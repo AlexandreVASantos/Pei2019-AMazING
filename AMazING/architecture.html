@@ -73,11 +73,15 @@
 							<li class="has-dropdown">
 								<a href="#">Vision and Scenarios</a>
 								<ul class="dropdown">
-									<li><a href="vision.html">Vision</a></li>
 									<li><a href="scenarios.html">Personas, Goals & Scenarios</a></li>
 								</ul>
 							</li>
-							<li><a href="architecture.html">Architecture</a></li>
+							<li class="has-dropdown">
+								<a href="#">Architecture</a>
+								<ul class="dropdown">
+									<li><a href="architecture.html">Architecture, Technical Requirements & Manual</a></li>
+								</ul>
+							</li>
 							<li><a href="logbook.html">LogBook</a></li>
 							<li class="active"><a href="about.html">About</a></li>
 						</ul>
@@ -107,6 +111,9 @@
 							<li class="md-nav__item">
 								<a href="#Technical" title="Log" class="md-nav__link"style="color:#6495ED">Technical Requirements</a>
 							</li>
+							<li class="md-nav__item">
+								<a href="#Manual" title="Log" class="md-nav__link"style="color:#6495ED">Manual</a>
+							</li>
 						</u>
 					
 				</nav>
@@ -118,13 +125,82 @@
 				<div class="row row-pb-sm">
 					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
 						<h2 id="Architecture">Architecture</h2>
-						<p> ###</p>
+							<br>
+							<div class="text-left">
+								<h4>Client Application</img></h4>
+							</div>
+							<table>
+								<tr>
+								<td style="padding-right:50px"><img src="images/appclient.png" style="width:70px" alt=""></td>
+								<td>A simple interface on clients PC to configure nodes.</td> 
+								</tr>
+							</table>
+							<br>
+							<br>
+							<div class="text-left">
+								<h4>Switch</img></h4>
+							</div>
+							<table>
+								<tr>
+								<td style="padding-right:50px"><img src="images/switch.png" style="width:70px" alt=""></td>
+								<td>A switch supporting SDN.</td> 
+								</tr>
+							</table>
+							<br>
+							<br>
+							<div class="text-left">
+								<h4>Switch Controller</img></h4>
+							</div>
+							<table>
+								<tr>
+								<td style="padding-right:50px"><img src="images/app.png" style="width:70px" alt=""></td>
+								<td>A interface that allows admin to enable or disable switch ports.</td> 
+								</tr>
+							</table>
+							<br>
+							<br>
+							<div class="text-left">
+								<h4>Node</img></h4>
+							</div>
+							<table>
+								<tr>
+								<td style="padding-right:50px"><img src="images/node.png" style="width:70px" alt=""></td>
+								<td>Piece of equipment based on an APU Board.</td> 
+								</tr>
+							</table>
+							<br>
+							<br>
+							<div class="text-left">
+								<h4>Daemon</img></h4>
+							</div>
+							<table>
+								<tr>
+								<td style="padding-right:50px"><img src="images/daemon.png" style="width:70px" alt=""></td>
+								<td>Software running in the background of the node OS(Operating System).</td> 
+								</tr>
+							</table>
+						
+						<br>
+						<br>
+						<br>
+									
+						<h3 style="padding-left:135px"> System overall architecture</h3>
+							<img style="width:120%" src="images/architecture.png"  alt="">
+							
+						
 					</div>
 				</div>
 				
 				<div class="row row-pb-sm">
 					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
 						<h2 id="Technical">Technical Requirements</h2>
+						<p> ###</p>
+					</div>
+				</div>
+				
+				<div class="row row-pb-sm">
+					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
+						<h2 id="Technical">Manual</h2>
 						<p> ###</p>
 					</div>
 				</div>
