@@ -85,7 +85,7 @@ h1, h2, h3, h4, h5, h6, figure {
 }
 
 .gtco-container {
-  max-width: 2000px;
+  max-width: 4000px;
   position: relative;
   margin: 0 auto;
   padding-left: 15px;
@@ -117,7 +117,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-nav #gtco-logo em {
   color: #483D8B;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 700px) {
   .gtco-nav .menu-1, .gtco-nav .menu-2 {
     display: none;
   }
@@ -320,7 +320,7 @@ h1, h2, h3, h4, h5, h6, figure {
   position: relative;
   z-index: 10;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-cover {
     height: 600px;
     height: inherit !important;
@@ -333,7 +333,7 @@ h1, h2, h3, h4, h5, h6, figure {
   display: table;
   width: 100%;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-cover .display-t,
   .gtco-cover .display-tc {
     height: 600px;
@@ -344,7 +344,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-cover.gtco-cover-sm {
   height: 300px;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-cover.gtco-cover-sm {
     height: 400px;
     height: inherit !important;
@@ -356,7 +356,7 @@ h1, h2, h3, h4, h5, h6, figure {
   display: table;
   width: 100%;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-cover.gtco-cover-sm .display-t,
   .gtco-cover.gtco-cover-sm .display-tc {
     height: 300px;
@@ -367,7 +367,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-cover.gtco-cover-xs {
   height: 300px;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-cover.gtco-cover-xs {
     height: inherit !important;
     padding: 3em 0;
@@ -379,7 +379,7 @@ h1, h2, h3, h4, h5, h6, figure {
   display: table;
   width: 100%;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-cover.gtco-cover-xs .display-t,
   .gtco-cover.gtco-cover-xs .display-tc {
     padding: 3em 0;
@@ -420,7 +420,7 @@ h1, h2, h3, h4, h5, h6, figure {
   -o-transition: 0.5s;
   transition: 0.5s;
 }
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 780px) {
   .gtco-services .service {
     margin-left: 0;
     margin-right: 0;
@@ -452,7 +452,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-services .service.changed {
   bottom: -7em;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-services .service.changed {
     bottom: 0;
   }
@@ -614,7 +614,7 @@ h1, h2, h3, h4, h5, h6, figure {
 #gtco-footer .gtco-footer-link {
   padding-left: 30px;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   #gtco-footer .gtco-footer-link {
     padding-left: 15px;
   }
@@ -635,7 +635,7 @@ h1, h2, h3, h4, h5, h6, figure {
 #gtco-footer .gtco-footer-subscribe {
   padding-left: 30px;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   #gtco-footer .gtco-footer-subscribe {
     padding-left: 15px;
   }
@@ -679,7 +679,7 @@ h1, h2, h3, h4, h5, h6, figure {
   width: 100%;
   display: block;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   .gtco-staff, .gtco-item {
     margin-bottom: 3em;
   }
@@ -802,7 +802,7 @@ h1, h2, h3, h4, h5, h6, figure {
   height: 500px;
   position: relative;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   #map {
     height: 200px;
   }
@@ -834,7 +834,7 @@ form label {
   color: #d3f1ed;
   font-weight: 100;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   #gtco-header h1 {
     line-height: 1.2 !important;
   }
