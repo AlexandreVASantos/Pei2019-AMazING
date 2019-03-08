@@ -261,12 +261,12 @@ h1, h2, h3, h4, h5, h6, figure {
   color: #000 !important;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   #gtco-header .text-left {
     text-align: center !important;
   }
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   #gtco-header .btn {
     display: block;
     width: 100%;
@@ -320,7 +320,7 @@ h1, h2, h3, h4, h5, h6, figure {
   position: relative;
   z-index: 10;
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   .gtco-cover {
     height: 600px;
     height: inherit !important;
@@ -333,7 +333,7 @@ h1, h2, h3, h4, h5, h6, figure {
   display: table;
   width: 100%;
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   .gtco-cover .display-t,
   .gtco-cover .display-tc {
     height: 600px;
@@ -344,7 +344,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-cover.gtco-cover-sm {
   height: 300px;
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   .gtco-cover.gtco-cover-sm {
     height: 400px;
     height: inherit !important;
@@ -356,7 +356,7 @@ h1, h2, h3, h4, h5, h6, figure {
   display: table;
   width: 100%;
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   .gtco-cover.gtco-cover-sm .display-t,
   .gtco-cover.gtco-cover-sm .display-tc {
     height: 300px;
@@ -367,7 +367,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-cover.gtco-cover-xs {
   height: 300px;
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   .gtco-cover.gtco-cover-xs {
     height: inherit !important;
     padding: 3em 0;
@@ -379,7 +379,7 @@ h1, h2, h3, h4, h5, h6, figure {
   display: table;
   width: 100%;
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 1080px) {
   .gtco-cover.gtco-cover-xs .display-t,
   .gtco-cover.gtco-cover-xs .display-tc {
     padding: 3em 0;
