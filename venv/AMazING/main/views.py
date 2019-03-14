@@ -5,4 +5,4 @@ def home(request):
 	return render(request,'main/login.html')
 
 def about(request):
-	return HttpResponse('<h1> about </h1>')
+	return render(request, 'main/about.html')
