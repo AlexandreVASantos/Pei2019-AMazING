@@ -1,10 +1,10 @@
 /* Base */
 body {
   line-height: 1.7;
-  color: #cfcfd1;
+  color: #0000;
   font-weight: 300;
   font-size: 1rem;
-  background: #232531;
+  background: #FFFF;
   font-family: "Roboto Mono", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; }
 
 ::-moz-selection {
@@ -33,7 +33,7 @@ h1, h2, h3, h4, h5,
   color: #000 !important; }
 
 .bg-black {
-  background: #000 !important; }
+  background: #FFFF !important; }
 
 .color-black-opacity-5 {
   color: rgba(0, 0, 0, 0.5); }
@@ -309,14 +309,14 @@ h1, h2, h3, h4, h5,
   .site-navbar .site-navigation .site-menu {
     margin-bottom: 0; }
     .site-navbar .site-navigation .site-menu .active > a {
-      color: #ff5733;
+      color: #0061ff;
       position: relative; }
       .site-navbar .site-navigation .site-menu .active > a:after {
         content: "";
         background: -webkit-gradient(linear, left top, right top, from(#c70039), color-stop(70%, #ff5733));
-        background: -webkit-linear-gradient(left, #c70039, #ff5733 70%);
-        background: -o-linear-gradient(left, #c70039, #ff5733 70%);
-        background: linear-gradient(to right, #c70039, #ff5733 70%);
+        background: -webkit-linear-gradient(left, #000, #0061ff 70%);
+        background: -o-linear-gradient(left, #000, #0061ff 70%);
+        background: linear-gradient(to right, #fff, #0061ff 70%);
         width: 100%;
         height: 2px;
         position: absolute;
@@ -338,7 +338,7 @@ h1, h2, h3, h4, h5,
         position: relative; }
         .site-navbar .site-navigation .site-menu > li > a:after {
           content: "";
-          background: -webkit-gradient(linear, left top, right top, from(#c70039), color-stop(70%, #ff5733));
+          background: -webkit-gradient(linear, left top, right top, from(#000), color-stop(70%, #ff5733));
           background: -webkit-linear-gradient(left, #c70039, #ff5733 70%);
           background: -o-linear-gradient(left, #c70039, #ff5733 70%);
           background: linear-gradient(to right, #c70039, #ff5733 70%);
@@ -681,9 +681,9 @@ h1, h2, h3, h4, h5,
     color: #e9e9ea; }
 
 .form-group .form-control {
-  color: #fff !important;
+  color: #000 !important;
   background: none;
-  border: 2px solid #fff; }
+  border: 2px solid #0061ff; }
   .form-group .form-control:active, .form-group .form-control:focus {
     background: none; }
 
