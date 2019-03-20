@@ -1,0 +1,54 @@
+{%  load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>SwitchController</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'Controller/base.css'%}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body style="background-color:#1111" >
+  <div class=container>
+    <nav class="navbar navbar-inverse navbar-fixed-top"  style="border-radius:0%;background-color:#1111;border-style: none">
+        
+        <div class="navbar-header">
+          
+            <a href="/" class="navbar-brand" style="font-size: 400px;padding-top: 0px"><img src="{% static 'img/it_logo.png' %}" alt="IT 25 Years - logo" style="width:252px; height:90px; border-radius:5%;background-color:#FFFF" width="252" height="90"></a>
+        </div>
+          <div class="container-fluid">
+            <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+              <li><a href="{%url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            {% else %}
+              <li><a href="{%url 'login'%}"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
+            {% endif %}
+          </ul>
+            
+          </div>
+
+          
+          
+        
+    </nav>
+  </div>
+  <br>
+  <div class="container" style="padding-top: 50px">
+    <div>
+    {% if messages %}
+     {% for message in messages%}
+        <div class ="alert">
+          {{message}}
+        </div>
+     {% endfor%}
+    {% endif %}
+    {% block content %} {% endblock %}
+
+    </div>
+  <div>
+
+</body>
+</html>
