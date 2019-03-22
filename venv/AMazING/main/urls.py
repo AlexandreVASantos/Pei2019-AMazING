@@ -4,8 +4,10 @@ from . import views
 
 
 urlpatterns = [
-    path('',views.home, name='main'),
-    path('about/',views.about, name='about')
+    path('',views.login, name='login'),
+    path('login/',views.login, name='login'),
+    path('about/',views.about, name='about'),
+    path('main/',views.main, name='main')
 ]
 
 urlpatterns += staticfiles_urlpatterns()
