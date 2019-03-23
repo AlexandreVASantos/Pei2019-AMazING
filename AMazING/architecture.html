@@ -127,35 +127,35 @@
 				<div class="row row-pb-sm">
 					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
 						<h2><a  id="Architecture" style="position:absolute;top:-100px"></a>Architecture</h2>
+
 							<br>
 							
+							<br>
+							
+							
+							<p>Keep in mind that the overall architecture is in the context of PEI 2019 and meets the needs of Instituto de Telecomunicações, and so has as
+							objective revitalize and put into operation the AMazING project with more features for the needs of experiences.</p>
+							<br>
+							
+							<br>
 							
 							<img style="width:120%" src="images/architecture.png"  alt="">
 							<br>
 							<br>
 							<br>
 							<br>
-							<p><h4 style="text-align:left">Note:</h4>
-							LDAP (Lightweight Directory Access Protocol) is a service where users information like username, password, phone number can be stored and used to do authentication.
+							<h4 style="text-align:left"><b>Note:</b></h4>
+							<p style="text-align:justify;"> LDAP (Lightweight Directory Access Protocol) is a service where users information like username, password, phone number can be stored and used to do authentication.
 							</p>
 							<br>
 							<br>
 							<br>
 							<br>
-							<table>
-								<tr>
-									<td style="padding-right:50px"><img src="images/appclient.png" style="width:70px" alt=""></td>
-									<td>
-										<div class="text-left">
-											<h4>Client Application</h4>
-										</div>
-										A simple interface on clients PC to configure nodes.
-									</td> 
-								</tr>
-							</table>
+
+							<h3 style="text-align:left">Network Infraestructure:</h3>
 							<br>
 							<br>
-							
+							<br>
 							<table>
 								<tr>
 									<td style="padding-right:50px"><img src="images/switch.png" style="width:70px" alt=""></td>
@@ -163,21 +163,7 @@
 										<div class="text-left">
 											<h4>Switch</h4>
 										</div>
-										A switch supporting SDN.
-									</td> 
-								</tr>
-							</table>
-							<br>
-							<br>
-							
-							<table>
-								<tr>
-									<td style="padding-right:50px"><img src="images/app.png" style="width:70px" alt=""></td>
-									<td>
-										<div class="text-left">
-											<h4>Switch Controller</h4>
-										</div>
-										An interface that allows admin to enable or disable switch ports.
+										<p style="text-align:justify;">A switch supporting SDN, in our case an Aruba 2920 48G POE+ (J9729A) switch, that will be the central point of all architecture.</p>
 									</td> 
 								</tr>
 							</table>
@@ -190,20 +176,7 @@
 										<div class="text-left">
 											<h4>Node</h4>
 										</div>
-										<p class="text-left">Piece of equipment based on an APU Board. In this case implemented in a 8x3 fixed grid.
-								</tr>
-							</table>
-							<br>
-							<br>
-							<table>
-								<tr>
-									<td style="padding-right:50px"><img src="images/daemon.png" style="width:70px" alt=""></td>
-									<td>
-										<div class="text-left">
-											<h4>Daemon</h4>
-										</div>
-										Software running in the background of the node OS(Operating System).
-									</td> 
+										<p style="text-align:justify;"> Piece of equipment based on an APU Board, with two wi-fi network adapters and four wi-fi antenas, connected to a PoE splitter. This ones inside a plastic box with a protective layer of naval wood on top for better protection.
 								</tr>
 							</table>
 							<br>
@@ -215,10 +188,64 @@
 										<div class="text-left">
 											<h4>Mobile Node</h4>
 										</div>
-										A node that is inside a mobile robot wich moves around the rooftop.
+										<p style="text-align:justify;">A node that is inside a mobile robot wich moves around the rooftop. This one is outside of PEI context since it is done as a master thesis of Eletronic Engineering.</p>
 									</td> 
 								</tr>
 							</table>
+							<br>
+							<br>
+							<br>
+							<br>
+							
+							<h3 style="text-align:left">Computacional infraestructure:</h3>
+							<br>
+							<br>
+							
+							<table>
+								<tr>
+									<td style="padding-right:50px"><img src="images/appclient.png" style="width:70px" alt=""></td>
+									<td>
+										<div class="text-left">
+											<h4>Client Application</h4>
+										</div>
+										<p style="text-align:justify;">A simple interface for client to remotely configure nodes. In our case it is only possible if using IT credentials. </p>
+									</td> 
+								</tr>
+							</table>
+							<br>
+							<br>
+							
+							
+							
+							<table>
+								<tr>
+									<td style="padding-right:50px"><img src="images/app.png" style="width:70px" alt=""></td>
+									<td>
+										<div class="text-left">
+											<h4>Switch Controller</h4>
+										</div>
+										<p style="text-align:justify;">An interface that allows system manager to remotely enable or disable PoE switch ports.</p>
+									</td> 
+								</tr>
+							</table>
+							<br>
+							<br>
+							
+							<br>
+							<table>
+								<tr>
+									<td style="padding-right:50px"><img src="images/daemon.png" style="width:70px" alt=""></td>
+									<td>
+										<div class="text-left">
+											<h4>Daemon</h4>
+										</div>
+										<p style="text-align:justify;"> Software running in the background of the node OS(Operating System).</p>
+									</td> 
+								</tr>
+							</table>
+							<br>
+							<br>
+							
 						
 						<br>
 						<br>
