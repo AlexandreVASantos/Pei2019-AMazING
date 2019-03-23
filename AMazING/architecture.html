@@ -133,8 +133,8 @@
 							<br>
 							
 							
-							<p>Keep in mind that the overall architecture is in the context of PEI 2019 and meets the needs of Instituto de Telecomunicações, and so has as
-							objective revitalize and put into operation the AMazING project with more features for the needs of experiences.</p>
+							<p>Keep in mind that the overall architecture is in the context of PEI 2019 and meets the needs of Instituto de Telecomunicações and so has as
+							objective revitalize and put into operation the AMazING project with more features for the needs of experiences. Your overall design may be different.</p>
 							<br>
 							
 							<br>
@@ -149,10 +149,13 @@
 							</p>
 							<br>
 							<br>
+							<h3 style="text-align:left">Description</h3>
+							<p style="text-align:justify;"> As you can see in the image above the architecture can be divided in 2 sides, left and write, with the left side being more oriented to hardware and right side software oriented.
+							</p>
 							<br>
 							<br>
 
-							<h3 style="text-align:left">Network Infraestructure:</h3>
+							<h3 style="text-align:left">Network Infraestructure (Left Side):</h3>
 							<br>
 							<br>
 							<br>
@@ -176,7 +179,23 @@
 										<div class="text-left">
 											<h4>Node</h4>
 										</div>
-										<p style="text-align:justify;"> Piece of equipment based on an APU Board, with two wi-fi network adapters and four wi-fi antenas, connected to a PoE splitter. This ones inside a plastic box with a protective layer of naval wood on top for better protection.
+										<p style="text-align:justify;"> Piece of equipment based on an APU Board, with two wi-fi network adapters and four wi-fi antenas, connected to a PoE splitter. This ones inside a plastic box with a protective layer of naval wood on top for better protection.</p>
+									</td> 
+								</tr>
+							</table>
+							<br>
+							<table>
+										<tr>
+											<td style="padding-left: 140px;padding-right:50px"><img src="images/daemon.png" style="width:70px" alt=""></td>
+											<td>
+												<div class="text-left">
+													<h4>Daemon</h4>
+												</div>
+												<p style="text-align:justify;"> Software running in the background of the node OS (Operating System).</p>
+											</td> 
+										</tr>
+									</table>
+									</td>
 								</tr>
 							</table>
 							<br>
@@ -197,7 +216,7 @@
 							<br>
 							<br>
 							
-							<h3 style="text-align:left">Computacional infraestructure:</h3>
+							<h3 style="text-align:left">Computacional infraestructure (Right Side):</h3>
 							<br>
 							<br>
 							
@@ -231,30 +250,7 @@
 							<br>
 							<br>
 							
-							<br>
-							<table>
-								<tr>
-									<td style="padding-right:50px"><img src="images/daemon.png" style="width:70px" alt=""></td>
-									<td>
-										<div class="text-left">
-											<h4>Daemon</h4>
-										</div>
-										<p style="text-align:justify;"> Software running in the background of the node OS(Operating System).</p>
-									</td> 
-								</tr>
-							</table>
-							<br>
-							<br>
-							
-						
-						<br>
-						<br>
-						<br>
-									
-						
-							
-						
-						
+							<br>	
 					</div>
 				</div>
 				
@@ -263,16 +259,29 @@
 						<h2><a id="Technical" style="position:absolute;top:-100px"></a>Technical Requirements</h2>
 						<br>
 						<br>
-						<img style="width:80%" src="images/blocks.png"  alt="">
+						<img style="width:65%" src="images/overallreq.png"  alt="">
 						<br>
 						<br>
+						<br>
+						<h3 style="text-align:left">Hardware Layer:</h3>
+
+
+						<br>
+						<br>
+
+						<img style="width:60%" src="images/hardware.png"  alt="">
+
+						<br>
+						<br>
+						<p style="text-align:justify;"> Note that both <b>Node REST Server and Daemon are software components </b> so will also ppear in Software layer, however they're the same. 
+						</p>
 						<br>
 						<div style="text-align:left">
 							
 							<h4>Node</h4>
 							<ul>
-								<li><p>Any APU board that can run unix server distros.</p></li>
-								<li><p>Uses a PoE splitter for power suply that comes from switch.</p>
+								<li><p>Any APU board that can run unix server distros, Ubuntu Server 18.04 LTS in our case</p></li>
+								<li><p>Uses a PoE splitter for power supply that comes from switch.</p>
 								<li><p>Needs to be protected if installed outside.</p></li>
 							</ul>		
 							<br>
@@ -283,26 +292,38 @@
 							<h4>Switch</h4>
 							<ul>
 								<li><p>A switch supporting SDN</p></li>
-								<li><p>OpenFlow installed</p></li>
+								<li><p>OpenFlow and Aruba REST API installed</p></li>
 							</ul>	
 							<br>
 							<br>
 						</div>
+						<h3 style="text-align:left">Software Layer:</h3>
+						<br>
+						<br>
+
+						<img style="width:60%" src="images/software.png"  alt="">
+
+						
+						<br>
+						<br>
 						<div style="text-align:left">
 							
-							<h4>Server Side (Processing Layer)</h4>
+							<h4>GUI Layer</h4>
 							<ul>
-								<li><p>Just needs to be possible to run both the web App and the controller App.</p></li>
+								<li><p>Any browser to run both the web App and the controller App.</p></li>
 							</ul>	
 							<br>
 							<br>
 						</div>
+						
 						<div style="text-align:left">
 							
-							<h4>Client Side (UI)</h4>
+							<h4>Processing and Kernel Layers</h4>
 							<ul>
-								<li><p>Any operating system with browser available.</p></li>
+								<li><p>Any server operating system capable of running python and c programs.</p></li>
 							</ul>
+							<br>
+							<br>
 						</div>
 					</div>
 				</div>

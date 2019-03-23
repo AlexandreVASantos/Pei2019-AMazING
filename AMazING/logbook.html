@@ -144,9 +144,7 @@
 					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
 						<h2>Week 3<h2>
 						<h3>25-02-2019 to 03-03-2019</h3>
-						<p> Wednesday, day 27, the weekly team meeting with the mentor provided us an introduction to the technologies and concepts to be used 
-						and to decide how to distribute tasks. Discussion on the overall architecture and first draft of MVP (Minimum Viable Product). 
-						During the last days of the week we started to getting used to Django, our choice of web framework to the web app, REST, SDN and OpenFlow.</p>
+						<p> Wednesday, day 27, the weekly team meeting with the mentor provided us an introduction to the technologies and concepts to be used and to decide how to distribute tasks. Discussion on the overall architecture and first draft of MVP (Minimum Viable Product). During the last days of the week we started to getting used to Django, our choice of web framework to the web app, REST, SDN and OpenFlow.</p>
 					</div>
 				</div>
 				
@@ -156,8 +154,7 @@
 						<h3>04-03-2019 to 10-03-2019</h3>
 						<p>This week there wasn't a team meeting due to incompabilities, however some work was done.Some nodes had OS (Operating System) already, 
 						however we didn't know the credentials, so we started to do clean OS install in some off them, since it will have to be done for all. 
-						We chose Ubuntu 18.04 LTS, however it had to be instalated via dist upgrade from Ubuntu 14.04 because the APU Board didn't allow us to install Ubuntu 
-						16.04 or 18.04 directly, maybe because of USB pen configuration, we will try later to resolve this problem due to better security, bug fix and longer 
+						We chose Ubuntu 18.04 LTS, however it had to be instalated via dist upgrade from Ubuntu 14.04 because the APU Board didn't allow us to install Ubuntu 16.04 or 18.04 directly, maybe because of USB pen configuration, we will try later to resolve this problem due to better security, bug fix and longer 
 						support in Ubuntu 18.04 LTS. In addition to documentation that we also complete, some front end has done.</p>
 					</div>
 				</div>
@@ -166,12 +163,17 @@
 					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
 						<h2>Week 5<h2>
 						<h3>11-03-2019 to 17-03-2019</h3>
-						<p>During week five we find that there are some lack of material, either the material is really lacking or used on another projects making them impossible to 
-						install in the grid, this ones will be later installed, and some fans cables are not weld or weld but not secure, 
-						this will be a major setback in our schedualing. However we still continued to install OS in the remaining nodes, making two 100% completed
-						and able to fullfill the needs of our sub tasks like web App and daemon. We discover that our switch, an Aruba J9727A, had a REST API , but did not allow to
-						do exactly what we want, enable and disable PoE, only allows do make GET requests like how many ports are enable, how many power supply is used,etc,
-						and so we will try another approach. 
+						<p>During week five we find that there are some lack of material, either the material is really lacking or used on another projects making them impossible to install in the grid, this ones will be later installed, and some fans cables are not weld or weld but not secure, this will be a major setback in our schedualing. However we still continued to install OS in the remaining nodes, making two 100% completed and able to fullfill the needs of our sub tasks like web App and daemon. We discover that our switch, an Aruba J9727A, had a REST API and we will try to explore that feature.
+						</p>
+					</div>
+				</div>
+
+				<div class="row row-pb-sm">
+					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
+						<h2>Week 6<h2>
+						<h3>18-03-2019 to 24-03-2019</h3>
+						<p>
+						During week 6 our main goal has to achieve full connectivity between Web App REST server and Node REST server so we made some experiences, connected two pcs, one for each REST server, and executed multiple requests between machines, most of them successful. In addition to that we still continued to install OS in nodes and the switch controller has been started, however the Aruba REST API is not installed in the switch and we need to decide what are the pros and cons of installing that, since the switch is the main piece of this project and we cannot have that broken. In the weekly team meeting, thursday day 21, we decided as first aproach for daemon to directly call comands via shell but later to use a library in python or c to do that, libnl and nl80211 respectively.
 						</p>
 					</div>
 				</div>
