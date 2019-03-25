@@ -4,6 +4,17 @@
  	once: true
  });
 
+$(MySelect).click( function(e){
+  var i = this.selectedIndex;
+  if(this.options[i].selectedOld==true){
+    this-options[i].selected = false;
+    thus.options[i].selectedOld = false;
+  }
+  else{
+    this.options[i].seectedOld =true;
+  }
+});
+
 jQuery(document).ready(function($) {
 
 	"use strict";
@@ -240,3 +251,4 @@ jQuery(document).ready(function($) {
 	siteDatePicker();
 
 });
+
