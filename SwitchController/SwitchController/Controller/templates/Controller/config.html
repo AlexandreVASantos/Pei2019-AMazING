@@ -8,27 +8,13 @@
 	<br>
 	<div class="row">
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF" type="submit">Turn  on</button>
-				
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" style= alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
-			
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<form  action="" method ='GET'>
+				{% csrf_token %}
+				<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+				<br>
+				<br>
+				<button class="btn btn-outline-info" style="background-color:red"><a style="color:white" href="{% url 'config' %}">ON</a></button>
+			</form>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -36,7 +22,23 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+			
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+				
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -44,7 +46,7 @@
 			<img src="{% static 'img/node.png' %}" width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -52,7 +54,7 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 	</div>
@@ -66,23 +68,7 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
-				
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" style= alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
-			
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -90,7 +76,23 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+			
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+				
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -98,7 +100,7 @@
 			<img src="{% static 'img/node.png' %}" width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -106,7 +108,7 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 	</div>
@@ -120,23 +122,7 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
-				
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" style= alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
-			
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -144,7 +130,23 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+			
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+				
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -152,7 +154,7 @@
 			<img src="{% static 'img/node.png' %}" width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -160,7 +162,7 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 	</div>
@@ -174,23 +176,7 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
-				
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" style= alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
-			
-		</div>
-		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
-			
-			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
-			<br>
-			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -198,7 +184,23 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+			
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
+				
+		</div>
+		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
+			
+			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
+			<br>
+			<br>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -206,7 +208,7 @@
 			<img src="{% static 'img/node.png' %}" width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 		<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
@@ -214,7 +216,7 @@
 			<img src="{% static 'img/node.png' %}"  width="40%" height="40%" alt="">
 			<br>
 			<br>
-			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">Turn on</button>
+			<button class="btn btn-outline-info" style="background-color:red;color:#FFFF "type="submit">ON</button>
 				
 		</div>
 	</div>

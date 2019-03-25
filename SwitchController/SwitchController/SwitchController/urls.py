@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path,include
 from Controller import views as Controller_views
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 
 
@@ -24,5 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/',auth_views.LoginView.as_view(template_name='Controller/login.html'), name='login'),
     path('logout/',auth_views.LogoutView.as_view(template_name='Controller/logout.html'), name='logout'),
+    path('config/',TemplateView.as_view(template_name="Controller/config.html"),name='asds'),
     path('', include('Controller.urls')),
 ]
