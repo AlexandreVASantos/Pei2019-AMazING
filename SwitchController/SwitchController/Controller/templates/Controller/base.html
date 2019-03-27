@@ -49,6 +49,20 @@
 
     </div>
   <div>
-
+<script>
+    function clickHandler(id) {
+      var i=document.getElementById(id);
+      if (i.value == "OFF"){
+        i.innerHTML = "ON";
+        i.value = "ON";
+        i.style.backgroundColor = "green";
+      }else if (i.value == "ON"){
+        i.innerHTML = "OFF";
+        i.value= "OFF";
+        i.style.backgroundColor = "red";
+      }
+    }
+  </script>
 </body>
+
 </html>
