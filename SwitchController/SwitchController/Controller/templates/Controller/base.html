@@ -10,6 +10,34 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script>
+    var idx;
+    function clickHandler(id) {
+      idx=id;
+      setTimeout(clicked,10);
+    }
+    function clicked(){
+      var i=document.getElementById(idx);
+      if (i.value == "OFF"){
+        i.innerHTML = "ON";
+        i.value = "ON";
+        i.style.background= "green";
+      }else if (i.value == "ON"){
+        i.innerHTML = "OFF";
+        i.value = "OFF";
+        i.style.background = "red";
+      }
+    }
+    function color(id){
+       var i=document.getElementById(id);
+       if (i.innerHTML == "OFF"){
+        i.style.background="red";
+       }else if(i.innerHTML == "ON"){
+        i.style.background="green";
+       }
+    }
+  </script>
+
 </head>
 <body style="background-color:#1111" >
   <div class=container>
@@ -49,20 +77,7 @@
 
     </div>
   <div>
-<script>
-    function clickHandler(id) {
-      var i=document.getElementById(id);
-      if (i.value == "OFF"){
-        i.innerHTML = "ON";
-        i.value = "ON";
-        i.style.backgroundColor = "green";
-      }else if (i.value == "ON"){
-        i.innerHTML = "OFF";
-        i.value= "OFF";
-        i.style.backgroundColor = "red";
-      }
-    }
-  </script>
+
 </body>
 
 </html>

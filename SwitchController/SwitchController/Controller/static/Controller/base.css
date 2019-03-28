@@ -5,6 +5,7 @@ html {
   background-color: #1100;
 }
 
+
 body {
   font-family: "Poppins", sans-serif;
   height: 100vh;
@@ -30,6 +31,7 @@ h2 {
 
 
 /* STRUCTURE */
+
 
 .wrapper {
   display: flex;
