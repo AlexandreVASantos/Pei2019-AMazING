@@ -22,12 +22,13 @@ def send_grid(request):
 
 def refresh_grid():
 	connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
-	c=connection.cursor()
+	c=connection.cursor()	
 	c.execute("Select * from node;")
 	fetch= c.fetchall()
 	for row in fetch:
 		grid[row[0]] = (row[1],row[2],row[3])
 	connection.close()
+
 	
 
 
@@ -42,26 +43,39 @@ def send_shit(request):
 	for key in dic:
 		node=key
 		value=dic[key]
-
-	comands = 'telnet x.x.x.x configure terminal interface' 
+	
+	
 	
 	connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
 	c=connection.cursor()
 	
-	if value == 'OFF':
-	#turn on
-		query = "Update node Set value='ON', color='green' where id="+ node +";"
-	else:
-	#turn off
-		query = "Update node Set value='OFF', color='red' where id=" + node +";"
-	
+
+	try:
+		if value == 'OFF':
+			#turn on
+			#comands = 'telnet x.x.x.x configure terminal interface' + grid[int(node)][2] + 'power-over-ethernet end write memory'
+			#command = 'telnet x.x.x.x show running-config'
+			#subprocess.check_output(comands)
+			print('1')
+			query = "Update node Set value='ON', color='green' where id="+ node +";"
+		else:
+			#turn off
+			#comands = 'telnet x.x.x.x configure terminal interface' + grid[int(node)][2] + ' no power-over-ethernet end write memory'
+			#command = 'telnet x.x.x.x show running-config'
+			#subprocess.check_output(comands)
+			print('1')
+			query = "Update node Set value='OFF', color='red' where id=" + node +";"
+	except subprocess.CalledProcessError as e:
+		return render(request, 'Controller/error.html', {'error': e.stderr})
+
+
 	c.execute(query)
 	connection.commit()
 	connection.close()
 	#
 	
 	refresh_grid()
-	print(grid)
+	
 	node_grid = grid
 	data_json= json.dumps(data)
 	headers = {'Content-Type': 'application/json'}
