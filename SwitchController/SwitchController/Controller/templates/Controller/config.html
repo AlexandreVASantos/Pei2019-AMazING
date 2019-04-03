@@ -1,7 +1,7 @@
 {% extends 'Controller/base.html' %}
 {% load static %}
 {% block content %}
-
+<!-- {% if user.is_authenticated %} -->
 <div class="container text-center" style="background-color:#FFFF" >
 	<br>
 	<br>
@@ -313,9 +313,18 @@
 			</form>
 
 		</div>
+		<br>
+		<br>
+		<br>
 	</div>
-	
-	
-</div>	
+	<br>
+	<br>
+	<br>
+
+</div>
+<!--
+{% else %}
+{% endif %}
+-->	
 {% endblock %}
 		
