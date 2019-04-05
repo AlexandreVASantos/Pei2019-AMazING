@@ -1,10 +1,12 @@
 from django.urls import path
 from . import views
-from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('',TemplateView.as_view(template_name='Controller/home.html'), name='home'),
+    path('',views.home, name='home'),
+    path('getlogin/', views.getlogin, name='getLogin'),
     path('config/',views.send_grid,name='config'),
     path('configurate/', views.send_shit, name ='configurate'),
+    path('logout/',views.log_out, name='logout'),
+    path('login/',views.log_in, name='login'),
    
 ]

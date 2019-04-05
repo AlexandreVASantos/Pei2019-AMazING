@@ -48,10 +48,8 @@
         </div>
           <div class="container-fluid">
             <ul class="nav navbar-nav navbar-right">
-            {% if user.is_authenticated %}
+            {% if user.authenticated %}
               <li><a href="{%url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-            {% else %}
-              <li><a href="{%url 'login'%}"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
             {% endif %}
           </ul>
             
@@ -65,17 +63,21 @@
   <br>
   <div class="container" style="padding-top: 50px">
     <div>
-    {% if messages %}
-     {% for message in messages%}
-        <div class ="alert">
+      {% if failed %}
+        <div class ="alert alert-danger" role="alert">
           {{message}}
         </div>
-     {% endfor%}
-    {% endif %}
+      {% elif success %}
+        <div class ="alert alert-success" role="alert">
+          {{message}}
+        </div>
+         
+      {% endif %}
+
     {% block content %} {% endblock %}
 
     </div>
-  <div>
+  </div>
 
 </body>
 

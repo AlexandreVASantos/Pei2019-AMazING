@@ -25,7 +25,7 @@ SECRET_KEY = 'g9nvx+gh5k$^qx5174pvlz-(o@71g23&-%!-*yf-%&vydv^1af'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -43,7 +43,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    #'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'SwitchController.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['/home/alexandre/Desktop/SwitchController/SwitchController/Controller/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +70,10 @@ TEMPLATES = [
         },
     },
 ]
+
+TEMPLATE_DIRS= (
+    '/home/alexandre/Desktop/SwitchController/SwitchController/Controller/templates/',
+    )
 
 WSGI_APPLICATION = 'SwitchController.wsgi.application'
 
@@ -120,14 +125,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_ROOT = "/home/alexandre/Desktop/SwitchController/SwitchController/Controller/static/"
+
 STATIC_URL = '/static/'
 
-CRISPY_TEMPLATE_PACK ='bootstrap4'
 
-LOGIN_REDIRECT_URL = 'config' 
-
-REST_FRAMEWORK = {
-'DEFAULT_AUTHENTICATION_CLASSES': (
-    'rest_framework.authentication.SessionAuthentication',
-),
-}

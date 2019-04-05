@@ -1,7 +1,43 @@
 {% extends "Controller/base.html" %}
 
 {% block content %}
-	<div class ="container">
-		<h1> AMazING Switch Controller</h1>
-	</div>
+	<div class="row">
+        <!-- Boxes de Acoes -->
+		<div class="box">							
+			<div class="icon">
+				<div class="image"><img class="fa fa-thumbs-o-up"></i></div>
+				<div class="info">
+					<h3 class="title">Welcome to the AMazING Switch Controller!</h3>
+					
+					<div class="more">
+				
+						{% if user.authenticated%}
+						<div class ="container">
+							<a  class="btn btn-primary" href="{% url 'config' %}">Node Grid</a>
+						</div>
+
+						{% else %}
+						<div class ="container">
+							<p>This is a system that allows the AMazING manager to enable or disable the Switch PoE ports, making nodes do turn on or off.</p>
+							<a  class="btn btn-primary" href="{% url 'getLogin' %}">Log In</a>
+					
+						</div>
+
+						{%endif%}
+              				
+					</div>
+						
+				</div>
+			</div>
+			<div class="space"></div>
+		
+		</div>
+
+	
+
+	
+	
+	
+	
+	
 {% endblock %}
