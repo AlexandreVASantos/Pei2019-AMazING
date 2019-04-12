@@ -1,0 +1,25 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+	<form action="/connect/" method ='get'>
+	  <div class="form-group" align="center">
+	    <label style="color:#000" align="center">SSID</label>
+	    <input type="text" class="form-control" required="required" name="SSID" placeholder="SSID">
+	  </div>
+	  <div class="form-group" align="center">
+	    <label style="color:#000" align="center">Frequency</label>
+	    <input type="text" class="form-control" id="Frequency" placeholder="Frequency">
+	  </div>
+	  <div class="form-group" align="center">
+	    <label style="color:#000" align="center">WEP ex</label>
+	    <input type="text" class="form-control" id="WEP" placeholder="WEP">
+	  </div>
+	  <div class="from-group" align="center">
+	  	<button style="background-color:#0061ff;color:#ffff" type="submit" class="btn">Submit</button>
+	  </div>
+	</form>
+{% endblock content %}
+
+{%block back %}
+ <li class="active"><a href="{% url 'menu' %}">Back</a></li>
+{%endblock back %}

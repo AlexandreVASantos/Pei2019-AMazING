@@ -1,13 +1,17 @@
 from django.urls import path
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import views
 
 
 urlpatterns = [
-    path('',views.login, name='login'),
-    path('login/',views.login, name='login'),
+    path('',views.home, name='login'),
     path('about/',views.about, name='about'),
-    path('main/',views.main, name='main')
+    path('menu/',views.menu, name='menu'),
+    path('NodeMenu/',views.NodeMenu, name='NodeMenu'),
+    path('connect/',views.post, name='connect'),
+    path('connection/',views.connection, name='connection'),
+    path('main/',views.main, name='main'),
+    path('help/',views.help, name='help'),
+    path('get/',views.get, name='get'),
+    path('stationPeer/',views.stationPeer, name='stationPeer'),
+    path('addrChange/',views.addrChange, name='addrChange')
 ]
-
-urlpatterns += staticfiles_urlpatterns()

@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+	<form action="/connect/" method ='get'>
+	  <div class="form-group" align="center">
+	    <label style="color:#000" align="center">IP Address</label>
+	    <input type="text" class="form-control" required="required" name="IP" placeholder="IP Addr">
+	  </div>
+	  <div class="from-group" align="center">
+	  	<button style="background-color:#0061ff;color:#ffff" type="submit" class="btn">Submit</button>
+	  </div>
+	</form>
+{% endblock content %}
+
+{%block back %}
+ <li class="active"><a href="{% url 'menu' %}">Back</a></li>
+{%endblock back %}
