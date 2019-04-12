@@ -1,0 +1,6 @@
+12/4/2019
+
+TO DO:
+--Acabar menus de interaçao (AKA forms de introduçao de dados para cada funçao)
+--Replicar funçoes para envio de dados com verificação dos dados inseridos (provavelmente vai ser inserido aqui a interaçao com kafka)
+--Implementar sistema de reserva de nós com tempo limite (utilizador escolhe o nó e o tempo que o quer reservar)
