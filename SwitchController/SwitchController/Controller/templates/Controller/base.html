@@ -10,30 +10,19 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
   <script>
-    var idx;
-    function clickHandler(id) {
-      idx=id;
-      setTimeout(clicked,10);
-    }
-    function clicked(){
-      var i=document.getElementById(idx);
-      if (i.value == "OFF"){
-        i.innerHTML = "ON";
-        i.value = "ON";
-        i.style.background= "green";
-      }else if (i.value == "ON"){
-        i.innerHTML = "OFF";
-        i.value = "OFF";
-        i.style.background = "red";
+    function isValidForm(id_button){
+      var i = document.getElementById(id_button);
+      if( i.value == "ON"){
+        var c = window.confirm("Are you sure you want to turn the node OFF?\n\nPlease make sure that no one is using it before turning it down!");
+        if (c != true){
+          return false;
+        }
       }
+      return true;
     }
-    function color(id){
-       var i=document.getElementById(id);
-       if (i.innerHTML == "OFF"){
-        i.style.background="red";
-       }else if(i.innerHTML == "ON"){
-        i.style.background="green";
-       }
+
+    function goBack(){
+      window.history.back();
     }
   </script>
 
@@ -48,6 +37,7 @@
         </div>
           <div class="container-fluid">
             <ul class="nav navbar-nav navbar-right">
+              <li><a href="{%url 'home' %}"><span class="glyphicon glyphicon-home"></span></a></li>
             {% if user.authenticated %}
               <li><a href="{%url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
             {% endif %}

@@ -84,6 +84,7 @@ def refresh_grid():
 		for row in fetch:
 			grid[row[0]] = (row[1],row[2],row[3])
 		connection.close()
+		print(grid)
 		return 0,[]
 	except sqlite3.Error as e:
 		return 1,str(e)
@@ -103,7 +104,7 @@ def send_shit(request):
 	url = "http://httpbin.org/post"
 	#data = {"SSID":"foo","Frequency":"1234","WEP":"1234123asdgwer"}
 	data = {"data":"123"}
-	dic=request.GET
+	dic=request.POST
 	for key in dic:
 		node=key
 		value=dic[key]
