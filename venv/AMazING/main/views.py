@@ -2,6 +2,7 @@ import requests
 import json
 from django.shortcuts import render
 from django.http import HttpResponse
+from kafka import KafkaProducer
 
 def home(request):
 	return render(request, 'main/login.html')
@@ -51,8 +52,11 @@ def post(request):
 	return render(request, 'main/menu.html')
 
 def get(request):
+	#producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	url = "http://192.168.0.25:5000/changeIP"
 	headers = {'Content-Type': 'application/json'}
 	req = requests.get(url, headers=headers)
 	print(req.json())
+	#data = {'username' : [url[:27],value, req.json()]}   #url[:27]= function name, value=input , req.json() = output
+    #producer.send('numtest', value=data)
 	return render(request, 'main/menu.html')	
