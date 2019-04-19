@@ -9,11 +9,29 @@ import base64
 
 
 user = {'username' : None, 'authenticated' : False }
-#url = 'http://x.x.x.x/rest/v3/'
+url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
 
 # Create your views here.
+
+def node_up(request,node):
+	if request.method == 'POST':
+		try:
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+			c=connection.cursor()
+			query = "Update node Set value='ON', color='green' where id="+ node +";"
+			c.execute(query)
+			connection.commit()
+			connection.close()
+			return 0
+		except sqlite3.Error as e:
+			return e
+
+	else:
+		return 'Wrong method'
+
+
 def home(request):
 	return render(request,'templates/Controller/home.html', {'user': user})
 
@@ -41,10 +59,8 @@ def log_in(request):
 	username = request.POST.get('username')
 	password = request.POST.get('password')
 	if username == '' or password == '':
-		#return redirect('http://127.0.0.1:8000/getlogin/')
 		return render(request,'templates/Controller/login.html', {'user': user, 'message' : 'Please fill both camps','failed': True})
 
-	print(username,password)
 
 	code=compLogin(username,password)
 	
@@ -54,6 +70,7 @@ def log_in(request):
 
 	user["username"] = username
 	user["authenticated"] = True
+	
 	return send_grid(request, 'Authentication Sucessful')
 
 def log_out(request):
@@ -64,6 +81,7 @@ def log_out(request):
 
 def send_grid(request, message = None):
 	refresh_grid()
+	##use this block if a user login is added to the switch
 	#sess = requests.Session()
 	#req = sess.post(url + 'login-sessions',,timeout=1)
 	#cookie_response = req.json()['cookie']
@@ -84,26 +102,26 @@ def refresh_grid():
 		for row in fetch:
 			grid[row[0]] = (row[1],row[2],row[3])
 		connection.close()
-		print(grid)
-		return 0,[]
+		return 0,grid
 	except sqlite3.Error as e:
 		return 1,str(e)
-	
-#def send_commands(command):
-	#command_bytes = command.encode()
-	#command_base64 = base64.b64encode(command_bytes)
-	#command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
-	#post_command = requests.post(url + 'cli_batch', headers=, data=json.dumps(command_dict), timeout=1)
-	#return post_command
 
-def send_shit(request):
-	#os.system('ping google.com')
-	temp_grid = grid
-	subprocess.check_call(['echo','SWITCH ARUBA'])
-	#url = 'http://192.1.1.1/connection'
-	url = "http://httpbin.org/post"
-	#data = {"SSID":"foo","Frequency":"1234","WEP":"1234123asdgwer"}
-	data = {"data":"123"}
+def grid_update(request):
+	node_grid = refresh_grid()
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'message': message, 'user' : user, 'success': True })
+	
+def send_commands(command):
+	command_bytes = command.encode()
+	command_base64 = base64.b64encode(command_bytes)
+	command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
+	post_command = requests.post(url + 'cli_batch', headers=cookie, data=json.dumps(command_dict), timeout=1)
+	return post_command
+
+def change_grid(request):
+	
+	#url = "http://httpbin.org/post"
+	
+	#data = {"data":"123"}
 	dic=request.POST
 	for key in dic:
 		node=key
@@ -115,48 +133,38 @@ def send_shit(request):
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
 		c=connection.cursor()
 		
-		try:
-			if value == 'OFF':
-				#turn on
-				#comands = 'telnet x.x.x.x configure terminal interface' + grid[int(node)][2] + 'power-over-ethernet end write memory'
-				#command = 'telnet x.x.x.x show running-config'
-				#commands = "interface" + portId + "\npower-over-ethernet\n"
-				#code = send_command(commands)
-				#subprocess.check_output(comands)
-				#if code != 202:
-					#render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-				query = "Update node Set value='ON', color='green' where id="+ node +";"
-			else:
-				#turn off
-				#comands = 'telnet x.x.x.x configure terminal interface' + grid[int(node)][2] + ' no power-over-ethernet end write memory'
-				#command = 'telnet x.x.x.x show running-config'
-				#commands = "interface" + portId + "\nno power-over-ethernet\n"
-				
-				#subprocess.check_output(comands)
-				#if code != 202:
-					#render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-				
-				query = "Update node Set value='OFF', color='red' where id=" + node +";"
-		except subprocess.CalledProcessError as e:
-			return render(request, 'templates/Controller/error.html', {'error': e.stderr, 'user' : user})
+		if value == 'OFF':
+			#turn on
+			commands = "interface" + portId + "\npower-over-ethernet\n"
+			
+			query = "Update node Set value='ON', color='green' where id="+ node +";"
+		else:
+			#turn off
+			commands = "interface" + portId + "\nno power-over-ethernet\n"
 
+			
+			query = "Update node Set value='OFF', color='red' where id=" + node +";"
+		
+		code = send_commands(commands)
+		if code != 202:
+			render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 
 		c.execute(query)
 		connection.commit()
 		connection.close()
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
-	#
+	
 	
 	E_id,error = refresh_grid()
 	if E_id == 1:
 		return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
 
 	node_grid = grid
-	data_json= json.dumps(data)
-	headers = {'Content-Type': 'application/json'}
-	req= requests.post(url,data=data_json, headers=headers)
-	print(req.json())
+	#data_json= json.dumps(data)
+	#headers = {'Content-Type': 'application/json'}
+	#req= requests.post(url,data=data_json, headers=headers)
+	#print(req.json())
 	
 	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user': user})
 
