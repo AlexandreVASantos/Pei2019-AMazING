@@ -8,7 +8,7 @@ urlpatterns = [
     path('config/change/', views.change_grid, name ='change'),
     path('logout/',views.log_out, name='logout'),
     path('login/',views.log_in, name='login'),
-    path('nodeup/<int:node>/',views.node_up, name='node_up'),
+    path('nodeup/',views.node_up, name='node_up'),
     path('config/refresh/',views.grid_update, name='update'),
    
 ]

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-
+from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
 import os
@@ -14,22 +14,29 @@ grid = {}
 cookie = {}
 
 # Create your views here.
-
-def node_up(request,node):
+@csrf_exempt
+def node_up(request):
 	if request.method == 'POST':
 		try:
+			args = json.loads(request.body.decode('utf-8'))
+			print(args)
+			node = args.get('node')
+			print(node)
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
 			c=connection.cursor()
-			query = "Update node Set value='ON', color='green' where id="+ node +";"
+			query = "Update node Set value='ON', color='green' where id="+ str(node) +";"
+		
 			c.execute(query)
 			connection.commit()
 			connection.close()
-			return 0
+			return render(request,'templates/Controller/node.html', {'message': 0})
+
 		except sqlite3.Error as e:
-			return e
+			return render(request,'templates/Controller/node.html', {'message':'database error'})
+
 
 	else:
-		return 'Wrong method'
+		return render(request,'templates/Controller/node.html', {'message':'Wrong method'})
 
 
 def home(request):
