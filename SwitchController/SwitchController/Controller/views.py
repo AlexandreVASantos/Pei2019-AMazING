@@ -13,7 +13,7 @@ url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
 
-# Create your views here.
+#function to receive wake up message from node, do not need csrf_cookie
 @csrf_exempt
 def node_up(request):
 	if request.method == 'POST':
@@ -24,8 +24,9 @@ def node_up(request):
 			print(node)
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
 			c=connection.cursor()
+
 			query = "Update node Set value='ON', color='green' where id="+ str(node) +";"
-		
+			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
 			connection.close()
@@ -136,36 +137,44 @@ def change_grid(request):
 
 	(val,color,portId) = grid[int(node)]
 
-	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
-		c=connection.cursor()
-		
-		if value == 'OFF':
-			#turn on
+	if value == 'OFF':
+			#if value OFF turn on
 			commands = "interface" + portId + "\npower-over-ethernet\n"
+
+			#can't update database immediately, need to wait for node to go up
+			code = send_commands(commands)
+
+			if code != 202:
+				return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+	else:
+		try:
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+			c=connection.cursor()
 			
-			query = "Update node Set value='ON', color='green' where id="+ node +";"
-		else:
-			#turn off
+		
+			#if value ON turn off
 			commands = "interface" + portId + "\nno power-over-ethernet\n"
 
-			
 			query = "Update node Set value='OFF', color='red' where id=" + node +";"
 		
-		code = send_commands(commands)
-		if code != 202:
-			render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+			code = send_commands(commands)
+			if code != 202:
+				return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 
-		c.execute(query)
-		connection.commit()
-		connection.close()
-	except sqlite3.Error as e:
-		return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
+			#update value of node state in database
+			c.execute(query)
+			connection.commit()
+			connection.close()
+
+
+			E_id,error = refresh_grid()
+			if E_id == 1:
+				return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
+
+		except sqlite3.Error as e:
+			return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
+		
 	
-	
-	E_id,error = refresh_grid()
-	if E_id == 1:
-		return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
 
 	node_grid = grid
 	#data_json= json.dumps(data)
