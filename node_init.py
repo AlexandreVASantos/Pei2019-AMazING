@@ -1,11 +1,13 @@
 import requests
 import json
 import subprocess
+import time
 
 
 ##Alexandre Santos, 80106
 
-url = 'x.x.x.x/node_up'
+url_wake = 'x.x.x.x/node_up'
+url_readings = 'x.x.x.x/get_readings'
 headers = {'Content-Type': 'application/json'}
 
 
@@ -26,5 +28,26 @@ def wake_up():
 	return 'MSG: ' + str(node_id) +' just woke up!!!'
 
 
+def get_readings():
+	
+	while True:
+		try:
+			values = subprocess.check_output(['sensors','| grep "ALARM"'])
 
-value = wake_up()
+			data_values = {'data', values}
+
+			data_json = json.dumps(data_values)
+			requests.post(url, data=data_json, headers=headers )
+		
+		except requests.exceptions.HTTPError as e:
+			return str(e)
+
+
+
+		time.sleep(3600)
+
+
+
+
+node = wake_up()
+readings = get_readings()

@@ -79,7 +79,9 @@ def log_in(request):
 	user["username"] = username
 	user["authenticated"] = True
 	
-	return send_grid(request, 'Authentication Sucessful')
+	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True })
+
+	
 
 def log_out(request):
 	user["username"] = None
@@ -87,7 +89,7 @@ def log_out(request):
 	return render(request, 'templates/Controller/logout.html', {'message': 'Logout Sucessful', 'user' : user, 'success' : True})
 
 
-def send_grid(request, message = None):
+def send_grid(request):
 	refresh_grid()
 	##use this block if a user login is added to the switch
 	#sess = requests.Session()
@@ -95,11 +97,10 @@ def send_grid(request, message = None):
 	#cookie_response = req.json()['cookie']
 	#cookie = {'cookie : cookie_response'}
 	node_grid = grid
-	if message == None:
-		return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user})
-	else:
-		return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'message': message, 'user' : user, 'success': True })
-
+	
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user})
+	
+	
 
 def refresh_grid():
 	try:	
@@ -139,7 +140,7 @@ def change_grid(request):
 
 	if value == 'OFF':
 			#if value OFF turn on
-			commands = "interface" + portId + "\npower-over-ethernet\n"
+			commands = "interface" + str(portId) + "\npower-over-ethernet\n"
 
 			#can't update database immediately, need to wait for node to go up
 			code = send_commands(commands)
@@ -153,9 +154,10 @@ def change_grid(request):
 			
 		
 			#if value ON turn off
-			commands = "interface" + portId + "\nno power-over-ethernet\n"
+			commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
 
-			query = "Update node Set value='OFF', color='red' where id=" + node +";"
+			query = "Update node Set value='OFF', color='red' where id=" + str(node) +";"
+			print("asdnasdhaksdhas")
 		
 			code = send_commands(commands)
 			if code != 202:
