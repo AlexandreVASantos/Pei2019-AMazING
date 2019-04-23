@@ -8,6 +8,6 @@
 
 source /home/amazing/dont_delete/venv/bin/activate
 
-python3 /home/amazing/dont_delete/APIPEI.py
+python3 /home/amazing/dont_delete/APIPEI.py &
 
-#python3 /home/amazing/dont_delete/node_init.py
+#python3 /home/amazing/dont_delete/node_init.py &
