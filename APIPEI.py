@@ -20,12 +20,15 @@ class connection(Resource):
 		#	abort(400)
 
 		args=request.get_json()
-
-
+		sudo_password = 'JustGetIn666'
+		
 		if(len(args) == 1):
 			# chamar conexão com SSID apenas
 			SSID = args.get('SSID')
-			ree = "iw wlp1s0 connect eduroam"# + SSID
+			command = "sudo iw wlp1s0 connect wsiit" + SSID
+			command = command.split()
+			cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
+			cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
 		elif(len(args) == 2):
 			#chamar conexão com SSID e Frequência
 			SSID = args.get('SSID')
@@ -55,7 +58,7 @@ class changeIP(Resource):
 		return out
 
 	def post(self):
-		sudo_password = 'amazing'
+		sudo_password = 'JustGetIn666'
 		args=request.get_json()
 		IP = args.get('IP')
 		if(len(args) == 1):
@@ -64,67 +67,98 @@ class changeIP(Resource):
 			cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
 			cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
 			response = cmd2.stdout.read().decode()
-
-			#a = subprocess.check_output("sudo ifconfig enp2s0 " + IP + " netmask 255.255.255.0", shell=True)
-			#out = subprocess.check_output("", shell=True)
-			#response = out.decode("utf-8") 
 		else:
 			response = jsonify({'Not the right ammount of args': 'needs to be 1'})
-		return response
+		temp = subprocess.check_output("curl localhost:5000/changeIP", shell=True)
+		temp = temp.decode("utf-8")
+		return temp
+
+		# exemplo: curl -H "Content-Type: application/json"  localhost:5000/connection -X post -d '{"IP":"192.168.0.16"}'
 
 class getlist(Resource):
 	def get(self):
-		#command = "ifconfig"
-		#result = subprocess.call([command], shell=True)
-		#result = subprocess.check_output([command], shell=True)
-		response = jsonify('retornado valor do $ifconfig:')
-		#return result
-		output = subprocess.run("ifconfig", stdout=subprocess.PIPE, universal_newlines=True)
-		return output.stdout#+ "\n hello"
+		out = subprocess.check_output("iw list", shell=True)
+		out = out.decode("utf-8") 
+		return out
 
 # exemplo: curl localhost:5000/getlist
 
 class event(Resource):
 	def get(self):
-		response = jsonify('retornado valor do $iw event')
-		return response
+		out = subprocess.check_output("iw event", shell=True)
+		out = out.decode("utf-8") 
+		return out
 # exemplo: curl localhost:5000/event
 
 class eventt(Resource):
 	def get(self):
-		response = jsonify('retornado valor do $iw event -t')
-		return response
+		out = subprocess.check_output("iw event -t", shell=True)
+		out = out.decode("utf-8") 
+		return out
 #exemplo: curl localhost:5000/eventt
 
 class eventf(Resource):
 	def get(self):
-		response = jsonify('retornado valor do $iw event -f')
-		return response
+		out = subprocess.check_output("iw event -f", shell=True)
+		out = out.decode("utf-8") 
+		return out
 #exemplo: curl localhost:5000/eventf
 
 class scan(Resource):
 	def get(self):
-		response = jsonify('retornado valor do $iw scan')
+		sudo_password = 'JustGetIn666'
+		command = "sudo iw dev wlp1s0 scan"
+		command = command.split()
+		cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
+		cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
+		response = cmd2.stdout.read().decode()
 		return response
 #exemplo: curl localhost:5000/scan
 
+class localwireless(Resource):
+	def get(self):
+		out = subprocess.check_output("nmcli dev wifi", shell=True)
+		out = out.decode("utf-8") 
+		return out
+#exemplo: curl localhost:5000/localwireless
+
+class link(Resource):
+	def get(self):
+		out = subprocess.check_output("iw dev wlp1s0 link", shell=True)
+		out = out.decode("utf-8") 
+		return out
+#exemplo: curl localhost:5000/link
+
 class stationstats(Resource):
 	def get(self):
-		response = jsonify('retornado valor do $iw dev wlan1 station dump')
-		return response
+		out = subprocess.check_output("iw dev wlp1s0 station dump", shell=True)
+		out = out.decode("utf-8") 
+		return out
 #exemplo: curl localhost:5000/stationstats
 
 class stationpeerstats(Resource):
 	def get(self):
-		response = jsonify('retornado valor do $ sudo iw dev wlan1 station get <peer-MAC-address>')
+		sudo_password = 'JustGetIn666'
+		args=request.get_json()
+		MAC = args.get('MAC')
+		if(len(args) == 1):
+			command = "sudo iw dev wlp1s0 station get " + MAC
+			command = command.split()
+			cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
+			cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
+			response = cmd2.stdout.read().decode()
+		else:
+			response = jsonify({'Not the right ammount of args': 'needs to be 1'})
 		return response
-#exemplo: curl localhost:5000/stationpeerstats
+		
+# exemplo: curl -H "Content-Type: application/json"  localhost:5000/stationpeerstats -X post -d '{"MAC":"<mac-address>"}'
 
 class modlegacytxbitrates(Resource):
 	def post(self):
 		# args=request.get_json()
 		response = jsonify('implementada alteração com $ iw wlan0 set bitrates legacy-2.4 x y z')
 		return response
+
 # exemplo: curl -H "Content-Type: application/json"  localhost:5000/modlegacytxbitrates -X post -d '{"x":"1","y":"2","z":"3"}'
 
 class modtxhtmcsbitrates(Resource):
@@ -154,9 +188,12 @@ api.add_resource(changeIP, '/changeIP')						#POST e GET
 api.add_resource(getlist, '/getlist')						#GET
 api.add_resource(event, '/event')							#GET
 api.add_resource(eventt,'/eventt')							#GET
+api.add_resource(eventf,'/eventf')							#GET
 api.add_resource(scan,'/scan')								#GET
+api.add_resource(localwireless,'/localwireless')			#GET
+api.add_resource(link,'/link')								#GET
 api.add_resource(stationstats,'/stationstats')				#GET
-api.add_resource(stationpeerstats, '/stationpeerstats')		#GET
+api.add_resource(stationpeerstats, '/stationpeerstats')		#POST
 api.add_resource(modlegacytxbitrates,'/modlegacytxbitrates')#POST
 api.add_resource(modtxhtmcsbitrates,'/modtxhtmcsbitrates')	#POST
 api.add_resource(settingtxpowerdev,'/settingtxpowerdev')	#POST
