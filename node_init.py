@@ -33,8 +33,8 @@ def get_readings():
 	while True:
 		try:
 			values = subprocess.check_output(['sensors','| grep "ALARM"'])
-
-			data_values = {'data', values}
+			node_id = get_hostname()
+			data_values = {"node" : node_id ,' data' : values}
 
 			data_json = json.dumps(data_values)
 			requests.post(url, data=data_json, headers=headers )

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #sudo chown root /path/to/script.sh
-#sudo chmod 776 /path/to/script.sh
+#sudo chmod 775 /path/to/script.sh
 #sudo crontab -e
 #@reboot /path/to/script.sh
 

@@ -1,15 +1,17 @@
 #!/bin/bash
 
 
-sudo mkdir /home/amazing/dont_delete
 
-echo 'amazing' | sudo -S mount /dev/sdb1 /media/cdrom
+
+#echo 'amazing' | sudo -S mount /dev/sdb1 /media/cdrom 
+
+echo 'amazing' | sudo -S mkdir /home/amazing/dont_delete
+
+echo 'amazing' | sudo -S cp /media/cdrom/* /home/amazing/dont_delete/
 
 echo 'amazing' | sudo -S chown root /home/amazing/dont_delete/init_node_script.sh
 
-echo 'amazing' | sudo -S chmod 775 /home/amazing/dont_delete/init_node_script.sh 
-
-echo 'amazing' | sudo -S cp /media/cdrom/* /home/amazing/dont_delete/
+echo 'amazing' | sudo -S chmod 775 /home/amazing/dont_delete/init_node_script.sh
 
 echo 'amazing' | sudo -S apt-get install python-pip -y
 
