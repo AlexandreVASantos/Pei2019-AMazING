@@ -12,6 +12,36 @@ user = {'username' : None, 'authenticated' : False }
 url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
+notifications = False
+
+#function to receive data from node sensors, do not need csrf_cookie
+@csrf_exempt
+def sensors(request):
+	if request.method == 'POST':
+		try:
+			args = json.loads(request.body.decode('utf-8'))
+			print(args)
+			node = args.get('node')
+			data = args.get('data')
+			print(node)
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/.db")
+			c=connection.cursor()
+
+			query = "Insert into notifications values(" + str(node)+ "," + str(data)+ ");"
+			#Only at this time we can update the value of the node in the database
+			c.execute(query)
+			connection.commit()
+			connection.close()
+			notifications = True
+			return render(request,'templates/Controller/node.html', {'message': 0})
+
+		except sqlite3.Error as e:
+			return render(request,'templates/Controller/node.html', {'message':'database error'})
+
+
+	else:
+		return render(request,'templates/Controller/node.html', {'message':'Wrong method'})
+
 
 #function to receive wake up message from node, do not need csrf_cookie
 @csrf_exempt
@@ -79,7 +109,7 @@ def log_in(request):
 	user["username"] = username
 	user["authenticated"] = True
 	
-	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True })
+	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True, 'alert': notifications})
 
 	
 
@@ -87,6 +117,30 @@ def log_out(request):
 	user["username"] = None
 	user["authenticated"] = False
 	return render(request, 'templates/Controller/logout.html', {'message': 'Logout Sucessful', 'user' : user, 'success' : True})
+
+def get_oneWeekTime():
+	
+
+
+def get_notifications():
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+		c=connection.cursor()
+		query='Select node, alert from users where username= "' + username + '";'
+		c.execute(query)
+		fetch= c.fetchall()
+		connection.close()
+		return 0,
+	except sqlite3.Error as e:
+		return 1,str(e)	
+
+
+def notifications(request):
+
+
+	return render(request, 'templates/Controller/notifications.html',{'user': user, 'notifications' : notifications })
+
+
 
 
 def send_grid(request):
@@ -98,7 +152,7 @@ def send_grid(request):
 	#cookie = {'cookie : cookie_response'}
 	node_grid = grid
 	
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user})
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': notifications})
 	
 	
 
@@ -117,7 +171,7 @@ def refresh_grid():
 
 def grid_update(request):
 	node_grid = refresh_grid()
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'message': message, 'user' : user, 'success': True })
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'message': message, 'user' : user, 'success': True, 'alert': notifications})
 	
 def send_commands(command):
 	command_bytes = command.encode()
@@ -152,7 +206,6 @@ def change_grid(request):
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
 			c=connection.cursor()
 			
-		
 			#if value ON turn off
 			commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
 
@@ -184,7 +237,7 @@ def change_grid(request):
 	#req= requests.post(url,data=data_json, headers=headers)
 	#print(req.json())
 	
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user': user})
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user': user,'alert': notifications})
 
 
 def error_404(request):

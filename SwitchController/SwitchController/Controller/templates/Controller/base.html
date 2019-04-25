@@ -39,8 +39,10 @@
             <ul class="nav navbar-nav navbar-right">
               <li><a href="{%url 'home' %}"><span class="glyphicon glyphicon-home"></span></a></li>
             {% if user.authenticated %}
-              <li><a href="{%url 'update' %}"><span class="glyphicon glyphicon-refresh"></span></a></li>
-              <li><a href="{%url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+
+              <li><a href="{% url 'notifications' %}"><span id="notification" class="glyphicon glyphicon-bell"></span></a></li>
+              <li><a href="{% url 'update' %}"><span class="glyphicon glyphicon-refresh"></span></a></li>
+              <li><a href="{% url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
             {% endif %}
           </ul>
             
