@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-source /home/amazing/dont_delete/env/bin/activate
+source /home/amazing/dont_delete/venv/bin/activate
 
 
-python3 /home/amazing/dont_delete/APIPEI.py
+sudo python3 /home/amazing/dont_delete/APIPEI.py &
