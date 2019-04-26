@@ -1,4 +1,5 @@
 {% extends "Controller/base.html" %}
+{% load static %}
 {% block content %}
 
 <div class="wrapper fadeInDown">
@@ -7,7 +8,7 @@
 
     <!-- Icon -->
     <div class="fadeIn first">
-      <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="" />
+      <img src="{% static '/img/login-user-icon.png' %}" style="width:30%" id="icon" alt="" />
     </div>
 
     <!-- Login Form -->
