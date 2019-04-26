@@ -6,8 +6,8 @@ import time
 
 ##Alexandre Santos, 80106
 
-url_wake = 'x.x.x.x/node_up'
-url_readings = 'x.x.x.x/get_readings'
+url_wake = 'http://127.0.0.1:8000/nodeup/'
+url_readings = '127.0.0.1:8000/get_readings'
 headers = {'Content-Type': 'application/json'}
 
 
@@ -19,9 +19,10 @@ def wake_up():
 
 	try:
 		node_id = get_hostname()
-		data = {'node': node_id }
+		data = {'node': str(node_id) }
+
 		data_json = json.dumps(data)
-		send = requests.post(url, data=data_json, headers= headers)
+		send = requests.post(url_wake, data=data_json, headers= headers)
 	except requests.exceptions.HTTPError as e:
 		return str(e)
 
@@ -33,11 +34,14 @@ def get_readings():
 	while True:
 		try:
 			values = subprocess.check_output(['sensors','| grep "ALARM"'])
-			node_id = get_hostname()
-			data_values = {"node" : node_id ,' data' : values}
+			if values != None or values != "":
+				todays_date = datetime.datetime.now()
 
-			data_json = json.dumps(data_values)
-			requests.post(url, data=data_json, headers=headers )
+				node_id = get_hostname()
+				data_values = {"node" : node_id ,' data' : values, 'date' : x.strftime("%Y-%m-%d")}
+
+				data_json = json.dumps(data_values)
+				requests.post(url, data=data_json, headers=headers )
 		
 		except requests.exceptions.HTTPError as e:
 			return str(e)
@@ -50,4 +54,5 @@ def get_readings():
 
 
 node = wake_up()
-readings = get_readings()
+print(node)
+#readings = get_readings()

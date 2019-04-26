@@ -12,7 +12,7 @@ user = {'username' : None, 'authenticated' : False }
 url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
-notifications = False
+alert = "False"
 
 #function to receive data from node sensors, do not need csrf_cookie
 @csrf_exempt
@@ -22,17 +22,18 @@ def sensors(request):
 			args = json.loads(request.body.decode('utf-8'))
 			print(args)
 			node = args.get('node')
-			data = args.get('data')
+			info = args.get('data')
+			date = args.get('date')
 			print(node)
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
-			query = "Insert into notifications values(" + str(node)+ "," + str(data)+ ");"
+			query = "Insert into alerts values(" + str(node)+ "," + str(info)+ ","+ str(date) +");"
 			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
 			connection.close()
-			notifications = True
+			notifications = "True"
 			return render(request,'templates/Controller/node.html', {'message': 0})
 
 		except sqlite3.Error as e:
@@ -52,7 +53,7 @@ def node_up(request):
 			print(args)
 			node = args.get('node')
 			print(node)
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
 			query = "Update node Set value='ON', color='green' where id="+ str(node) +";"
@@ -79,7 +80,7 @@ def getlogin(request, message = None):
 
 def compLogin(username, password):
 	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query='Select username, password from users where username= "' + username + '";'
 		c.execute(query)
@@ -109,7 +110,7 @@ def log_in(request):
 	user["username"] = username
 	user["authenticated"] = True
 	
-	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True, 'alert': notifications})
+	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True,  'alert': alert})
 
 	
 
@@ -118,27 +119,31 @@ def log_out(request):
 	user["authenticated"] = False
 	return render(request, 'templates/Controller/logout.html', {'message': 'Logout Sucessful', 'user' : user, 'success' : True})
 
-def get_oneWeekTime():
+#def get_oneWeekTime():
 	
 
 
 def get_notifications():
 	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query='Select node, alert from users where username= "' + username + '";'
+		query='Select node_id, alert from alerts;' 
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
-		return 0,
+		notifications = [('node '+x[0]+ ':', x[1]) for x in fetch]
+		return 0,notifications
 	except sqlite3.Error as e:
 		return 1,str(e)	
 
 
 def notifications(request):
+	notifications = "False"
+	error,value = get_notifications();
+	if error == 1:
+		return render(request, 'templates/Controller/error.html',{'error': "Can't get notifications. Try again later.",'user': user})
 
-
-	return render(request, 'templates/Controller/notifications.html',{'user': user, 'notifications' : notifications })
+	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
 
 
 
@@ -152,13 +157,13 @@ def send_grid(request):
 	#cookie = {'cookie : cookie_response'}
 	node_grid = grid
 	
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': notifications})
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
 	
 	
 
 def refresh_grid():
 	try:	
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()	
 		c.execute("Select * from node;")
 		fetch= c.fetchall()
@@ -170,8 +175,11 @@ def refresh_grid():
 		return 1,str(e)
 
 def grid_update(request):
-	node_grid = refresh_grid()
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'message': message, 'user' : user, 'success': True, 'alert': notifications})
+	code,node_grid = refresh_grid()
+	if code == 1:
+		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
+
+	return render(request,'templates/Controller/config.html',{'node_grid': node_grid, 'user' : user,  'alert': alert})
 	
 def send_commands(command):
 	command_bytes = command.encode()
@@ -182,9 +190,6 @@ def send_commands(command):
 
 def change_grid(request):
 	
-	#url = "http://httpbin.org/post"
-	
-	#data = {"data":"123"}
 	dic=request.POST
 	for key in dic:
 		node=key
@@ -203,7 +208,7 @@ def change_grid(request):
 				return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 	else:
 		try:
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/grid.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 			
 			#if value ON turn off
@@ -232,16 +237,13 @@ def change_grid(request):
 	
 
 	node_grid = grid
-	#data_json= json.dumps(data)
-	#headers = {'Content-Type': 'application/json'}
-	#req= requests.post(url,data=data_json, headers=headers)
-	#print(req.json())
 	
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user': user,'alert': notifications})
+	
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user': user, 'alert': alert})
 
 
 def error_404(request):
-	return render(request, 'templates/Controller/notfound.html', {"error":"404 Page not found",'user' : user})
+	return render(request, 'templates/Controller/notfound.html', {"error":"404 Page not found",'user' : user,'alert': alert})
 
 def error_500(request):
-	return render(request, 'templates/Controller/notfound.html', {"error": "Error 500",'user' : user})
+	return render(request, 'templates/Controller/notfound.html', {"error": "Error 500",'user' : user,'alert': alert})
