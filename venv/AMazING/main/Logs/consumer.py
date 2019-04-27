@@ -12,8 +12,8 @@ for message in consumer:
 	cursor = connection.cursor()
 	message = message.value
 	for (a,b) in message.items():
-		print("("+str(a)+"',' "+str(b[0])+"',' "+str(b[1])+"',' "+str(b[2]) + ") values entered")
-		cursor.execute("INSERT INTO test VALUES('"+ str(a)+"',' "+str(b[0])+"',' "+str(b[1])+"',' "+str(b[2])+"');")
+		print("("+str(a)+"',' "+str(b[0])+"',' "+str(b[1])+"',' "+str(b[2]) +"',' "+str(b[3]) + ") values entered")
+		cursor.execute("INSERT INTO test VALUES('"+ str(a)+"',' "+str(b[0])+"',' "+str(b[1])+"',' "+str(b[2])+"',' "+str(b[3])+"');")
 		connection.commit()
 	cursor.close()
 	connection.close()
