@@ -34,7 +34,7 @@ def sensors(request):
 			c.execute(query)
 			connection.commit()
 			connection.close()
-			notifications = "True"
+			alert = True
 			return render(request,'templates/Controller/node.html', {'message': 0})
 
 		except sqlite3.Error as e:
@@ -111,7 +111,7 @@ def log_in(request):
 	user["username"] = username
 	user["authenticated"] = True
 	
-	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True,  'alert': True})
+	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True,  'alert': alert})
 
 	
 
@@ -166,7 +166,7 @@ def get_notifications():
 
 
 def notifications(request):
-	notifications = "False"
+	alert = False
 	error,value = get_notifications();
 	if error == 1:
 		return render(request, 'templates/Controller/error.html',{'error': str(value),'user': user})

@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" href="{% static 'img/favicon.png' %}">
   <title>SwitchController</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,7 +26,7 @@
               <li><a href="{%url 'home' %}"><span class="glyphicon glyphicon-home"></span></a></li>
             {% if user.authenticated %}
 
-              <li><a id="alert" value="{{alert}}" href="{% url 'notifications' %}"><span class="glyphicon glyphicon-bell"></span></a></li>
+              <li><a id="alert" href="{% url 'notifications' %}"><span class="glyphicon glyphicon-bell"></span></a></li>
               <li><a href="{% url 'update' %}"><span class="glyphicon glyphicon-refresh"></span></a></li>
               <li><a href="{% url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
             {% endif %}
@@ -58,9 +59,9 @@
   </div>
 
 <script>
+    var elem = document.getElementById("alert");
+    var value = "{{alert}}";
 
-    var interval = window.setInterval(red_notification(),300000);
-    
     function isValidForm(id_button){
       var i = document.getElementById(id_button);
       if( i.value == "ON"){
@@ -77,14 +78,14 @@
     }
 
     function red_notification(){
-      var x = document.getElementById("alert");
-      if( x.value == "True"){
-        x.style.color= "red";
-      }
+     if (value == "True"){
+        elem.style.color = "red";
 
+     }
     }
 
-    var fixed = window.onload = red_notification;
+    var timeout = window.setTimeout(red_notification(),300000);
+
     
 </script>
 
