@@ -42,6 +42,7 @@ CREATE TABLE alerts (
 node_id int,
 alert varchar(255),
 date_alert date not null,
+read boolean not null,
 PRIMARY KEY (node_id,alert),
 FOREIGN KEY (node_id) REFERENCES node(id));
 

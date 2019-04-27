@@ -6,13 +6,14 @@ import os
 import subprocess
 import sqlite3
 import base64
+import time
 
 
 user = {'username' : None, 'authenticated' : False }
 url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
-alert = "False"
+alert = False
 
 #function to receive data from node sensors, do not need csrf_cookie
 @csrf_exempt
@@ -28,7 +29,7 @@ def sensors(request):
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
-			query = "Insert into alerts values(" + str(node)+ "," + str(info)+ ","+ str(date) +");"
+			query = "Insert into alerts values(" + str(node)+ "," + str(info)+ ","+ str(date) +",FALSE);"
 			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
@@ -110,7 +111,7 @@ def log_in(request):
 	user["username"] = username
 	user["authenticated"] = True
 	
-	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True,  'alert': alert})
+	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True,  'alert': True})
 
 	
 
@@ -121,13 +122,40 @@ def log_out(request):
 
 #def get_oneWeekTime():
 	
+def get_notifications_with_date(request):
+	print(request.POST)
+	date_init = request.POST.get('date1')
+	date_final = request.POST.get('date2')
+	
+	if date_init is None or date_init == '' or date_final is None or date_final == '':
+		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill both dates' ,'user': user})
+
+	date1 = time.strptime(date_init, "%Y-%m-%d")
+	date2 = time.strptime(date_final, "%Y-%m-%d")
+
+	if date2 <= date1:
+		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Final date must be bigger than initial date.' ,'user': user})
+
+
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query='Select node_id, alert from alerts where date_alert >=' +str(date_init)+ ' AND date_alert <=' +str(date_final)+ ';' 
+		c.execute(query)
+		fetch= c.fetchall()
+		connection.close()
+		value = [('node '+x[0]+ ':', x[1]) for x in fetch]
+	except sqlite3.Error as e:
+		return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
+
+	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
 
 
 def get_notifications():
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query='Select node_id, alert from alerts;' 
+		query='Select node_id, alert from alerts where not read;' 
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
@@ -141,7 +169,7 @@ def notifications(request):
 	notifications = "False"
 	error,value = get_notifications();
 	if error == 1:
-		return render(request, 'templates/Controller/error.html',{'error': "Can't get notifications. Try again later.",'user': user})
+		return render(request, 'templates/Controller/error.html',{'error': str(value),'user': user})
 
 	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
 
@@ -215,7 +243,7 @@ def change_grid(request):
 			commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
 
 			query = "Update node Set value='OFF', color='red' where id=" + str(node) +";"
-			print("asdnasdhaksdhas")
+		
 		
 			code = send_commands(commands)
 			if code != 202:

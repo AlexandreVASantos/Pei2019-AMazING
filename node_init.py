@@ -29,26 +29,26 @@ def wake_up():
 	return 'MSG: ' + str(node_id) +' just woke up!!!'
 
 
-def get_readings():
-	
-	while True:
-		try:
-			values = subprocess.check_output(['sensors','| grep "ALARM"'])
-			if values != None or values != "":
-				todays_date = datetime.datetime.now()
-
-				node_id = get_hostname()
-				data_values = {"node" : node_id ,' data' : values, 'date' : x.strftime("%Y-%m-%d")}
-
-				data_json = json.dumps(data_values)
-				requests.post(url, data=data_json, headers=headers )
-		
-		except requests.exceptions.HTTPError as e:
-			return str(e)
-
-
-
-		time.sleep(3600)
+#def get_readings():
+#	
+#	while True:
+#		try:
+#			values = subprocess.check_output(['sensors','| grep "ALARM"'])
+#			if values != None or values != "":
+#				todays_date = datetime.datetime.now()
+#
+#				node_id = get_hostname()
+#				data_values = {"node" : node_id ,' data' : values, 'date' : x.strftime("%Y-%m-%d")}
+#
+#				data_json = json.dumps(data_values)
+#				requests.post(url, data=data_json, headers=headers )
+#		
+#		except requests.exceptions.HTTPError as e:
+#			return str(e)
+#
+#
+#
+#		time.sleep(3600)
 
 
 

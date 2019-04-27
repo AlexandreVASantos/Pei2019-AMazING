@@ -9,32 +9,7 @@
   <link rel="stylesheet" href="{% static 'Controller/base.css'%}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-  <script>
-
-    var interval = window.setInterval(red_notification(),300000)
-    function isValidForm(id_button){
-      var i = document.getElementById(id_button);
-      if( i.value == "ON"){
-        var c = window.confirm("Are you sure you want to turn the node OFF?\n\nPlease make sure that no one is using it before turning it down!");
-        if (c != true){
-          return false;
-        }
-      }
-      return true;
-    }
-
-    function goBack(){
-      window.history.back();
-    }
-
-    function red_notification(value){
-      var x = document.getElementById("notification");
-      if( x.value == "TRUE"){
-        x.style.color = "red";
-      }
-
-    }
-  </script>
+ 
 
 </head>
 <body style="background-color:#1111" >
@@ -50,7 +25,7 @@
               <li><a href="{%url 'home' %}"><span class="glyphicon glyphicon-home"></span></a></li>
             {% if user.authenticated %}
 
-              <li><a href="{% url 'notifications' %}"><span id="notification" value="{{alert}}" class="glyphicon glyphicon-bell"></span></a></li>
+              <li><a id="alert" value="{{alert}}" href="{% url 'notifications' %}"><span class="glyphicon glyphicon-bell"></span></a></li>
               <li><a href="{% url 'update' %}"><span class="glyphicon glyphicon-refresh"></span></a></li>
               <li><a href="{% url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
             {% endif %}
@@ -81,6 +56,37 @@
 
     </div>
   </div>
+
+<script>
+
+    var interval = window.setInterval(red_notification(),300000);
+    
+    function isValidForm(id_button){
+      var i = document.getElementById(id_button);
+      if( i.value == "ON"){
+        var c = window.confirm("Are you sure you want to turn the node OFF?\n\nPlease make sure that no one is using it before turning it down!");
+        if (c != true){
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function goBack(){
+      window.history.back();
+    }
+
+    function red_notification(){
+      var x = document.getElementById("alert");
+      if( x.value == "True"){
+        x.style.color= "red";
+      }
+
+    }
+
+    var fixed = window.onload = red_notification;
+    
+</script>
 
 </body>
 
