@@ -3,6 +3,7 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from kafka import KafkaProducer
+import datetime
 
 def home(request):
 	return render(request, 'main/login.html')
@@ -57,6 +58,7 @@ def get(request):
 	headers = {'Content-Type': 'application/json'}
 	req = requests.get(url, headers=headers)
 	print(req.json())
-	#data = {'username' : [url[:27],value, req.json()]}   #url[:27]= function name, value=input , req.json() = output
+	#curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	#data = {'username' : [curdate, url[:27],value, req.json()]}   #curdate= current date, url[:27]= function name, value=input , req.json() = output
     #producer.send('numtest', value=data)
 	return render(request, 'main/menu.html')	

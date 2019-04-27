@@ -1,4 +1,6 @@
-pip install kafka-python						
+pip install kafka-python		
+
+sudo apt-get install python-dateutil				
 
 bin/zookeeper-server-start.sh config/zookeeper.properties  		// to run zookeeper inside kafka paste
 
