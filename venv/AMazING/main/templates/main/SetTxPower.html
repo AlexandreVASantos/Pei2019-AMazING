@@ -1,10 +1,10 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% block content %}
-	<form action="/postIPChange/" method ='get'>
+	<form action="/postTxPower/" method ='get'>
 	  <div class="form-group" align="center">
-	    <label style="color:#000" align="center">IP Address</label>
-	    <input type="text" class="form-control" required="required" name="IP" placeholder="IP Addr">
+	    <label style="color:#000" align="center">Tx Power</label>
+	    <input type="text" class="form-control" required="required" name="TxPower" placeholder="TxPower">
 	  </div>
 	  <div class="from-group" align="center">
 	  	<button style="background-color:#0061ff;color:#ffff" type="submit" class="btn">Submit</button>
