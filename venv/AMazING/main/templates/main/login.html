@@ -1,6 +1,7 @@
 {% extends "main/base.html" %}
 {% block content %}
-	<form>
+	<form action = "/menu/" method = "POST">
+		{% csrf_token %}
 	  <div class="form-group" align="center">
 	    <label style="color:#000" align="center" for="emailInput">Email</label>
 	    <input type="email" class="form-control" id="emailInput" placeholder="Email">
@@ -10,7 +11,10 @@
 	    <input type="password" class="form-control" id="passwordInput" placeholder="Password">
 	  </div>
 	  <div class="from-group" align="center">
-	  	<button style="background-color:#0061ff;color:#ffff" type="submit" class="btn">Submit</button>
+	  	<input type="radio" name="timer" value="15" required="required"> <label style="color:#000" for="passwordInput"> 15 Min.</label> 
+        <input type="radio" name="timer" value="30"> <label style="color:#000" for="passwordInput"> 30 Min.</label>
+        <input type="radio" name="timer" value="60"><label style="color:#000" for="passwordInput"> 1 Hour</label> <br>
+	  	<button style="background-color:#0061ff;color:#ffff" type="submit" id="timer" value class="btn">Submit</button>
 	  </div>
 	</form>
 {% endblock content %}

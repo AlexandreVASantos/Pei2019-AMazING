@@ -32,11 +32,13 @@ def stationPeer(request):
 def addrChange(request):
 	return render(request, 'main/addrChange.html')
 
+def setTxPower(request):
+	return render(request, 'main/SetTxPower.html')
 
 
-def post(request):
-	#url = "http://httpbin.org/post"
-	url = "http://192.168.0.25:5000/changeIP"
+def postEventListening(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/changeIP"
 	data = request.GET
 	
 	#dic = {"data":"123"}
@@ -51,6 +53,134 @@ def post(request):
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
 	return render(request, 'main/menu.html')
+
+def postScanning(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/changeIP"
+	data = request.GET
+	
+	#dic = {"data":"123"}
+	for key in data:
+		node=key
+		value=data[key]
+
+	
+	dic = {node:value}
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	print(req.json())
+	return render(request, 'main/menu.html')
+
+def postLinkStatus(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/changeIP"
+	data = request.GET
+	
+	#dic = {"data":"123"}
+	for key in data:
+		node=key
+		value=data[key]
+
+	
+	dic = {node:value}
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	print(req.json())
+	return render(request, 'main/menu.html')
+
+
+def postIPChange(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/changeIP"
+	data = request.GET
+	
+	#dic = {"data":"123"}
+	for key in data:
+		node=key
+		value=data[key]
+
+	
+	dic = {node:value}
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	print(req.json())
+	return render(request, 'main/menu.html')
+
+def postConnection(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/connect"
+	data = request.GET
+	
+	#dic = {"data":"123"}
+	for key in data:
+		node=key
+		value=data[key]
+
+	
+	dic = {node:value}
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	print(req.json())
+	return render(request, 'main/menu.html')
+
+def postStationStats(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/changeIP"
+	data = request.GET
+	
+	#dic = {"data":"123"}
+	for key in data:
+		node=key
+		value=data[key]
+
+	
+	dic = {node:value}
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	print(req.json())
+	return render(request, 'main/menu.html')
+
+def postStationPeer(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/changeIP"
+	data = request.GET
+	
+	#dic = {"data":"123"}
+	for key in data:
+		node=key
+		value=data[key]
+
+	
+	dic = {node:value}
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	print(req.json())
+	return render(request, 'main/menu.html')
+
+def postTxPower(request):
+	url = "http://httpbin.org/post"
+	#url = "http://192.168.0.25:5000/changeIP"
+	data = request.GET
+	
+	#dic = {"data":"123"}
+	for key in data:
+		node=key
+		value=data[key]
+
+	
+	dic = {node:value}
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	print(req.json())
+	return render(request, 'main/menu.html')
+
 
 def get(request):
 	#producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))

@@ -1,4 +1,213 @@
 {% extends "main/base.html" %}
+{% load static %}
 {% block content %}
 
+
+    <div style="left:-200%" class="site-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-lg-4">
+            <div class="site-section-heading">
+              <h2 style="color:black; left:-200%">Options</h2>
+            </div>
+          </div>
+        </div>
+
+       <form  action="/postEventListening/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+              	 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Event Listening</h2>  
+                  <input type="radio" name="optional" value="-f" required="required"/> Check frames<br>
+                  <input type="radio" name="optional" value="-t"> Check timings<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+      <form  action="/postScanning/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Scanning</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                  <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/postLinkStatus/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Get link status</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/connection/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'connection' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Establish a basic connection</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/postStationStats/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Get station statistics</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/postStationPeer/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'stationPeer' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Get station statistics against a peer</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/menu/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Modifying transmit bitrates (Legacy)</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/menu/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Modifying transmit bitrates (HT MCS)</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/setTxPower/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'setTxPower' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Setting TX power</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form>
+
+       <form  action="/addrChange/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'addrChange' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Change IP address</h2>  
+                  <input type="radio" name="WLan" value="0" required="required"> WLan 0<br>
+                    <input type="radio" name="WLan" value="1"> WLan 1<br>
+                </div>
+            </div>
+          </div>
+        </div>
+       </form> 
+      </div>
+     </div> 
+
+
 {% endblock content %}
+
+{%block back %}
+ <li class="active"><a href="{% url 'NodeMenu' %}">Back</a></li>
+{%endblock back %}
