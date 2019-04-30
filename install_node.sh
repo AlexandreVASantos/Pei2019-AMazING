@@ -6,8 +6,6 @@ echo 'amazing' | sudo -S apt upgrade -y
 
 echo 'amazing' | sudo -S apt-get install lm-sensors -y
 
-#echo 'amazing' | sudo -S sensors-detect --auto
-
 echo 'amazing' | sudo -S mkdir /home/amazing/dont_delete
 
 echo 'amazing' | sudo -S cp /media/cdrom/* /home/amazing/dont_delete/
@@ -22,7 +20,7 @@ echo 'amazing' | sudo -S pip3 install virtualenv
 
 echo 'amazing' | sudo -S virtualenv /home/amazing/dont_delete/venv
 
-sudo source /home/amazing/dont_delete/venv/bin/activate
+source /home/amazing/dont_delete/venv/bin/activate
 
 echo 'amazing' | sudo -S pip3 install -r /home/amazing/dont_delete/requirements.txt
 

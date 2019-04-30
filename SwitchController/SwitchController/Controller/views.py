@@ -29,7 +29,7 @@ def sensors(request):
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
-			query = "Insert into alerts values(" + str(node)+ "," + str(info)+ ","+ str(date) +",FALSE);"
+			query = "Insert into alerts values(" + str(node)+ ",'" + str(info)+ "','"+ str(date) +"','False');"
 			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
@@ -128,7 +128,7 @@ def get_notifications_with_date(request):
 	date_final = request.POST.get('date2')
 	
 	if date_init is None or date_init == '' or date_final is None or date_final == '':
-		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill both dates' ,'user': user})
+		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill all fields' ,'user': user})
 
 	date1 = time.strptime(date_init, "%Y-%m-%d")
 	date2 = time.strptime(date_final, "%Y-%m-%d")
@@ -140,11 +140,11 @@ def get_notifications_with_date(request):
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query='Select node_id, alert from alerts where date_alert >=' +str(date_init)+ ' AND date_alert <=' +str(date_final)+ ';' 
+		query="Select node_id, alert from alerts where date_alert >='" +str(date_init)+ "' AND date_alert <='" +str(date_final)+ "';"
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
-		value = [('node '+x[0]+ ':', x[1]) for x in fetch]
+		value = [('node '+str(x[0]) + ':', x[1]) for x in fetch]
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
 
@@ -159,7 +159,7 @@ def get_notifications():
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
-		notifications = [('node '+x[0]+ ':', x[1]) for x in fetch]
+		notifications = [('node '+ str(x[0]) + ':', x[1]) for x in fetch]
 		return 0,notifications
 	except sqlite3.Error as e:
 		return 1,str(e)	

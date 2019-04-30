@@ -38,7 +38,7 @@ def wake_up():
 #				todays_date = datetime.datetime.now()
 #
 #				node_id = get_hostname()
-#				data_values = {"node" : node_id ,' data' : values, 'date' : x.strftime("%Y-%m-%d")}
+#				data_values = {'node' : node_id ,' data' : values, 'date' : x.strftime("%Y-%m-%d")}
 #
 #				data_json = json.dumps(data_values)
 #				requests.post(url, data=data_json, headers=headers )
