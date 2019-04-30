@@ -13,6 +13,8 @@ urlpatterns = [
     path('notifications/', views.notifications, name= 'notifications'),
     path('notifications/date/', views.get_notifications_with_date, name= 'get_alert_date'),
     path('sensors/', views.sensors, name= 'sensors'),
+    path('password/', views.password, name = 'password'),
+    path('password/change/', views.change_pass, name = 'change_pass'),
     
    
 ]
