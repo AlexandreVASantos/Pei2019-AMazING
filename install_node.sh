@@ -14,6 +14,10 @@ echo 'amazing' | sudo -S chown root /home/amazing/dont_delete/init_node.sh
 
 echo 'amazing' | sudo -S chmod 775 /home/amazing/dont_delete/init_node.sh
 
+echo 'amazing' | sudo -S chown root /home/amazing/dont_delete/wake_up.sh
+
+echo 'amazing' | sudo -S chmod 775 /home/amazing/dont_delete/wake_up.sh
+
 echo 'amazing' | sudo -S apt-get install python3-pip -y
 
 echo 'amazing' | sudo -S pip3 install virtualenv

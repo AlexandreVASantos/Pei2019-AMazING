@@ -6,14 +6,17 @@ import time
 
 ##Alexandre Santos, 80106
 
-url_wake = 'http://127.0.0.1:8000/nodeup/'
-url_readings = '127.0.0.1:8000/get_readings'
+url = 'http://127.0.0.1:8000/'
+
 headers = {'Content-Type': 'application/json'}
 
 
 def get_hostname():
 	hostname = subprocess.check_output(['hostname'])
-	return hostname[3]
+	if hostname[4] != "" or hostname[4] is not None:
+		return chr(hostname[3]) + chr(hostname[4])
+	else:
+		return chr(hostname[3])
 
 def wake_up():
 
@@ -22,7 +25,7 @@ def wake_up():
 		data = {'node': str(node_id) }
 
 		data_json = json.dumps(data)
-		send = requests.post(url_wake, data=data_json, headers= headers)
+		send = requests.post(url + 'nodeup/', data=data_json, headers= headers)
 	except requests.exceptions.HTTPError as e:
 		return str(e)
 
@@ -41,7 +44,7 @@ def wake_up():
 #				data_values = {'node' : node_id ,' data' : values, 'date' : x.strftime("%Y-%m-%d")}
 #
 #				data_json = json.dumps(data_values)
-#				requests.post(url, data=data_json, headers=headers )
+#				requests.post(url + 'sensors/' , data=data_json, headers=headers )
 #		
 #		except requests.exceptions.HTTPError as e:
 #			return str(e)
