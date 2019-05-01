@@ -140,6 +140,10 @@ def change_pass(request):
 	r_pass = request.POST.get('rewrite_password')
 	print(request.POST)
 
+	if username != 'AmazingManager':
+		return render(request, 'templates/Controller/password.html',{'message' :'Wrong username' ,'user' : user, 'failed': True  })
+
+
 	if n_pass != r_pass or n_pass is None or n_pass == '':
 		return render(request, 'templates/Controller/password.html',{'message' :'New passwords did not match' ,'user' : user, 'failed': True  })
 
@@ -218,9 +222,13 @@ def get_notifications():
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query='Select node_id, alert from alerts where not read;' 
+		query="Select node_id, alert from alerts where read = 'False';" 
 		c.execute(query)
 		fetch= c.fetchall()
+		for x in fetch:
+			query_up = "Update alerts set read = 'True' where node_id = " +str(x[0])+ " AND alert= '" +str(x[1])+ "';"
+			c.execute(query_up)
+			connection.execute()
 		connection.close()
 		notifications = [('node '+ str(x[0]) + ':', x[1]) for x in fetch]
 		return 0,notifications
