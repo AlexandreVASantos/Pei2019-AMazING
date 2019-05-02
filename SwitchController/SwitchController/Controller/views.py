@@ -21,11 +21,11 @@ def sensors(request):
 	if request.method == 'POST':
 		try:
 			args = json.loads(request.body.decode('utf-8'))
-			print(args)
+			
 			node = args.get('node')
-			info = args.get('data')
+			info = args.get('readings')
 			date = args.get('date')
-			print(node)
+			
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
@@ -208,13 +208,11 @@ def get_notifications_with_date(request):
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
-		value = [('node '+str(x[0]) + ':', x[1]) for x in fetch]
+		value = [('node '+str(x[0]) + ':', x[1].split('\n')) for x in fetch]
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
 
 	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
-
-
 
 
 
@@ -228,9 +226,10 @@ def get_notifications():
 		for x in fetch:
 			query_up = "Update alerts set read = 'True' where node_id = " +str(x[0])+ " AND alert= '" +str(x[1])+ "';"
 			c.execute(query_up)
-			connection.execute()
+			connection.commit()
 		connection.close()
-		notifications = [('node '+ str(x[0]) + ':', x[1]) for x in fetch]
+		notifications = [('node '+ str(x[0]) + ':', x[1].split('\n')) for x in fetch]
+		print(notifications)
 		return 0,notifications
 	except sqlite3.Error as e:
 		return 1,str(e)	
