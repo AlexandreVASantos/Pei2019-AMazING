@@ -21,15 +21,15 @@ def sensors(request):
 	if request.method == 'POST':
 		try:
 			args = json.loads(request.body.decode('utf-8'))
-			print(args)
+			
 			node = args.get('node')
-			info = args.get('data')
+			info = args.get('readings')
 			date = args.get('date')
-			print(node)
+			
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
-			query = "Insert into alerts values(" + str(node)+ "," + str(info)+ ","+ str(date) +",FALSE);"
+			query = "Insert into alerts values(" + str(node)+ ",'" + str(info)+ "','"+ str(date) +"','False');"
 			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
@@ -43,6 +43,11 @@ def sensors(request):
 
 	else:
 		return render(request,'templates/Controller/node.html', {'message':'Wrong method'})
+
+
+
+
+
 
 
 #function to receive wake up message from node, do not need csrf_cookie
@@ -72,18 +77,29 @@ def node_up(request):
 		return render(request,'templates/Controller/node.html', {'message':'Wrong method'})
 
 
+
+
+
+
 def home(request):
 	return render(request,'templates/Controller/home.html', {'user': user})
 
+
+
+
+
 def getlogin(request, message = None):
 	return render(request,'templates/Controller/login.html', {'user': user})
+
+
+
 
 
 def compLogin(username, password):
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query='Select username, password from users where username= "' + username + '";'
+		query="Select username, password from users where username= '" + str(username) + "';"
 		c.execute(query)
 		fetch= c.fetchall()
 		print(fetch)
@@ -94,6 +110,8 @@ def compLogin(username, password):
 		return 0,None
 	except sqlite3.Error as e:
 		return 1,str(e)
+
+
 
 def log_in(request):
 	username = request.POST.get('username')
@@ -113,14 +131,60 @@ def log_in(request):
 	
 	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True,  'alert': alert})
 
-	
+
+
+def change_pass(request):
+	username = request.POST.get('username')
+	o_pass = request.POST.get('old_password')
+	n_pass = request.POST.get('new_password')
+	r_pass = request.POST.get('rewrite_password')
+	print(request.POST)
+
+	if username != 'AmazingManager':
+		return render(request, 'templates/Controller/password.html',{'message' :'Wrong username' ,'user' : user, 'failed': True  })
+
+
+	if n_pass != r_pass or n_pass is None or n_pass == '':
+		return render(request, 'templates/Controller/password.html',{'message' :'New passwords did not match' ,'user' : user, 'failed': True  })
+
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query1="Select username, password from users where username='" + str(username) + "';"
+		print(username)
+		c.execute(query1)
+		fetch= c.fetchall()
+		print(fetch)
+		if fetch[0][1] != o_pass:
+			connection.close()
+			return render(request, 'templates/Controller/password.html',{'message' :'Old password did not match' ,'user' : user, 'failed': True  })
+
+		query2 = "Update users set password='" +  str(n_pass) + "'where username= '" + str(username) + "';"
+		c.execute(query2)
+		connection.commit()
+		connection.close()
+		return render(request, 'templates/Controller/login.html',{'message' :'Password changed with success' ,'user' : user, 'success': True  })
+	except sqlite3.Error as e:
+		return render(request, 'templates/Controller/error.html',{'error' :"Can't access database at the moment ",'user' : user  })
+
+
+
+
+def password(request):
+	return render(request, 'templates/Controller/password.html')
+
+
+
 
 def log_out(request):
 	user["username"] = None
 	user["authenticated"] = False
 	return render(request, 'templates/Controller/logout.html', {'message': 'Logout Sucessful', 'user' : user, 'success' : True})
 
-#def get_oneWeekTime():
+
+
+
+
 	
 def get_notifications_with_date(request):
 	print(request.POST)
@@ -128,7 +192,7 @@ def get_notifications_with_date(request):
 	date_final = request.POST.get('date2')
 	
 	if date_init is None or date_init == '' or date_final is None or date_final == '':
-		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill both dates' ,'user': user})
+		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill all fields' ,'user': user})
 
 	date1 = time.strptime(date_init, "%Y-%m-%d")
 	date2 = time.strptime(date_final, "%Y-%m-%d")
@@ -140,29 +204,36 @@ def get_notifications_with_date(request):
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query='Select node_id, alert from alerts where date_alert >=' +str(date_init)+ ' AND date_alert <=' +str(date_final)+ ';' 
+		query="Select node_id, alert from alerts where date_alert >='" +str(date_init)+ "' AND date_alert <='" +str(date_final)+ "';"
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
-		value = [('node '+x[0]+ ':', x[1]) for x in fetch]
+		value = [('node '+str(x[0]) + ':', x[1].split('\n')) for x in fetch]
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
 
 	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
 
 
+
 def get_notifications():
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query='Select node_id, alert from alerts where not read;' 
+		query="Select node_id, alert from alerts where read = 'False';" 
 		c.execute(query)
 		fetch= c.fetchall()
+		for x in fetch:
+			query_up = "Update alerts set read = 'True' where node_id = " +str(x[0])+ " AND alert= '" +str(x[1])+ "';"
+			c.execute(query_up)
+			connection.commit()
 		connection.close()
-		notifications = [('node '+x[0]+ ':', x[1]) for x in fetch]
+		notifications = [('node '+ str(x[0]) + ':', x[1].split('\n')) for x in fetch]
+		print(notifications)
 		return 0,notifications
 	except sqlite3.Error as e:
 		return 1,str(e)	
+
 
 
 def notifications(request):
@@ -202,12 +273,21 @@ def refresh_grid():
 	except sqlite3.Error as e:
 		return 1,str(e)
 
+
+
+
+
 def grid_update(request):
 	code,node_grid = refresh_grid()
 	if code == 1:
 		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
 
 	return render(request,'templates/Controller/config.html',{'node_grid': node_grid, 'user' : user,  'alert': alert})
+
+
+
+
+
 	
 def send_commands(command):
 	command_bytes = command.encode()
@@ -215,6 +295,11 @@ def send_commands(command):
 	command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
 	post_command = requests.post(url + 'cli_batch', headers=cookie, data=json.dumps(command_dict), timeout=1)
 	return post_command
+
+
+
+
+	
 
 def change_grid(request):
 	

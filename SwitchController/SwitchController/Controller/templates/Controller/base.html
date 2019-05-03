@@ -59,9 +59,6 @@
   </div>
 
 <script>
-    var elem = document.getElementById("alert");
-    var value = "{{alert}}";
-
     function isValidForm(id_button){
       var i = document.getElementById(id_button);
       if( i.value == "ON"){
@@ -78,13 +75,15 @@
     }
 
     function red_notification(){
+    var elem = document.getElementById("alert");
+    var value = "{{alert}}";
      if (value == "True"){
         elem.style.color = "red";
 
      }
     }
 
-    var timeout = window.setTimeout(red_notification(),300000);
+    var timeout = window.setInterval(red_notification(),300000);
 
     
 </script>

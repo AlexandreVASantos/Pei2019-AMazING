@@ -7,10 +7,10 @@
 			<div>
 				<label for="date1">Initial Date:</label>
 				<input style= "margin-left: 1%;margin-right: 5%" name="date1" type=date id="date1">
-				<span class="validity"></span>
+				
 				<label for="date2">Final Date:</label>
 				<input style= "margin-left: 1%;margin-right: 5%" name="date2" type=date id="date2">
-				<span class="validity"></span>
+				
 				<input class="btn" value="Submit" id="submit_dates" style="background-color:#6495ED;color:#FFFF" href="{% url 'get_alert_date' %}" type="submit">
 			
 			</div>
@@ -18,10 +18,17 @@
 					
 			
 		</form>
-		<textarea rows="25" cols="120">	
+		<textarea cols="100" rows="35" readonly style="resize:None">	
+		
 			{% for x in notifications %}
-				<h3>x.0</h3>
-				<p>x.1</p>
+				{{x.0}}
+
+				{% for y in x.1 %}
+					
+					{{y}}
+
+				{% endfor %}
+			
 			{% endfor %}
 		</textarea>
 	</div>
