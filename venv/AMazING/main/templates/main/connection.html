@@ -14,9 +14,19 @@
 	    <label style="color:#000" align="center">WEP ex</label>
 	    <input type="text" class="form-control" id="WEP" placeholder="WEP">
 	  </div>
+	  <div class="form-group" align="center">  
+        <input type="radio"  name="WLan" value="0" required="required"> <label style="color:#000">WLan 0</label>
+        <input type="radio"  name="WLan" value="1"> <label style="color:#000">WLan 1</label>
+      </div>
 	  <div class="from-group" align="center">
 	  	<button style="background-color:#0061ff;color:#ffff" type="submit" class="btn">Submit</button>
 	  </div>
+	  {% if flagC %}
+        <br>
+        <textarea class="col-12 border-top border-bottom py-5" style="resize: none" readonly>
+                
+        </textarea>
+      {% endif %}
 	</form>
 {% endblock content %}
 

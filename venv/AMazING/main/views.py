@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from kafka import KafkaProducer
 import datetime
 
+
 def home(request):
 	return render(request, 'main/login.html')
 
@@ -42,17 +43,16 @@ def postEventListening(request):
 	data = request.GET
 	
 	#dic = {"data":"123"}
+	dic={}
 	for key in data:
-		node=key
-		value=data[key]
+		dic[key] = data[key]
 
-	
-	dic = {node:value}
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request,'main/menu.html', {"flagEL":True,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
 
 def postScanning(request):
 	url = "http://httpbin.org/post"
@@ -60,17 +60,16 @@ def postScanning(request):
 	data = request.GET
 	
 	#dic = {"data":"123"}
+	dic={}
 	for key in data:
-		node=key
-		value=data[key]
+		dic[key] = data[key]
 
-	
-	dic = {node:value}
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request, 'main/menu.html', {"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
 
 def postLinkStatus(request):
 	url = "http://httpbin.org/post"
@@ -78,17 +77,16 @@ def postLinkStatus(request):
 	data = request.GET
 	
 	#dic = {"data":"123"}
+	dic={}
 	for key in data:
-		node=key
-		value=data[key]
+		dic[key] = data[key]
 
-	
-	dic = {node:value}
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":True,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
 
 
 def postIPChange(request):
@@ -97,71 +95,70 @@ def postIPChange(request):
 	data = request.GET
 	
 	#dic = {"data":"123"}
+	dic={}
 	for key in data:
-		node=key
-		value=data[key]
+		dic[key] = data[key]
 
-	
-	dic = {node:value}
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
 
 def postConnection(request):
 	url = "http://httpbin.org/post"
 	#url = "http://192.168.0.25:5000/connect"
 	data = request.GET
-	
+	#print(data)
 	#dic = {"data":"123"}
+	#dic = {"data":"123"}
+	dic={}
 	for key in data:
-		node=key
-		value=data[key]
+		dic[key] = data[key]
 
-	
-	dic = {node:value}
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request, 'main/connection.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True})
 
 def postStationStats(request):
 	url = "http://httpbin.org/post"
 	#url = "http://192.168.0.25:5000/changeIP"
-	data = request.GET
-	
+	data = request.GET 										#########NOT WORKING request.GET vazio 
+					
 	#dic = {"data":"123"}
+	#dic = {"data":"123"}
+	dic={}
 	for key in data:
-		node=key
-		value=data[key]
+		dic[key] = data[key]
 
-	
-	dic = {node:value}
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False})
 
 def postStationPeer(request):
 	url = "http://httpbin.org/post"
 	#url = "http://192.168.0.25:5000/changeIP"
 	data = request.GET
-	
+	print(data)
 	#dic = {"data":"123"}
-	for key in data:
-		node=key
-		value=data[key]
 
-	
-	dic = {node:value}
+	dic={}
+	for key in data:
+		dic[key] = data[key]
+
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request, 'main/stationPeer.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":True,"flagTP":False,"flagC":False})
 
 def postTxPower(request):
 	url = "http://httpbin.org/post"
@@ -169,17 +166,16 @@ def postTxPower(request):
 	data = request.GET
 	
 	#dic = {"data":"123"}
+	dic={}
 	for key in data:
-		node=key
-		value=data[key]
+		dic[key] = data[key]
 
-	
-	dic = {node:value}
+		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
-	return render(request, 'main/menu.html')
+	return render(request, 'main/menu.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":True,"flagC":False})
 
 
 def get(request):
