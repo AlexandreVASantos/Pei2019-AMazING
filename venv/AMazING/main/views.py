@@ -187,4 +187,31 @@ def get(request):
 	#curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
 	#data = {'username' : [curdate, url[:27],value, req.json()]}   #curdate= current date, url[:27]= function name, value=input , req.json() = output
     #producer.send('numtest', value=data)
-	return render(request, 'main/menu.html')	
+	return render(request, 'main/menu.html')
+
+def verify_mac(mac_address):
+	if re.match("[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", mac_address.lower()):
+		return 1
+	return 0
+
+def verify_IP(IP_address):
+	a = IP_address.split('.')
+	if len(a) != 4:
+		return 0
+	for x in a:
+		if not x.isdigit():
+			return 0
+		i = int(x)
+		if i < 0 or i > 255:
+			return 0
+	return 1
+
+def verify_freq(freq):
+	if freq.isdigit():
+		return 1
+	return 0
+
+def verify_wep(wep, size):
+	if re.match("[0-9a-f]*",wep.lower()) and len(wep)==(size/4):
+		return 1
+	return 0	
