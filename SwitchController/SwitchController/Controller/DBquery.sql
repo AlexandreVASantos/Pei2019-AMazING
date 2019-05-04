@@ -43,7 +43,7 @@ node_id int,
 alert varchar(255),
 date_alert date not null,
 read varchar(5) not null,
-PRIMARY KEY (node_id,alert),
+PRIMARY KEY (node_id,alert,date_alert),
 FOREIGN KEY (node_id) REFERENCES node(id));
 
 COMMIT;

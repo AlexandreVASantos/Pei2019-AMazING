@@ -34,7 +34,9 @@ def sensors(request):
 			c.execute(query)
 			connection.commit()
 			connection.close()
+			global alert
 			alert = True
+
 			return render(request,'templates/Controller/node.html', {'message': 0})
 
 		except sqlite3.Error as e:
@@ -88,7 +90,7 @@ def home(request):
 
 
 
-def getlogin(request, message = None):
+def getlogin(request):
 	return render(request,'templates/Controller/login.html', {'user': user})
 
 
@@ -128,6 +130,8 @@ def log_in(request):
 
 	user["username"] = username
 	user["authenticated"] = True
+
+
 	
 	return render(request,'templates/Controller/home.html',{ 'message': 'Authentication Sucessful', 'user' : user, 'success': True,  'alert': alert})
 
@@ -202,6 +206,9 @@ def get_notifications_with_date(request):
 
 
 	try:
+		date_init =str(date_init) + ' 00:00:00.000'
+		print(date_init)
+		date_final = str(date_final) + ' 23:59:59.999'
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query="Select node_id, alert from alerts where date_alert >='" +str(date_init)+ "' AND date_alert <='" +str(date_final)+ "';"
@@ -237,6 +244,7 @@ def get_notifications():
 
 
 def notifications(request):
+	global alert
 	alert = False
 	error,value = get_notifications();
 	if error == 1:

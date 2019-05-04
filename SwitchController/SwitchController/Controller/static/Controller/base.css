@@ -263,3 +263,106 @@ input[type=text],input[type=password]:placeholder {
   width:60%;
 }
 
+.notification {
+  height: 8%;
+  background-color: #C1F7EE;
+  margin-top: 20%;
+  -webkit-animation: notify 10s ease-in-out infinite;
+  animation: notify 10s ease-in-out infinite;
+}
+
+@-webkit-keyframes notify {
+  0% {transform: scaleX(0);}
+  10% {transform: scaleX(1);}
+  13% {transform: scale(1.1);}
+  16% {transform: scale(1);}
+  55% {transform: scaleX(1); border-radius: 0%;}
+  65% {transform: scaleX(0.25); border-radius: 50%;}
+  95% {transform: scaleX(0.25); border-radius: 50%;}
+  100% {transform: scaleX(0);}
+}
+
+@keyframes notify {
+  0% {transform: scaleX(0);}
+  10% {transform: scaleX(1);}
+  13% {transform: scale(1.1);}
+  16% {transform: scale(1);}
+  55% {transform: scaleX(1); border-radius: 0%;}
+  65% {transform: scaleX(0.25); border-radius: 50%;}
+  95% {transform: scaleX(0.25); border-radius: 50%;}
+  100% {transform: scaleX(0);}
+}
+
+.identifier {
+  position: absolute;
+  height: 20px;
+  width: 10%;
+  border-radius: 100%;
+  background-color: #94DACD;
+  margin-left: 7.5px;
+  -webkit-animation: exit 10s ease-in-out infinite;
+  animation: exit 10s ease-in-out infinite;
+}
+
+.text {
+  position: absolute;
+  height: 20px;
+  width: 100%;
+  margin-left: 15%;
+  -webkit-animation: exit 10s ease-in-out infinite;
+  animation: exit 10s ease-in-out infinite;
+}
+
+@-webkit-keyframes exit {
+  0% {opacity: 1;}
+  55% {opacity: 1;}
+  65% {opacity: 0;}  
+  100% {opacity: 0;}
+}
+
+@keyframes exit {
+  0% {opacity: 1;}
+  55% {opacity: 1;}
+  65% {opacity: 0;}  
+  100% {opacity: 0;}
+}
+
+.number {
+  position: absolute;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  color: #94DACD;
+  margin-left: 85%;
+  -webkit-animation: enter 10s ease-in-out infinite;
+  animation: enter 10s ease-in-out infinite;
+}
+
+@-webkit-keyframes enter {
+  0% {opacity: 0;}
+  55% {opacity: 0;}
+  65% {opacity: 1; transform: scaleX(1);}
+  95% {opacity: 1; transform: scaleX(1);}
+  100% {opacity: 0; transform: scaleX(1);}
+}
+
+@keyframes enter {
+  0% {opacity: 0;}
+  55% {opacity: 0;}
+  65% {opacity: 1; transform: scaleX(1);}
+  95% {opacity: 1; transform: scaleX(1);}
+  100% {opacity: 0; transform: scaleX(1);}
+}
+
+
+
+a,
+a:visited {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+a:focus,
+a:hover {
+  color: #45B39F;
+}
+

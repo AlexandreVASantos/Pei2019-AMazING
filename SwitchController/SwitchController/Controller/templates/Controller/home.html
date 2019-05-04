@@ -12,16 +12,16 @@
 					<div class="more">
 				
 						{% if user.authenticated%}
-						<div class ="container">
-							<a  class="btn btn-primary" href="{% url 'config' %}">Node Grid</a>
-						</div>
+							<div class ="container">
+								<a  class="btn btn-primary" href="{% url 'config' %}">Node Grid</a>
+							</div>
 
 						{% else %}
-						<div class ="container">
-							<p>This is a system that allows the AMazING manager to enable or disable the Switch PoE ports, making nodes do turn on or off.</p>
-							<a  class="btn btn-primary" href="{% url 'getLogin' %}">Log In</a>
-					
-						</div>
+							<div class ="container">
+								<p>This is a system that allows the AMazING manager to enable or disable the Switch PoE ports, making nodes do turn on or off.</p>
+								<a  class="btn btn-primary" href="{% url 'getLogin' %}">Log In</a>
+						
+							</div>
 
 						{%endif%}
               				
