@@ -108,13 +108,13 @@ h1, h2, h3, h4, h5, h6, figure {
   }
 }
 .gtco-nav #gtco-logo {
-  font-size: 20px;
+  font-size: 25px;
   margin: 0;
   padding: 0;
   text-transform: uppercase;
   font-weight: bold;
 }
-.gtco-nav #gtco-logo em {
+. #gtco-logo em {
   color: #483D8B;
 }
 @media screen and (max-width: 1000px) {
@@ -135,11 +135,11 @@ h1, h2, h3, h4, h5, h6, figure {
 }
 .gtco-nav ul li > a {
   text-transform: uppercase;
-  font-size: 13px !important;
+  font-size: 19px !important;
   letter-spacing: .05em;
 }
 .gtco-nav ul li a {
-  font-size: 16px;
+  font-size: 25px;
   padding: 30px 10px;
   color: #483D8B;
   -webkit-transition: 0.5s;
@@ -168,7 +168,7 @@ h1, h2, h3, h4, h5, h6, figure {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   content: "\e921";
-  font-style: 10px;
+  font-style: 25px;
   position: absolute;
   top: 50%;
   margin-top: -7px;
@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6, figure {
   color: #ccc;
 }
 .gtco-nav ul li.has-dropdown .dropdown {
-  width: 130px;
+  width: 100%;
   -webkit-box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.15);
   -moz-box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.15);
   box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.15);
@@ -223,7 +223,7 @@ h1, h2, h3, h4, h5, h6, figure {
   color: #6495ED;
   line-height: 1.2;
   text-transform: none;
-  font-size: 15px;
+  font-size: 25px;
 }
 .gtco-nav ul li.has-dropdown .dropdown li a:hover {
   color: #000;
@@ -1115,7 +1115,7 @@ form label {
   width: 25px;
   height: 2px;
   color: #252525;
-  font: bold 14px/.4 Helvetica;
+  font: bold 25px/.4 Helvetica;
   text-transform: uppercase;
   text-indent: -55px;
   background: #252525;
@@ -1448,7 +1448,7 @@ form label {
   margin: 0;
 }
 .gtco-nav .gtco-contact ul li a {
-  font-size: 14px;
+  font-size: 25px;
   font-weight: bold !important;
   margin-left: 0px;
 }
