@@ -3,12 +3,15 @@
 
 html {
   background-color: #1100;
+  height: 100vh;
+  padding: 0px;
 }
 
 
 body {
   font-family: "Poppins", sans-serif;
   height: 100vh;
+  padding: 0px;
 }
 
 a {

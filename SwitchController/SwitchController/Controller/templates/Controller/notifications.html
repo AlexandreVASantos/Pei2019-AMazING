@@ -1,35 +1,35 @@
 {% extends "Controller/base.html" %}
 
 {% block content %}
-	<div class ="container">
-		<form action="/notifications/date/" method="POST">
-			{% csrf_token %}
-			<div>
-				<label for="date1">Initial Date:</label>
-				<input style= "margin-left: 1%;margin-right: 5%" name="date1" type=date id="date1">
+			<div class ="container" style="text-align: center;position: absolute;margin-top:1%;">
+				<form action="/notifications/date/" method="POST">
+					{% csrf_token %}
+					<div>
+						<label for="date1">Initial Date:</label>
+						<input style= "margin-left: 1%;margin-right: 5%" name="date1" type=date id="date1">
+						
+						<label for="date2">Final Date:</label>
+						<input style= "margin-left: 1%;margin-right: 5%" name="date2" type=date id="date2">
+						
+						<input class="btn" value="Submit" id="submit_dates" style="background-color:#6495ED;color:#FFFF" href="{% url 'get_alert_date' %}" type="submit">
+					
+					</div>
+					
+							
+					
+				</form>
+				<textarea cols="100" rows="35" readonly style="resize:None">	
 				
-				<label for="date2">Final Date:</label>
-				<input style= "margin-left: 1%;margin-right: 5%" name="date2" type=date id="date2">
-				
-				<input class="btn" value="Submit" id="submit_dates" style="background-color:#6495ED;color:#FFFF" href="{% url 'get_alert_date' %}" type="submit">
-			
+					{% for x in notifications %}
+						{{x.0}}
+
+						{% for y in x.1 %}
+							
+							{{y}}
+
+						{% endfor %}
+					
+					{% endfor %}
+				</textarea>
 			</div>
-			
-					
-			
-		</form>
-		<textarea cols="100" rows="35" readonly style="resize:None">	
-		
-			{% for x in notifications %}
-				{{x.0}}
-
-				{% for y in x.1 %}
-					
-					{{y}}
-
-				{% endfor %}
-			
-			{% endfor %}
-		</textarea>
-	</div>
 {% endblock %}
