@@ -13,7 +13,7 @@ user = {'username' : None, 'authenticated' : False }
 url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
-alert = False
+alert = True
 
 #function to receive data from node sensors, do not need csrf_cookie
 @csrf_exempt
@@ -80,13 +80,13 @@ def node_up(request):
 
 
 
+def manual(request):
+	return render(request,'templates/Controller/manual.html', {'user': user, 'alert' : alert})
 
 
 
 def home(request):
-	return render(request,'templates/Controller/home.html', {'user': user})
-
-
+	return render(request,'templates/Controller/home.html', {'user': user, 'alert' : alert})
 
 
 

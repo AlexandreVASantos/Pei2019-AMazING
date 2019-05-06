@@ -15,6 +15,7 @@ urlpatterns = [
     path('sensors/', views.sensors, name= 'sensors'),
     path('password/', views.password, name = 'password'),
     path('password/change/', views.change_pass, name = 'change_pass'),
+    path('manual/', views.manual, name='manual'),
     
    
 ]

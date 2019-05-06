@@ -2,15 +2,12 @@
 {% load static %}
 {% block content %}
 
-<div class="wrapper fadeInDown">
+<div class="wrapper fadeInDown" style="min-height: 14vh">
   <div id="formContent">
-    <!-- Tabs Titles -->
-
     <!-- Icon -->
     <div class="fadeIn first">
       <img src="{% static '/img/login-user-icon.png' %}" style="width:30%" id="icon" alt="" />
     </div>
-
     <!-- Login Form -->
     <form action="/login/" method='POST'>
       {%csrf_token%}
@@ -22,7 +19,7 @@
 
     <!-- Remind Passowrd -->
     <div id="formFooter">
-      <a class="underlineHover" href="{% url 'password' %}">Change Password?</a>
+      <a class="underlineHover" style="color:#6495ED" href="{% url 'password' %}">Change Password?</a>
     </div>
 
   </div>

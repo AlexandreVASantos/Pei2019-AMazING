@@ -1,7 +1,7 @@
 {% extends "Controller/base.html" %}
 
 {% block content %}
-			<div class ="container" style="text-align: center;position: absolute;margin-top:1%;">
+			<div class ="container" style="text-align: center;margin-top:1%;">
 				<form action="/notifications/date/" method="POST">
 					{% csrf_token %}
 					<div>
@@ -18,7 +18,7 @@
 							
 					
 				</form>
-				<textarea cols="100" rows="35" readonly style="resize:None">	
+				<textarea cols="100" rows="35" readonly style="background-color: #1111;resize:None">	
 				
 					{% for x in notifications %}
 						{{x.0}}
