@@ -201,7 +201,7 @@ def get_notifications_with_date(request):
 	date1 = time.strptime(date_init, "%Y-%m-%d")
 	date2 = time.strptime(date_final, "%Y-%m-%d")
 
-	if date2 <= date1:
+	if date2 < date1:
 		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Final date must be bigger than initial date.' ,'user': user})
 
 
@@ -211,11 +211,11 @@ def get_notifications_with_date(request):
 		date_final = str(date_final) + ' 23:59:59.999'
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query="Select node_id, alert from alerts where date_alert >='" +str(date_init)+ "' AND date_alert <='" +str(date_final)+ "';"
+		query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_init)+ "' AND date_alert <='" +str(date_final)+ "';"
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
-		value = [('node '+str(x[0]) + ':', x[1].split('\n')) for x in fetch]
+		value = [('node '+str(x[0]), x[1].split('\n'), x[2]) for x in fetch]
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
 
@@ -227,15 +227,15 @@ def get_notifications():
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query="Select node_id, alert from alerts where read = 'False';" 
+		query="Select node_id, alert, date_alert from alerts where read = 'False' Order by date_alert Desc;" 
 		c.execute(query)
 		fetch= c.fetchall()
 		for x in fetch:
-			query_up = "Update alerts set read = 'True' where node_id = " +str(x[0])+ " AND alert= '" +str(x[1])+ "';"
+			query_up = "Update alerts set read = 'True' where node_id = " +str(x[0])+ " AND date_alert= '" +str(x[2])+ "';"
 			c.execute(query_up)
 			connection.commit()
 		connection.close()
-		notifications = [('node '+ str(x[0]) + ':', x[1].split('\n')) for x in fetch]
+		notifications = [('node '+ str(x[0]), x[1].split('\n'),x[2]) for x in fetch]
 		print(notifications)
 		return 0,notifications
 	except sqlite3.Error as e:
@@ -301,7 +301,7 @@ def send_commands(command):
 	command_bytes = command.encode()
 	command_base64 = base64.b64encode(command_bytes)
 	command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
-	post_command = requests.post(url + 'cli_batch', headers=cookie, data=json.dumps(command_dict), timeout=1)
+	post_command = requests.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=1)
 	return post_command
 
 

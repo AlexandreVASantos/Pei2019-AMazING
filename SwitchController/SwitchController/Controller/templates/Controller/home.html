@@ -1,34 +1,33 @@
 {% extends "Controller/base.html" %}
 {% load static %}
 {% block content %}
-		<div class="row" style="margin-top: 5%;margin-bottom: 10%; min-height: 23vh">
+		<div class="row" style="margin-bottom: 10%; min-height: 26vh">
 	        <!-- Boxes de Acoes -->
 			<div class="box">							
 				<div class="icon">
 					<div class="image"><img class="fa fa-thumbs-o-up"></div>
 					<div class="info">
-						<h3 class="title">Welcome to the AMazING Switch Controller!</h3>
-						
-						<div class="more">
-					
-							{% if user.authenticated%}
-								<div class ="container">
-									<a  class="btn btn-primary" href="{% url 'config' %}">Node Grid</a>
-								</div>
-								<br>
-								<br>
-								
-
-							{% else %}
-								<div class ="container">
-									<p>This is a system that allows the AMazING manager to enable or disable the Switch PoE ports, making nodes do turn on or off.</p>
-									<a  class="btn btn-primary" href="{% url 'getLogin' %}">Log In</a>
+						<div class ="container">
+							<h3 class="title">Welcome to the AMazING Switch Controller!</h3>
+				
+						{% if user.authenticated%}
 							
-								</div>
+								<a  class="btn btn-primary" href="{% url 'config' %}">Node Grid</a>
+							</div>
+							<br>
+							<br>
+							
 
-							{%endif%}
-	              				
-						</div>
+						{% else %}
+							
+								<p style="font-size: 120%">This is a system that allows the AMazING manager to enable or disable the Switch PoE ports, making nodes do turn on or off.</p>
+								<a  class="btn btn-primary" href="{% url 'getLogin' %}">Log In</a>
+						
+							</div>
+
+						{%endif%}
+              				
+						
 							
 					</div>
 				</div>

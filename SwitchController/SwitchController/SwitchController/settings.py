@@ -74,7 +74,7 @@ TEMPLATE_DIRS= (
     '/home/alexandre/Desktop/SwitchController/SwitchController/Controller/templates/',
     )
 
-WSGI_APPLICATION = 'SwitchController.wsgi.application'
+##WSGI_APPLICATION = 'SwitchController.wsgi.application'
 
 
 # Database
