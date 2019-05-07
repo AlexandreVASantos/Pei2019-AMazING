@@ -1,6 +1,19 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% block content %}
+	
+{% if messages %}
+<ul class="messages">
+    {% for msg in messages %}       
+    <li>
+        <div class="alert alert-{{msg.level_tag}}" style="width: 450px;right:50px" role="alert">
+        {{msg.message}}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 	<form action="/postIPChange/" method ='get'>
 	  <div class="form-group" align="center">
 	    <label style="color:#000" align="center">IP Address</label>
