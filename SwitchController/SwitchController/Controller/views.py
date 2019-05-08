@@ -14,7 +14,8 @@ url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
 alert = False
-
+node_up=0
+power_supply=0
 #function to receive data from node sensors, do not need csrf_cookie
 @csrf_exempt
 def sensors(request):
@@ -64,7 +65,7 @@ def node_up(request):
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
-			query = "Update node Set value='ON', color='green' where id="+ str(node) +";"
+			query = "Update node Set value='ON' where id="+ str(node) +";"
 			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
@@ -187,6 +188,19 @@ def log_out(request):
 
 
 
+def num_nodes_up():
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query1="Select count(id) from node where value='ON';"
+		c.execute(query1)
+		fetch= c.fetch()
+		connection.close()
+		return
+	except sqlite3.Error as e:
+		return
+
+
 
 
 	
@@ -273,16 +287,21 @@ def notifications(request):
 
 	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
 
-
-
+def stats(request):
+	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert})
 
 def send_grid(request):
 	refresh_grid()
+	print(grid)
 	##use this block if a user login is added to the switch
 	#sess = requests.Session()
-	#req = sess.post(url + 'login-sessions',,timeout=1)
+	#req = sess.post(url + 'login-sessions',data={},timeout=1)
 	#cookie_response = req.json()['cookie']
 	#cookie = {'cookie : cookie_response'}
+	#if req.status_code != 201:
+	#	return render(request, 'Controller/error.html', {'error': 'could not connect to the Switch'})
+
+	
 	node_grid = grid
 	
 	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
@@ -293,10 +312,14 @@ def refresh_grid():
 	try:	
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()	
-		c.execute("Select * from node;")
+		c.execute("Select node_id, value, portId from node as N Join switch as S on N.id = S.node_id;")
 		fetch= c.fetchall()
 		for row in fetch:
-			grid[row[0]] = (row[1],row[2],row[3])
+			if str(row[1]) == 'ON':
+				color='green'
+			else:
+				color = 'red'
+			grid[row[0]] = (row[1],color,row[2])
 		connection.close()
 		return 0,grid
 	except sqlite3.Error as e:
@@ -336,7 +359,7 @@ def change_grid(request):
 	for key in dic:
 		node=key
 		value=dic[key]
-
+	
 	(val,color,portId) = grid[int(node)]
 
 	if value == 'OFF':
@@ -356,13 +379,18 @@ def change_grid(request):
 			#if value ON turn off
 			commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
 
-			query = "Update node Set value='OFF', color='red' where id=" + str(node) +";"
+			query = "Update node Set value='OFF' where id=" + str(node) +";"
 		
 		
-			code = send_commands(commands)
-			if code != 202:
+			post = send_commands(commands)
+			if post.status_code != 202:
 				return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 
+
+
+			verify_response = post.json()['result_base64_encoded']
+			decoded_r = base64.b64decode(verify_response).decode('utf-8')
+			print(decoded_r)
 			#update value of node state in database
 			c.execute(query)
 			connection.commit()
