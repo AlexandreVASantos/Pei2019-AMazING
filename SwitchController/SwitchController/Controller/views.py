@@ -13,7 +13,7 @@ user = {'username' : None, 'authenticated' : False }
 url = 'http://10.110.1.149/rest/v3/'
 grid = {}
 cookie = {}
-alert = True
+alert = False
 
 #function to receive data from node sensors, do not need csrf_cookie
 @csrf_exempt
@@ -192,26 +192,47 @@ def log_out(request):
 	
 def get_notifications_with_date(request):
 	print(request.POST)
-	date_init = request.POST.get('date1')
-	date_final = request.POST.get('date2')
 	
-	if date_init is None or date_init == '' or date_final is None or date_final == '':
-		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill all fields' ,'user': user})
-
-	date1 = time.strptime(date_init, "%Y-%m-%d")
-	date2 = time.strptime(date_final, "%Y-%m-%d")
-
-	if date2 < date1:
-		return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Final date must be bigger than initial date.' ,'user': user})
-
-
 	try:
-		date_init =str(date_init) + ' 00:00:00.000'
-		print(date_init)
-		date_final = str(date_final) + ' 23:59:59.999'
+
+		values = request.POST
+
+		date_init = values.get('date1')
+		date_final = values.get('date2')
+		node = values.get('node_id')
+
+		if node is None or node == '':
+			if date_init is None or date_init == '' or date_final is None or date_final == '':
+				return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill at least node field or both data fields' ,'user': user})
+
+			else:
+				date1 = time.strptime(date_init, "%Y-%m-%d")
+				date2 = time.strptime(date_final, "%Y-%m-%d")
+				if date2 < date1:
+					return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Final date must be bigger than initial date.' ,'user': user})
+
+				date_in =str(date_init) + ' 00:00:00.000'
+				print(date_init)
+				date_fin = str(date_final) + ' 23:59:59.999'
+				query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_in)+ "' AND date_alert <='" +str(date_fin)+ "';"
+
+		else:
+			if date_init is None or date_init == '' or date_final is None or date_final == '':
+				query="Select node_id, alert, date_alert from alerts where node_id= " + str(node) + " Order by date_alert Desc;"
+			else:
+				date1 = time.strptime(date_init, "%Y-%m-%d")
+				date2 = time.strptime(date_final, "%Y-%m-%d")
+				if date2 < date1:
+					return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Final date must be bigger than initial date.' ,'user': user})
+
+				date_in =str(date_init) + ' 00:00:00.000'
+				print(date_init)
+				date_fin = str(date_final) + ' 23:59:59.999'
+				query = query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_in)+ "' AND date_alert <='" +str(date_fin)+ "' AND node_id=" + str(node) + ";"
+		
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_init)+ "' AND date_alert <='" +str(date_final)+ "';"
+			
 		c.execute(query)
 		fetch= c.fetchall()
 		connection.close()
@@ -219,7 +240,7 @@ def get_notifications_with_date(request):
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
 
-	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
+	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value, 'date1' : str(date_init), 'date2': str(date_final), 'node' : str(node)})
 
 
 

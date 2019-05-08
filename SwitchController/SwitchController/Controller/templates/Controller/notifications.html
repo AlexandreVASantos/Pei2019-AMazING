@@ -5,13 +5,15 @@
 				<form action="/notifications/date/" method="POST">
 					{% csrf_token %}
 					<div>
+						<label for="node">Node:</label>
+						<input style= "margin-left: 1%;margin-right: 5%; width: 10%" type=text value="{{node}}" name="node_id" id="node"> 
 						<label for="date1">Initial Date:</label>
-						<input style= "margin-left: 1%;margin-right: 5%" name="date1" type=date id="date1">
+						<input style= "margin-left: 1%;margin-right: 5%" name="date1" value="{{date1}}" type=date id="date1">
 						
 						<label for="date2">Final Date:</label>
-						<input style= "margin-left: 1%;margin-right: 5%" name="date2" type=date id="date2">
+						<input style= "margin-left: 1%;margin-right: 5%" name="date2" value="{{date2}}"  type=date id="date2">
 						
-						<input class="btn" value="Submit" id="submit_dates" style="background-color:#6495ED;color:#FFFF" href="{% url 'get_alert_date' %}" type="submit">
+						<input class="btn" value="Submit" id="submit_dates" style="background-color:#6495ED;color:#FFFF;margin-top: 2%" href="{% url 'get_alert_date' %}" type="submit">
 					
 					</div>
 					
