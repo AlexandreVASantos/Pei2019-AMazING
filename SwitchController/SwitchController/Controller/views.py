@@ -188,21 +188,6 @@ def log_out(request):
 
 
 
-def num_nodes_up():
-	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-		c=connection.cursor()
-		query1="Select count(id) from node where value='ON';"
-		c.execute(query1)
-		fetch= c.fetch()
-		connection.close()
-		return
-	except sqlite3.Error as e:
-		return
-
-
-
-
 	
 def get_notifications_with_date(request):
 	print(request.POST)
@@ -288,7 +273,38 @@ def notifications(request):
 	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
 
 def stats(request):
-	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert})
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query1="Select count(id) from node where value='ON';" 
+		c.execute(query1)
+		fetch_up= c.fetchone()[0]
+		query2="Select count(*) from alerts;" 
+		c.execute(query2)
+		fetch_alerts= c.fetchone()[0]
+		connection.close()
+
+		#commands = "interface" + str(portId) + "\npower-over-ethernet\n"
+
+			#can't update database immediately, need to wait for node to go up
+		#code = send_commands(commands)
+
+		#if code != 202:
+		#	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+
+	except sqlite3.Error as e:
+		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
+
+	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(fetch_up), 'n_alerts': str(fetch_alerts)})
+
+
+	
+def send_commands_power(command):
+	command_bytes = command.encode()
+	command_base64 = base64.b64encode(command_bytes)
+	command_dict={'service_poe_base64_encoded': command_base64.decode('utf-8')}
+	post_command = requests.post(url + 'system/status/power/consumption', data=json.dumps(command_dict), timeout=1)
+	return post_command
 
 def send_grid(request):
 	refresh_grid()
@@ -367,9 +383,9 @@ def change_grid(request):
 			commands = "interface" + str(portId) + "\npower-over-ethernet\n"
 
 			#can't update database immediately, need to wait for node to go up
-			code = send_commands(commands)
+			post = send_commands(commands)
 
-			if code != 202:
+			if post.status_code != 202:
 				return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 	else:
 		try:
