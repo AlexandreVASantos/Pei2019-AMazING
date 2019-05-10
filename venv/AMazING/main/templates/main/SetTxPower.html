@@ -26,6 +26,12 @@
 	  <div class="from-group" align="center">
 	  	<button style="background-color:#0061ff;color:#ffff" type="submit" class="btn">Submit</button>
 	  </div>
+	  {% if flagTP %}
+        <br>
+        <div class="container" style="min-height:27vh">
+            {{req}}
+        </div>
+      {% endif %}
 	</form>
 {% endblock content %}
 

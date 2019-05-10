@@ -40,21 +40,21 @@ def setTxPower(request):
 
 
 def postEventListening(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/changeIP"
+	#url = "http://httpbin.org/post"
+	url = "http://10.42.0.2:5000/event"
 	data = request.GET
 	
-	#dic = {"data":"123"}
-	dic={}
-	for key in data:
-		dic[key] = data[key]
+	dic = {"data":"123"}
+	# dic={}
+	# for key in data:
+	# 	dic[key] = data[key]
 
 		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-	print(req.json())
-	return render(request,'main/menu.html', {"flagEL":True,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
+	updatedReqResp = req.json()
+	return render(request,'main/menu.html', {"flagEL":True,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp['data']})
 
 def postScanning(request):
 	url = "http://httpbin.org/post"
@@ -108,8 +108,8 @@ def postLinkStatus(request):
 
 
 def postIPChange(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/changeIP"
+	#url = "http://httpbin.org/post"
+	url = "http://10.42.0.2:5000/changeIP"
 	data = request.GET
 	dic={}
 	
@@ -120,11 +120,13 @@ def postIPChange(request):
 			print(key)
 			dic[key] = data[key]
 
+		print(dic)
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
-		print(req.json())
-		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
+		updatedReqResp = req.json()
+		#print(req.json())
+		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp})
 	
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -133,25 +135,41 @@ def postIPChange(request):
 	return render(request,'main/addrChange.html')
 
 def postConnection(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/connect"
+	#url = "http://httpbin.org/post"
+	url = "http://10.42.0.2:5000/connection"
 	data = request.GET
 	dic={}
 	#print(data)
 	#dic = {"data":"123"}
 	#dic = {"data":"123"}
-	
-	if(verify_Wlan(request,data) and not (len(data)==0)):	
-		print(verify_Wlan(request,data))
-		for key in data:
-			print(key)
-			dic[key] = data[key]
 
-		dataToSend = json.dumps(dic)
-		headers = {'Content-Type': 'application/json'}
-		req = requests.post(url,data=dataToSend, headers=headers)
-		print(req.json())
-		return render(request, 'main/connection.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True})
+	if(verify_Wlan(request,data) and not (len(data)==0)):	
+			if data["Frequency"]:
+				if not verify_freq(request,data["Frequency"]):
+					dataToSend = json.dumps(dic)
+					headers = {'Content-Type': 'application/json'}
+					req = requests.post(url,data=dataToSend, headers=headers)
+					print(req.json())
+					return render(request,'main/connection.html')
+
+			if data["WEP"]:
+				if not verify_wep(request,data["WEP"]):
+					dataToSend = json.dumps(dic)
+					headers = {'Content-Type': 'application/json'}
+					req = requests.post(url,data=dataToSend, headers=headers)
+					print(req.json())
+					return render(request,'main/connection.html')
+
+			print(verify_Wlan(request,data))
+			for key in data:
+				print(key)
+				dic[key] = data[key]
+
+			dataToSend = json.dumps(dic)
+			headers = {'Content-Type': 'application/json'}
+			req = requests.post(url,data=dataToSend, headers=headers)
+			print(req.json())
+			return render(request, 'main/connection.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True})
 			
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -161,8 +179,8 @@ def postConnection(request):
 	
 
 def postStationStats(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/changeIP"
+	#url = "http://httpbin.org/post"
+	url = "http://10.42.0.2:5000/stationstats"
 	data = request.GET
 	dic={}
 	#print(data)
@@ -176,8 +194,9 @@ def postStationStats(request):
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
-		print(req.json())
-		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False})
+		#print(req.json())
+		updatedReqResp = req.json()
+		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp})
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
@@ -224,7 +243,7 @@ def postTxPower(request):
 	#print(data)
 	#dic = {"data":"123"}
 	#dic = {"data":"123"}
-	print(verify_Wlan(request,data))
+	
 	if(verify_Wlan(request,data) and not (len(data)==0)):	
 		
 		for key in data:
@@ -246,7 +265,7 @@ def postTxPower(request):
 
 def get(request):
 	#producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
-	url = "http://192.168.0.25:5000/changeIP"
+	url = "http://10.42.0.2:5000/getlist"
 	headers = {'Content-Type': 'application/json'}
 	req = requests.get(url, headers=headers)
 	print(req.json())
@@ -276,14 +295,16 @@ def verify_IP(request,IP_address):
 			return 0
 	return 1
 
-def verify_freq(freq):
+def verify_freq(request,freq):
 	if freq.isdigit():
 		return 1
+	messages.warning(request, 'Please insert a valid Frequency.')
 	return 0
 
-def verify_wep(wep, size):
+def verify_wep(request,wep, size):
 	if re.match("[0-9a-f]*",wep.lower()) and len(wep)==(size/4):
 		return 1
+	messages.warning(request, 'Please insert a valid WEP Key.')
 	return 0	
 
 def verify_Wlan(request,dic):

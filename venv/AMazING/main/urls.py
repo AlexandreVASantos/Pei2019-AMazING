@@ -16,7 +16,7 @@ urlpatterns = [
     path('postLinkStatus/',views.postLinkStatus, name='postLinkStatus'),
     path('postStationStats/',views.postStationStats, name='postStationStats'),
     path('postStationPeer/',views.postStationStats, name='postStationStats'),
-    
+    path('get/',views.get, name='get'),
     path('setTxPower/',views.setTxPower, name='setTxPower'),
     path('postTxPower/',views.postTxPower, name='postTxPower'),
     path('help/',views.help, name='help'),
