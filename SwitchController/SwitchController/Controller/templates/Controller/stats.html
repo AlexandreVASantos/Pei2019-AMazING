@@ -1,0 +1,37 @@
+{% extends "Controller/base.html" %}
+{% load static %}
+{% block content %}
+		<div class ="container" style="text-align: center;margin-top:5%;min-height: 32vh">
+			<div class="row">
+				<div class="col-md-4">					
+					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
+					  <div class="card-body text-secondary">
+					  	<h1 style="width: 55%;margin-top: 15%" ><span class="glyphicon glyphicon-off"></span></h1>
+					    <h3 style="width: 55%; margin-left:55%;margin-top: -15%">{{node_up}}/24</h3>
+					  </div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
+					  <div class="card-body text-secondary">
+					  	<h1 style="width: 55%;margin-top: 15%" ><i class="fa fa-plug" aria-hidden="true"></i></h1>
+					    <h3 style="width: 55%; margin-left:45%;margin-top: -15%">{{power}} Watts</h3>
+					  </div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
+					  <div class="card-body text-secondary">
+					  	<h1 style="width: 55%;margin-top: 15%" ><span class="glyphicon glyphicon-bell"></span></h1>
+					    <h3 style="width: 55%; margin-left:45%;margin-top: -15%">{{n_alerts}} Alerts</h3>
+					  </div>
+					</div>
+				</div>
+			</div>
+
+			
+
+		
+		</div>
+
+{% endblock %}

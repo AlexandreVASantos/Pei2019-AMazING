@@ -6,6 +6,10 @@ echo 'amazing' | sudo -S apt upgrade -y
 
 echo 'amazing' | sudo -S apt-get install lm-sensors -y
 
+echo 'amazing' | sudo -S apt-get install wireless-tools -y
+
+echo 'amazing' | sudo -S apt-get install wpasupplicant -y
+
 echo 'amazing' | sudo -S mkdir /home/amazing/dont_delete
 
 echo 'amazing' | sudo -S cp /media/cdrom/* /home/amazing/dont_delete/

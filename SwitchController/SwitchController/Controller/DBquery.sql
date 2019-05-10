@@ -1,42 +1,19 @@
-PRAGMA foreign_keys=OFF;
+PRAGMA foreign_keys=ON;
 BEGIN TRANSACTION;
 
-CREATE TABLE node(
+CREATE TABLE node (
 id int PRIMARY KEY,
 value varchar(3) NOT NULL,
-color varchar(5) NOT NULL,
-portId int NOT NULL);
+dateOn date not NULL
+);
 
-INSERT INTO node VALUES(1,'OFF','red',1);
-INSERT INTO node VALUES(2,'OFF','red',2);
-INSERT INTO node VALUES(3,'OFF','red',3);
-INSERT INTO node VALUES(4,'OFF','red',4);
-INSERT INTO node VALUES(5,'OFF','red',5);
-INSERT INTO node VALUES(6,'OFF','red',6);
-INSERT INTO node VALUES(7,'OFF','red',7);
-INSERT INTO node VALUES(8,'OFF','red',8);
-INSERT INTO node VALUES(9,'OFF','red',9);
-INSERT INTO node VALUES(10,'OFF','red',10);
-INSERT INTO node VALUES(11,'OFF','red',11);
-INSERT INTO node VALUES(12,'OFF','red',12);
-INSERT INTO node VALUES(13,'OFF','red',13);
-INSERT INTO node VALUES(14,'OFF','red',14);
-INSERT INTO node VALUES(15,'OFF','red',15);
-INSERT INTO node VALUES(16,'OFF','red',16);
-INSERT INTO node VALUES(17,'OFF','red',17);
-INSERT INTO node VALUES(18,'OFF','red',18);
-INSERT INTO node VALUES(19,'OFF','red',19);
-INSERT INTO node VALUES(20,'OFF','red',20);
-INSERT INTO node VALUES(21,'OFF','red',21);
-INSERT INTO node VALUES(22,'OFF','red',22);
-INSERT INTO node VALUES(23,'OFF','red',23);
-INSERT INTO node VALUES(24,'OFF','red',24);
+CREATE TABLE switch (
+node_id int,
+portId int,
+PRIMARY KEY (node_id,portId),
+FOREIGN KEY (node_id) REFERENCES node(id)
+);
 
-CREATE TABLE users (
-username varchar(255) PRIMARY KEY,
-password varchar(255) not null);
-
-INSERT INTO users VALUES('AmazingManager','Amazing2019');
 
 CREATE TABLE alerts (
 node_id int,
@@ -44,6 +21,69 @@ alert varchar(255),
 date_alert date not null,
 read varchar(5) not null,
 PRIMARY KEY (node_id,alert,date_alert),
-FOREIGN KEY (node_id) REFERENCES node(id));
+FOREIGN KEY (node_id) REFERENCES node(id)
+);
+
+
+CREATE TABLE users (
+username varchar(255) PRIMARY KEY,
+password varchar(255) not null
+);
+
+
+INSERT INTO node VALUES(1,'OFF','0');
+INSERT INTO node VALUES(2,'OFF','0');
+INSERT INTO node VALUES(3,'OFF','0');
+INSERT INTO node VALUES(4,'OFF','0');
+INSERT INTO node VALUES(5,'OFF','0');
+INSERT INTO node VALUES(6,'OFF','0');
+INSERT INTO node VALUES(7,'OFF','0');
+INSERT INTO node VALUES(8,'OFF','0');
+INSERT INTO node VALUES(9,'OFF','0');
+INSERT INTO node VALUES(10,'OFF','0');
+INSERT INTO node VALUES(11,'OFF','0');
+INSERT INTO node VALUES(12,'OFF','0');
+INSERT INTO node VALUES(13,'OFF','0');
+INSERT INTO node VALUES(14,'OFF','0');
+INSERT INTO node VALUES(15,'OFF','0');
+INSERT INTO node VALUES(16,'OFF','0');
+INSERT INTO node VALUES(17,'OFF','0');
+INSERT INTO node VALUES(18,'OFF','0');
+INSERT INTO node VALUES(19,'OFF','0');
+INSERT INTO node VALUES(20,'OFF','0');
+INSERT INTO node VALUES(21,'OFF','0');
+INSERT INTO node VALUES(22,'OFF','0');
+INSERT INTO node VALUES(23,'OFF','0');
+INSERT INTO node VALUES(24,'OFF','0');
+
+
+INSERT INTO switch VALUES(1,1);
+INSERT INTO switch VALUES(2,2);
+INSERT INTO switch VALUES(3,3);
+INSERT INTO switch VALUES(4,4);
+INSERT INTO switch VALUES(5,5);
+INSERT INTO switch VALUES(6,6);
+INSERT INTO switch VALUES(7,7);
+INSERT INTO switch VALUES(8,8);
+INSERT INTO switch VALUES(9,9);
+INSERT INTO switch VALUES(10,10);
+INSERT INTO switch VALUES(11,11);
+INSERT INTO switch VALUES(12,12);
+INSERT INTO switch VALUES(13,13);
+INSERT INTO switch VALUES(14,14);
+INSERT INTO switch VALUES(15,15);
+INSERT INTO switch VALUES(16,16);
+INSERT INTO switch VALUES(17,17);
+INSERT INTO switch VALUES(18,18);
+INSERT INTO switch VALUES(19,19);
+INSERT INTO switch VALUES(20,20);
+INSERT INTO switch VALUES(21,21);
+INSERT INTO switch VALUES(22,22);
+INSERT INTO switch VALUES(23,23);
+INSERT INTO switch VALUES(24,24);
+
+
+INSERT INTO users VALUES('AmazingManager','Amazing2019');
+
 
 COMMIT;
