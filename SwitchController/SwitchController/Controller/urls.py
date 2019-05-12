@@ -18,5 +18,6 @@ urlpatterns = [
     path('manual/', views.manual, name='manual'),
     path('stats/', views.stats,name='stats'),
     
+    
    
 ]

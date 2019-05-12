@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from dateutil import relativedelta
+from django.http import JsonResponse
 import json
 import requests
 import os
@@ -7,6 +9,7 @@ import subprocess
 import sqlite3
 import base64
 import time
+import datetime
 
 
 user = {'username' : None, 'authenticated' : False }
@@ -25,7 +28,9 @@ def sensors(request):
 			
 			node = args.get('node')
 			info = args.get('readings')
-			date = args.get('date')
+
+			todays_date = datetime.datetime.now()
+			date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
 			
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
@@ -38,14 +43,14 @@ def sensors(request):
 			global alert
 			alert = True
 
-			return render(request,'templates/Controller/node.html', {'message': 0})
+			return JsonResponse({'alert': alert})
 
 		except sqlite3.Error as e:
-			return render(request,'templates/Controller/node.html', {'message':'database error'})
+			return JsonResponse({'message':'database error'})
 
 
 	else:
-		return render(request,'templates/Controller/node.html', {'message':'Wrong method'})
+		return JsonResponse({'message':'Wrong method'})
 
 
 
@@ -61,23 +66,24 @@ def node_up(request):
 			args = json.loads(request.body.decode('utf-8'))
 			print(args)
 			node = args.get('node')
-			print(node)
+			up_date = datetime.datetime.now()
+			date = up_date.strftime("%Y-%m-%d %H:%M:%S")
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
-			query = "Update node Set value='ON' where id="+ str(node) +";"
+			query = "Update node Set value='ON', dateOn='"+ str(date) + "' where id="+ str(node) +";"
 			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
 			connection.close()
-			return render(request,'templates/Controller/node.html', {'message': 0})
+			return JsonResponse({'message': 0})
 
 		except sqlite3.Error as e:
-			return render(request,'templates/Controller/node.html', {'message':'database error'})
+			return JsonResponse({'message':'database error'})
 
 
 	else:
-		return render(request,'templates/Controller/node.html', {'message':'Wrong method'})
+		return JsonResponse({'message':'Wrong method'})
 
 
 
@@ -96,7 +102,8 @@ def getlogin(request):
 
 
 
-
+def alerts(request):
+	JsonResponse({'alert':alert})
 
 def compLogin(username, password):
 	try:
@@ -205,28 +212,28 @@ def get_notifications_with_date(request):
 				return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Please fill at least node field or both data fields' ,'user': user})
 
 			else:
-				date1 = time.strptime(date_init, "%Y-%m-%d")
-				date2 = time.strptime(date_final, "%Y-%m-%d")
+				date1 = datetime.datetime.strptime(date_init, "%Y-%m-%d")
+				date2 = datetime.datetime.strptime(date_final, "%Y-%m-%d")
 				if date2 < date1:
 					return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Final date must be bigger than initial date.' ,'user': user})
 
-				date_in =str(date_init) + ' 00:00:00.000'
+				date_in =str(date_init) + ' 00:00:00'
 				print(date_init)
-				date_fin = str(date_final) + ' 23:59:59.999'
+				date_fin = str(date_final) + ' 23:59:59'
 				query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_in)+ "' AND date_alert <='" +str(date_fin)+ "';"
 
 		else:
 			if date_init is None or date_init == '' or date_final is None or date_final == '':
 				query="Select node_id, alert, date_alert from alerts where node_id= " + str(node) + " Order by date_alert Desc;"
 			else:
-				date1 = time.strptime(date_init, "%Y-%m-%d")
-				date2 = time.strptime(date_final, "%Y-%m-%d")
+				date1 = datetime.datetime.strptime(date_init, "%Y-%m-%d")
+				date2 = datetime.datetime.strptime(date_final, "%Y-%m-%d")
 				if date2 < date1:
 					return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Final date must be bigger than initial date.' ,'user': user})
 
-				date_in =str(date_init) + ' 00:00:00.000'
+				date_in =str(date_init) + ' 00:00:00'
 				print(date_init)
-				date_fin = str(date_final) + ' 23:59:59.999'
+				date_fin = str(date_final) + ' 23:59:59'
 				query = query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_in)+ "' AND date_alert <='" +str(date_fin)+ "' AND node_id=" + str(node) + ";"
 		
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
@@ -272,18 +279,88 @@ def notifications(request):
 
 	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value })
 
-def stats(request):
+
+
+def getNumHours():
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
-		query1="Select count(id) from node where value='ON';" 
-		c.execute(query1)
-		fetch_up= c.fetchone()[0]
-		query2="Select count(*) from alerts;" 
-		c.execute(query2)
-		fetch_alerts= c.fetchone()[0]
-		connection.close()
+		todays_date = datetime.datetime.now()
+		query = "Select id, dateOn from node where dateOn != '0';"
+		c.execute(query)
+		fetch = c.fetchall()
 
+		numHours={}
+		for info in fetch:
+			up_date = datetime.datetime.strptime(info[1],'%Y-%m-%d %H:%M:%S')
+			difference = relativedelta.relativedelta(todays_date,up_date)
+
+			
+			numHours[info[0]] = difference.hours
+
+		
+		for i in range(1,25):
+			if i not in list(numHours.keys()):
+				numHours[i] = 0
+
+		
+	except sqlite3.Error as e:
+		return 1,e
+
+	return 0,numHours
+
+
+def getNumAlertsByNode():
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query = "Select node_id, count(alert) from alerts group by node_id;"
+		c.execute(query)
+		fetch = c.fetchall()
+		numAlertsNode={}
+		for info in fetch:
+			numAlertsNode[info[0]] = int(info[1])
+
+		for i in range(1,25):
+			if i not in list(numAlertsNode.keys()):
+				numAlertsNode[i] = 0
+
+	except sqlite3.Error as e:
+		return 1,e
+
+	return 0,numAlertsNode
+
+
+def getNumNodesOn():
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query="Select count(id) from node where value='ON';" 	
+		c.execute(query)
+		numOn = c.fetchone()[0]
+		
+
+	except sqlite3.Error as e:
+		return 1,e
+
+	return 0,numOn
+
+
+def getNumAlerts():
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query="Select count(*) from alerts;" 	
+		c.execute(query)
+		numAlerts = c.fetchone()[0]
+		
+
+	except sqlite3.Error as e:
+		return 1,e
+
+	return 0,numAlerts
+
+def stats(request):
 		#commands = "interface" + str(portId) + "\npower-over-ethernet\n"
 
 			#can't update database immediately, need to wait for node to go up
@@ -291,11 +368,20 @@ def stats(request):
 
 		#if code != 202:
 		#	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+	numAlerts = getNumAlerts()
+	numOn = getNumNodesOn()
+	numHours = getNumHours()
+	numAlertsNode = getNumAlertsByNode()
 
-	except sqlite3.Error as e:
+	if request.is_ajax():
+		return JsonResponse({'node_up':str(numOn[1]), 'hours' : numHours[1],'n_alerts_node': numAlertsNode[1] ,'n_alerts': str(numAlerts[1])})
+
+
+	if numHours[0] == 1 or numAlerts[0] == 1:
 		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
-	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(fetch_up), 'n_alerts': str(fetch_alerts)})
+	
+	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(numOn[1]), 'hours' : numHours[1],'n_alerts_node': numAlertsNode[1] ,'n_alerts': str(numAlerts[1])})
 
 
 	
@@ -319,6 +405,9 @@ def send_grid(request):
 
 	
 	node_grid = grid
+
+	if request.is_ajax():
+		return JsonResponse(node_grid)
 	
 	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
 	
@@ -350,6 +439,7 @@ def grid_update(request):
 	if code == 1:
 		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
 
+
 	return render(request,'templates/Controller/config.html',{'node_grid': node_grid, 'user' : user,  'alert': alert})
 
 
@@ -367,62 +457,74 @@ def send_commands(command):
 
 
 
-	
-
+@csrf_exempt
 def change_grid(request):
 	
 	dic=request.POST
+	
 	for key in dic:
-		node=key
-		value=dic[key]
+		if key == 'id':
+			node=dic[key]
+		elif key == 'value':
+			value=dic[key]
+
+	print(node)
+	print(value)
 	
 	(val,color,portId) = grid[int(node)]
 
-	if value == 'OFF':
-			#if value OFF turn on
-			commands = "interface" + str(portId) + "\npower-over-ethernet\n"
+	# if value == 'OFF':
+	# 		#if value OFF turn on
+	# 		commands = "interface" + str(portId) + "\npower-over-ethernet\n"
 
-			#can't update database immediately, need to wait for node to go up
-			post = send_commands(commands)
+	# 		#can't update database immediately, need to wait for node to go up
+	# 		post = send_commands(commands)
 
-			if post.status_code != 202:
-				return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-	else:
-		try:
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-			c=connection.cursor()
-			
-			#if value ON turn off
-			commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
-
-			query = "Update node Set value='OFF' where id=" + str(node) +";"
+	# 		if post.status_code != 202:
+	# 			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+	# else:
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
 		
-		
-			post = send_commands(commands)
-			if post.status_code != 202:
-				return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+		#if value ON turn off
+		commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
+
+		query = "Update node Set value='OFF' where id=" + str(node) +";"
+	
+	
+		# post = send_commands(commands)
+		# if post.status_code != 202:
+		# 	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 
 
 
-			verify_response = post.json()['result_base64_encoded']
-			decoded_r = base64.b64decode(verify_response).decode('utf-8')
-			print(decoded_r)
-			#update value of node state in database
-			c.execute(query)
-			connection.commit()
-			connection.close()
+		# verify_response = post.json()['result_base64_encoded']
+		# decoded_r = base64.b64decode(verify_response).decode('utf-8')
+		# print(decoded_r)
+		#update value of node state in database
+		c.execute(query)
+		connection.commit()
+		connection.close()
 
 
-			E_id,error = refresh_grid()
-			if E_id == 1:
-				return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
+		E_id,error = refresh_grid()
+		if E_id == 1:
+			return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
 
-		except sqlite3.Error as e:
-			return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
+	except sqlite3.Error as e:
+		return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
 		
 	
 
 	node_grid = grid
+
+	if request.is_ajax():
+		print ('asdakjsdhiadhah')
+		return JsonResponse(node_grid)
+
+	print ('blablabla')
+	
 	
 	
 	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user': user, 'alert': alert})

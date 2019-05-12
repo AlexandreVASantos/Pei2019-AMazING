@@ -2,12 +2,13 @@
 {% load static %}
 {% block content %}
 		<div class ="container" style="text-align: center;margin-top:5%;min-height: 32vh">
+			
 			<div class="row">
 				<div class="col-md-4">					
 					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
 					  <div class="card-body text-secondary">
 					  	<h1 style="width: 55%;margin-top: 15%" ><span class="glyphicon glyphicon-off"></span></h1>
-					    <h3 style="width: 55%; margin-left:55%;margin-top: -15%">{{node_up}}/24</h3>
+					    <h3 style="width: 55%; margin-left:55%;margin-top: -15%" id="node_up">{{node_up}}/24</h3>
 					  </div>
 					</div>
 				</div>
@@ -23,15 +24,204 @@
 					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
 					  <div class="card-body text-secondary">
 					  	<h1 style="width: 55%;margin-top: 15%" ><span class="glyphicon glyphicon-bell"></span></h1>
-					    <h3 style="width: 55%; margin-left:45%;margin-top: -15%">{{n_alerts}} Alerts</h3>
+					    <h3 style="width: 55%; margin-left:45%;margin-top: -15%" id="node_alerts">{{n_alerts}} Alerts</h3>
 					  </div>
 					</div>
 				</div>
 			</div>
 
+			<br>
+			<br>
+
+			<div id="chart_div1" style="width: 100%; height: 500px;"></div>
+
+			<div id="chart_div2" style="width: 100%; height: 500px;"></div>
+
+
+
 			
 
 		
 		</div>
+ <script type="text/javascript">
+
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+    google.charts.setOnLoadCallback(HoursNode);
+    google.charts.setOnLoadCallback(drawAlertsByNode);
+
+    function HoursNode() {
+          var data = new google.visualization.DataTable();
+
+          data.addColumn('number', 'Node Number');
+          data.addColumn('number', 'Number of hours');
+
+          var node1 = parseInt("{{hours.1}}");
+          var node2 = parseInt("{{hours.2}}");
+          var node3 = parseInt("{{hours.3}}");
+          var node4 = parseInt("{{hours.4}}");
+          var node5 = parseInt("{{hours.5}}");
+          var node6 = parseInt("{{hours.6}}");
+          var node7 = parseInt("{{hours.7}}");
+          var node8 = parseInt("{{hours.8}}");
+          var node9 = parseInt("{{hours.9}}");
+          var node10 = parseInt("{{hours.10}}");
+          var node11 = parseInt("{{hours.11}}");
+          var node12 = parseInt("{{hours.12}}");
+          var node13 = parseInt("{{hours.13}}");
+          var node14 = parseInt("{{hours.14}}");
+          var node15 = parseInt("{{hours.15}}");
+          var node16 = parseInt("{{hours.16}}");
+          var node17 = parseInt("{{hours.17}}");
+          var node18 = parseInt("{{hours.18}}");
+          var node19 = parseInt("{{hours.19}}");
+          var node20 = parseInt("{{hours.20}}");
+          var node21 = parseInt("{{hours.21}}");
+          var node22 = parseInt("{{hours.22}}");
+          var node23 = parseInt("{{hours.23}}");
+          var node24 = parseInt("{{hours.24}}");
+
+
+          data.addRows([
+            [{v: 1, f: 'node 1'}, node1 ],
+            [{v: 2, f: 'node 2'}, node2 ],
+            [{v: 3, f: 'node 3'}, node3 ],
+            [{v: 4, f: 'node 4'}, node4 ],
+            [{v: 5, f: 'node 5'}, node5 ],
+            [{v: 6, f: 'node 6'}, node6 ],
+            [{v: 7, f: 'node 7'}, node7 ],
+            [{v: 8, f: 'node 8'}, node8 ],
+            [{v: 9, f: 'node 9'}, node9 ],
+            [{v: 10, f: 'node 10'}, node10 ],
+            [{v: 11, f: 'node 11'}, node11 ],
+            [{v: 12, f: 'node 12'}, node12 ],
+            [{v: 13, f: 'node 13'}, node13 ],
+            [{v: 14, f: 'node 14'}, node14 ],
+            [{v: 15, f: 'node 15'}, node15 ],
+            [{v: 16, f: 'node 16'}, node16 ],
+            [{v: 17, f: 'node 17'}, node17 ],
+            [{v: 18, f: 'node 18'}, node18 ],
+            [{v: 19, f: 'node 19'}, node19 ],
+            [{v: 20, f: 'node 20'}, node20 ],
+            [{v: 21, f: 'node 21'}, node21 ],
+            [{v: 22, f: 'node 22'}, node22 ],
+            [{v: 23, f: 'node 23'}, node23 ],
+            [{v: 24, f: 'node 24'}, node24 ],
+            
+
+          ]);
+
+          var options = {
+            title: 'Numbers of hours by Node',
+
+            hAxis: {
+              title: 'Node Number',
+              viewWindow: {
+                min: 0,
+                max: 25
+              }
+            },
+            vAxis: {
+              title: 'Number of hours'
+            }
+          };
+
+          var chart = new google.visualization.ColumnChart(document.getElementById('chart_div1'));
+          chart.draw(data, options);
+
+        }
+
+      function drawAlertsByNode() {
+          var data = new google.visualization.DataTable();
+
+          data.addColumn('number', 'Node Number');
+          data.addColumn('number', 'Number of alerts');
+
+          var node1 = parseInt("{{n_alerts_node.1}}");
+          var node2 = parseInt("{{n_alerts_node.2}}");
+          var node3 = parseInt("{{n_alerts_node.3}}");
+          var node4 = parseInt("{{n_alerts_node.4}}");
+          var node5 = parseInt("{{n_alerts_node.5}}");
+          var node6 = parseInt("{{n_alerts_node.6}}");
+          var node7 = parseInt("{{n_alerts_node.7}}");
+          var node8 = parseInt("{{n_alerts_node.8}}");
+          var node9 = parseInt("{{n_alerts_node.9}}");
+          var node10 = parseInt("{{n_alerts_node.10}}");
+          var node11 = parseInt("{{n_alerts_node.11}}");
+          var node12 = parseInt("{{n_alerts_node.12}}");
+          var node13 = parseInt("{{n_alerts_node.13}}");
+          var node14 = parseInt("{{n_alerts_node.14}}");
+          var node15 = parseInt("{{n_alerts_node.15}}");
+          var node16 = parseInt("{{n_alerts_node.16}}");
+          var node17 = parseInt("{{n_alerts_node.17}}");
+          var node18 = parseInt("{{n_alerts_node.18}}");
+          var node19 = parseInt("{{n_alerts_node.19}}");
+          var node20 = parseInt("{{n_alerts_node.20}}");
+          var node21 = parseInt("{{n_alerts_node.21}}");
+          var node22 = parseInt("{{n_alerts_node.22}}");
+          var node23 = parseInt("{{n_alerts_node.23}}");
+          var node24 = parseInt("{{n_alerts_node.24}}");
+
+
+          data.addRows([
+            [{v: 1, f: 'node 1'}, node1 ],
+            [{v: 2, f: 'node 2'}, node2 ],
+            [{v: 3, f: 'node 3'}, node3 ],
+            [{v: 4, f: 'node 4'}, node4 ],
+            [{v: 5, f: 'node 5'}, node5 ],
+            [{v: 6, f: 'node 6'}, node6 ],
+            [{v: 7, f: 'node 7'}, node7 ],
+            [{v: 8, f: 'node 8'}, node8 ],
+            [{v: 9, f: 'node 9'}, node9 ],
+            [{v: 10, f: 'node 10'}, node10 ],
+            [{v: 11, f: 'node 11'}, node11 ],
+            [{v: 12, f: 'node 12'}, node12 ],
+            [{v: 13, f: 'node 13'}, node13 ],
+            [{v: 14, f: 'node 14'}, node14 ],
+            [{v: 15, f: 'node 15'}, node15 ],
+            [{v: 16, f: 'node 16'}, node16 ],
+            [{v: 17, f: 'node 17'}, node17 ],
+            [{v: 18, f: 'node 18'}, node18 ],
+            [{v: 19, f: 'node 19'}, node19 ],
+            [{v: 20, f: 'node 20'}, node20 ],
+            [{v: 21, f: 'node 21'}, node21 ],
+            [{v: 22, f: 'node 22'}, node22 ],
+            [{v: 23, f: 'node 23'}, node23 ],
+            [{v: 24, f: 'node 24'}, node24 ],
+            
+
+          ]);
+
+          var options = {
+            title: 'Numbers of Alerts By Node ',
+
+            hAxis: {
+              title: 'Node Number',
+              viewWindow: {
+                min: 0,
+                max: 25
+              }
+            },
+            vAxis: {
+              title: 'Number of Alerts'
+            }
+          };
+
+          var chart = new google.visualization.ColumnChart(document.getElementById('chart_div2'));
+          chart.draw(data, options);
+
+        }
+
+
+  	function get_stats(){
+	    $.get("/stats/", function (data) {
+            document.getElementById("node_up").innerHTML = data["node_up"] + "/24";
+           	document.getElementById("node_alerts").innerHTML = data["n_alerts"] + " Alerts";
+	    });
+	}
+ 
+  	setInterval(get_stats,500)
+
+  </script>
+
 
 {% endblock %}
