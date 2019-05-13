@@ -392,7 +392,7 @@
 		data= { 
 			'id': $(this).attr('id'),
 			'value' : $(this).attr('value')};
-    	$.post("/config/change/", data ,function (data) {
+    	$.post("/config/", data ,function (data) {
             
             document.getElementById(id).innerHTML = data[id.toString()][0];
             document.getElementById(id).value = data[id.toString()][0];

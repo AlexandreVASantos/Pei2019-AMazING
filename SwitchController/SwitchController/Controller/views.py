@@ -93,6 +93,11 @@ def manual(request):
 
 
 def home(request):
+	if request.is_ajax():
+		global alert
+		alert = alerts()
+		return JsonResponse({'alert':alert, 'user':user})
+
 	return render(request,'templates/Controller/home.html', {'user': user, 'alert' : alert})
 
 
@@ -102,8 +107,22 @@ def getlogin(request):
 
 
 
-def alerts(request):
-	JsonResponse({'alert':alert})
+def alerts():
+	try:
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		c=connection.cursor()
+		query="Select count(*) from alerts where read = 'False';" 
+		c.execute(query)
+		fetch= c.fetchone()[0]
+		print(fetch)
+		connection.close()
+		if fetch != 0:
+			return True
+		return False
+	except sqlite3.Error as e:
+		return False
+
+	
 
 def compLogin(username, password):
 	try:
@@ -197,7 +216,6 @@ def log_out(request):
 
 	
 def get_notifications_with_date(request):
-	print(request.POST)
 	
 	try:
 
@@ -269,6 +287,8 @@ def get_notifications():
 		return 1,str(e)	
 
 
+def alert_alarm(request):
+	return JsonResponse({'alert':alert})
 
 def notifications(request):
 	global alert
@@ -392,9 +412,16 @@ def send_commands_power(command):
 	post_command = requests.post(url + 'system/status/power/consumption', data=json.dumps(command_dict), timeout=1)
 	return post_command
 
+
+
+@csrf_exempt
 def send_grid(request):
-	refresh_grid()
-	print(grid)
+	
+	code = refresh_grid()
+
+	if code[0] == 1:
+		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
+	
 	##use this block if a user login is added to the switch
 	#sess = requests.Session()
 	#req = sess.post(url + 'login-sessions',data={},timeout=1)
@@ -407,7 +434,73 @@ def send_grid(request):
 	node_grid = grid
 
 	if request.is_ajax():
-		return JsonResponse(node_grid)
+		if request.method == 'GET':
+			return JsonResponse(node_grid)
+		else:
+			dic=request.POST
+		
+			for key in dic:
+				if key == 'id':
+					node=dic[key]
+				elif key == 'value':
+					value=dic[key]
+
+			print(node)
+			print(value)
+			
+			(val,color,portId) = grid[int(node)]
+
+			# if value == 'OFF':
+			# 		#if value OFF turn on
+			# 		commands = "interface" + str(portId) + "\npower-over-ethernet\n"
+
+			# 		#can't update database immediately, need to wait for node to go up
+			# 		post = send_commands(commands)
+
+			# 		if post.status_code != 202:
+			# 			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+			# else:
+			try:
+				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+				c=connection.cursor()
+				
+				#if value ON turn off
+				commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
+
+				query = "Update node Set value='OFF' where id=" + str(node) +";"
+			
+			
+				# post = send_commands(commands)
+				# if post.status_code != 202:
+				# 	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+
+
+
+				# verify_response = post.json()['result_base64_encoded']
+				# decoded_r = base64.b64decode(verify_response).decode('utf-8')
+				# print(decoded_r)
+				#update value of node state in database
+				c.execute(query)
+				connection.commit()
+				connection.close()
+
+
+				E_id,error = refresh_grid()
+				if E_id == 1:
+					return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
+
+			except sqlite3.Error as e:
+				return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
+				
+			
+
+			node_grid = grid
+
+		
+			print ('asdakjsdhiadhah')
+			return JsonResponse(node_grid)
+		
+
 	
 	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
 	
@@ -436,8 +529,7 @@ def refresh_grid():
 
 def grid_update(request):
 	code,node_grid = refresh_grid()
-	if code == 1:
-		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
+	
 
 
 	return render(request,'templates/Controller/config.html',{'node_grid': node_grid, 'user' : user,  'alert': alert})
@@ -455,79 +547,6 @@ def send_commands(command):
 	return post_command
 
 
-
-
-@csrf_exempt
-def change_grid(request):
-	
-	dic=request.POST
-	
-	for key in dic:
-		if key == 'id':
-			node=dic[key]
-		elif key == 'value':
-			value=dic[key]
-
-	print(node)
-	print(value)
-	
-	(val,color,portId) = grid[int(node)]
-
-	# if value == 'OFF':
-	# 		#if value OFF turn on
-	# 		commands = "interface" + str(portId) + "\npower-over-ethernet\n"
-
-	# 		#can't update database immediately, need to wait for node to go up
-	# 		post = send_commands(commands)
-
-	# 		if post.status_code != 202:
-	# 			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-	# else:
-	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-		c=connection.cursor()
-		
-		#if value ON turn off
-		commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
-
-		query = "Update node Set value='OFF' where id=" + str(node) +";"
-	
-	
-		# post = send_commands(commands)
-		# if post.status_code != 202:
-		# 	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-
-
-
-		# verify_response = post.json()['result_base64_encoded']
-		# decoded_r = base64.b64decode(verify_response).decode('utf-8')
-		# print(decoded_r)
-		#update value of node state in database
-		c.execute(query)
-		connection.commit()
-		connection.close()
-
-
-		E_id,error = refresh_grid()
-		if E_id == 1:
-			return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
-
-	except sqlite3.Error as e:
-		return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
-		
-	
-
-	node_grid = grid
-
-	if request.is_ajax():
-		print ('asdakjsdhiadhah')
-		return JsonResponse(node_grid)
-
-	print ('blablabla')
-	
-	
-	
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user': user, 'alert': alert})
 
 
 def error_404(request):

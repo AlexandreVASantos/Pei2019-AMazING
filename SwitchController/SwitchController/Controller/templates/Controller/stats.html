@@ -44,6 +44,8 @@
 		
 		</div>
  <script type="text/javascript">
+ 	var hours ={};
+ 	var n_alerts_node = {};
 
     google.charts.load('current', {packages: ['corechart', 'bar']});
     google.charts.setOnLoadCallback(HoursNode);
@@ -55,30 +57,30 @@
           data.addColumn('number', 'Node Number');
           data.addColumn('number', 'Number of hours');
 
-          var node1 = parseInt("{{hours.1}}");
-          var node2 = parseInt("{{hours.2}}");
-          var node3 = parseInt("{{hours.3}}");
-          var node4 = parseInt("{{hours.4}}");
-          var node5 = parseInt("{{hours.5}}");
-          var node6 = parseInt("{{hours.6}}");
-          var node7 = parseInt("{{hours.7}}");
-          var node8 = parseInt("{{hours.8}}");
-          var node9 = parseInt("{{hours.9}}");
-          var node10 = parseInt("{{hours.10}}");
-          var node11 = parseInt("{{hours.11}}");
-          var node12 = parseInt("{{hours.12}}");
-          var node13 = parseInt("{{hours.13}}");
-          var node14 = parseInt("{{hours.14}}");
-          var node15 = parseInt("{{hours.15}}");
-          var node16 = parseInt("{{hours.16}}");
-          var node17 = parseInt("{{hours.17}}");
-          var node18 = parseInt("{{hours.18}}");
-          var node19 = parseInt("{{hours.19}}");
-          var node20 = parseInt("{{hours.20}}");
-          var node21 = parseInt("{{hours.21}}");
-          var node22 = parseInt("{{hours.22}}");
-          var node23 = parseInt("{{hours.23}}");
-          var node24 = parseInt("{{hours.24}}");
+          var node1 = parseInt(hours[1]);
+          var node2 = parseInt(hours[2]);
+          var node3 = parseInt(hours[3]);
+          var node4 = parseInt(hours[4]);
+          var node5 = parseInt(hours[5]);
+          var node6 = parseInt(hours[6]);
+          var node7 = parseInt(hours[7]);
+          var node8 = parseInt(hours[8]);
+          var node9 = parseInt(hours[9]);
+          var node10 = parseInt(hours[10]);
+          var node11 = parseInt(hours[11]);
+          var node12 = parseInt(hours[12]);
+          var node13 = parseInt(hours[13]);
+          var node14 = parseInt(hours[14]);
+          var node15 = parseInt(hours[15]);
+          var node16 = parseInt(hours[16]);
+          var node17 = parseInt(hours[17]);
+          var node18 = parseInt(hours[18]);
+          var node19 = parseInt(hours[19]);
+          var node20 = parseInt(hours[20]);
+          var node21 = parseInt(hours[21]);
+          var node22 = parseInt(hours[22]);
+          var node23 = parseInt(hours[23]);
+          var node24 = parseInt(hours[24]);
 
 
           data.addRows([
@@ -136,30 +138,30 @@
           data.addColumn('number', 'Node Number');
           data.addColumn('number', 'Number of alerts');
 
-          var node1 = parseInt("{{n_alerts_node.1}}");
-          var node2 = parseInt("{{n_alerts_node.2}}");
-          var node3 = parseInt("{{n_alerts_node.3}}");
-          var node4 = parseInt("{{n_alerts_node.4}}");
-          var node5 = parseInt("{{n_alerts_node.5}}");
-          var node6 = parseInt("{{n_alerts_node.6}}");
-          var node7 = parseInt("{{n_alerts_node.7}}");
-          var node8 = parseInt("{{n_alerts_node.8}}");
-          var node9 = parseInt("{{n_alerts_node.9}}");
-          var node10 = parseInt("{{n_alerts_node.10}}");
-          var node11 = parseInt("{{n_alerts_node.11}}");
-          var node12 = parseInt("{{n_alerts_node.12}}");
-          var node13 = parseInt("{{n_alerts_node.13}}");
-          var node14 = parseInt("{{n_alerts_node.14}}");
-          var node15 = parseInt("{{n_alerts_node.15}}");
-          var node16 = parseInt("{{n_alerts_node.16}}");
-          var node17 = parseInt("{{n_alerts_node.17}}");
-          var node18 = parseInt("{{n_alerts_node.18}}");
-          var node19 = parseInt("{{n_alerts_node.19}}");
-          var node20 = parseInt("{{n_alerts_node.20}}");
-          var node21 = parseInt("{{n_alerts_node.21}}");
-          var node22 = parseInt("{{n_alerts_node.22}}");
-          var node23 = parseInt("{{n_alerts_node.23}}");
-          var node24 = parseInt("{{n_alerts_node.24}}");
+          var node1 = parseInt(n_alerts_node[1]);
+          var node2 = parseInt(n_alerts_node[2]);
+          var node3 = parseInt(n_alerts_node[3]);
+          var node4 = parseInt(n_alerts_node[4]);
+          var node5 = parseInt(n_alerts_node[5]);
+          var node6 = parseInt(n_alerts_node[6]);
+          var node7 = parseInt(n_alerts_node[7]);
+          var node8 = parseInt(n_alerts_node[8]);
+          var node9 = parseInt(n_alerts_node[9]);
+          var node10 = parseInt(n_alerts_node[10]);
+          var node11 = parseInt(n_alerts_node[11]);
+          var node12 = parseInt(n_alerts_node[12]);
+          var node13 = parseInt(n_alerts_node[13]);
+          var node14 = parseInt(n_alerts_node[14]);
+          var node15 = parseInt(n_alerts_node[15]);
+          var node16 = parseInt(n_alerts_node[16]);
+          var node17 = parseInt(n_alerts_node[17]);
+          var node18 = parseInt(n_alerts_node[18]);
+          var node19 = parseInt(n_alerts_node[19]);
+          var node20 = parseInt(n_alerts_node[20]);
+          var node21 = parseInt(n_alerts_node[21]);
+          var node22 = parseInt(n_alerts_node[22]);
+          var node23 = parseInt(n_alerts_node[23]);
+          var node24 = parseInt(n_alerts_node[24]);
 
 
           data.addRows([
@@ -216,6 +218,8 @@
 	    $.get("/stats/", function (data) {
             document.getElementById("node_up").innerHTML = data["node_up"] + "/24";
            	document.getElementById("node_alerts").innerHTML = data["n_alerts"] + " Alerts";
+           	hours = data['hours'];
+           	n_alerts_node = data['n_alerts_node'];
 	    });
 	}
  
