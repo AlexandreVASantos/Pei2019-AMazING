@@ -15,7 +15,6 @@ urlpatterns = [
     path('password/change/', views.change_pass, name = 'change_pass'),
     path('manual/', views.manual, name='manual'),
     path('stats/', views.stats, name='stats'),
-    path('config/alert', views.alert_alarm ,name='alert_alarm'),
     
     
     

@@ -1,6 +1,7 @@
 {% extends "Controller/base.html" %}
 {% load static %}
 {% block content %}
+	{% if user.authenticated %}
 		<div class ="container" style="text-align: center;margin-top:5%;min-height: 32vh">
 			
 			<div class="row">
@@ -43,6 +44,7 @@
 
 		
 		</div>
+
  <script type="text/javascript">
  	var hours ={};
  	var n_alerts_node = {};
@@ -219,13 +221,33 @@
             document.getElementById("node_up").innerHTML = data["node_up"] + "/24";
            	document.getElementById("node_alerts").innerHTML = data["n_alerts"] + " Alerts";
            	hours = data['hours'];
+           	console.log(JSON.stringify(data));
            	n_alerts_node = data['n_alerts_node'];
 	    });
 	}
- 
-  	setInterval(get_stats,500)
+ 	
+ 	setInterval(HoursNode,500);
+ 	setInterval(drawAlertsByNode,500);
+  	setInterval(get_stats,500);
 
   </script>
+  {% else %}
 
-
+  	<div class="row" style="margin-bottom: 10%; min-height: 26vh">
+	        <!-- Boxes de Acoes -->
+			<div class="box">							
+				<div class="icon">
+					<div class="image"><img class="fa fa-thumbs-o-up"></div>
+					<div class="info">
+						<div class ="container">
+							<h3 class="title">Welcome to the AMazING Switch Controller!</h3>
+							<p style="font-size: 120%">Log In to access statistics!</p>
+							<a  class="btn btn-primary" href="{% url 'getLogin' %}">Log In</a>
+						
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+  {% endif %}
 {% endblock %}
