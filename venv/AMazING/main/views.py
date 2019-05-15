@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from kafka import KafkaProducer
 import datetime
+from json import dumps
 
 
 def home(request):
@@ -43,16 +44,25 @@ def postEventListening(request):
 	#url = "http://httpbin.org/post"
 	url = "http://10.42.0.2:5000/event"
 	data = request.GET
-	
+	#dic = {"data":"123"}
+	dic={}
+	for key in data:
+		dic[key] = data[key]
 	dic = {"data":"123"}
 	# dic={}
 	# for key in data:
 	# 	dic[key] = data[key]
-
-		
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Event List' ,'null', req.json()]}   #curdate= current date, req.json() = output
+	producer.send('numtest', value=data)
+
+	print(req.json())
+	return render(request,'main/menu.html', {"flagEL":True,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
 	updatedReqResp = req.json()
 	return render(request,'main/menu.html', {"flagEL":True,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp['data']})
 
@@ -72,12 +82,24 @@ def postScanning(request):
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+		data = {'username' : [curdate, 'Scan' ,data["Wlan"], req.json()]}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		producer.send('numtest', value=data)
+
 		print(req.json())
 		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Scan' ,data["Wlan"], req.json()]}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	producer.send('numtest', value=data)
+
 	print(req.json())
 	return render(request,'main/menu.html')	
 
@@ -97,11 +119,24 @@ def postLinkStatus(request):
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+		data = {'username' : [curdate, 'Link Status' ,data["Wlan"], req.json()]}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		producer.send('numtest', value=data)
+
 		print(req.json())
 		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":True,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
+
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Link Status' ,data["Wlan"], req.json()]}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	producer.send('numtest', value=data)
+
 	print(req.json())
 	return render(request,'main/menu.html')
 
@@ -113,17 +148,23 @@ def postIPChange(request):
 	data = request.GET
 	dic={}
 	
-	print(verify_IP(request,data["IP"]))
 	if(verify_IP(request,data["IP"]) and not (len(data)==0)):	
 		
 		for key in data:
-			print(key)
 			dic[key] = data[key]
 
 		print(dic)
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+		data = {'username' : [curdate, 'Change Ip' ,data["IP"], req.json()]}   #curdate= current date, data["IP"]=input , req.json() = output
+		producer.send('numtest', value=data)
+
+		print(req.json())
+		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
 		updatedReqResp = req.json()
 		#print(req.json())
 		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp})
@@ -131,6 +172,12 @@ def postIPChange(request):
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Change Ip' ,data["IP"], req.json()]}   #curdate= current date, data["IP"]=input , req.json() = output
+	producer.send('numtest', value=data)
+
 	print(req.json())
 	return render(request,'main/addrChange.html')
 
@@ -168,12 +215,24 @@ def postConnection(request):
 			dataToSend = json.dumps(dic)
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post(url,data=dataToSend, headers=headers)
+
+			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+			curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+			data = {'username' : [curdate, 'Connection' ,'null', req.json()]}   #curdate= current date, req.json() = output
+			producer.send('numtest', value=data)
+
 			print(req.json())
 			return render(request, 'main/connection.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True})
 			
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Connection' ,'null', req.json()]}   #curdate= current date, req.json() = output
+	producer.send('numtest', value=data)
+
 	print(req.json())
 	return render(request,'main/connection.html')
 	
@@ -194,12 +253,30 @@ def postStationStats(request):
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
+
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+		data = {'username' : [curdate, 'Station Stats' ,data["Wlan"], req.json()]}   #curdate= current date, dic["Wlan"]=input , req.json() = output
+		producer.send('numtest', value=data)
+
+		print(req.json())
+		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False})
+
+
 		#print(req.json())
 		updatedReqResp = req.json()
 		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp})
+
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Station Stats' ,data["Wlan"], req.json()]}   #curdate= current date, dic["Wlan"]=input , req.json() = output
+	producer.send('numtest', value=data)
+
 	print(req.json())
 	return render(request,'main/menu.html')
 
@@ -221,15 +298,28 @@ def postStationPeer(request):
 				dic[key] = data[key]
 
 			print(dic)	
+
 			dataToSend = json.dumps(dic)
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post(url,data=dataToSend, headers=headers)
+
+			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+			curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+			data = {'username' : [curdate, 'Station Peer' ,ḿac, req.json()]}   #curdate= current date, mac=input , req.json() = output
+			producer.send('numtest', value=data)
+
 			print(req.json())
 			return render(request, 'main/stationPeer.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":True,"flagTP":False,"flagC":False})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Station Peer' ,mac, req.json()]}   #curdate= current date, mac=input , req.json() = output
+	producer.send('numtest', value=data)
+
 	print(req.json())
 	return render(request,'main/stationPeer.html')
 	
@@ -253,25 +343,37 @@ def postTxPower(request):
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+		data = {'username' : [curdate, 'Tx Power' ,data["Wlan"], req.json()]}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		producer.send('numtest', value=data)
+
 		print(req.json())
 		return render(request, 'main/SetTxPower.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":True,"flagC":False})
-	
+
+
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
+	data = {'username' : [curdate, 'Tx Power' ,data["Wlan"], req.json()]}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	producer.send('numtest', value=data)
+
 	print(req.json())
 	return render(request,'main/SetTxPower.html')
 
 
 def get(request):
+	url = "http://192.168.0.25:5000/changeIP"
 	#producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	url = "http://10.42.0.2:5000/getlist"
+
 	headers = {'Content-Type': 'application/json'}
 	req = requests.get(url, headers=headers)
 	print(req.json())
-	#curdate = datetime.datetime.today().strftime('%B %d, %Y - %H:%M:%S')
-	#data = {'username' : [curdate, url[:27],value, req.json()]}   #curdate= current date, url[:27]= function name, value=input , req.json() = output
-    #producer.send('numtest', value=data)
 	return render(request, 'main/menu.html')
 
 def verify_mac(request,mac_address):
