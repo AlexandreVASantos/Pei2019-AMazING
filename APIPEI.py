@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, json 	#, abort
+from flask import Flask, jsonify, request, json
 from flask_restful import Api, Resource, reqparse
 import subprocess
 
@@ -6,201 +6,210 @@ import subprocess
 
 app = Flask(__name__)
 api = Api(app)
+flag=0
 
 @app.route("/")
 def hello():
 	return "root API amazing PEI \n"
 
 class connection(Resource):
-	def get(self):
-		return {'status' : 'estado atual'}
-
 	def post(self):
-		# if not request.json or not 'SSID' in request.json:
-		#	abort(400)
-
-		args=request.get_json()
-		sudo_password = 'JustGetIn666'
-		
-		if(len(args) == 1):
-			# chamar conexão com SSID apenas
+		args=request.get_json()		
+		if(len(args) == 3):
 			SSID = args.get('SSID')
-			command = "sudo iw wlp1s0 connect wsiit" + SSID
-			command = command.split()
-			cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
-			cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
-		elif(len(args) == 2):
-			#chamar conexão com SSID e Frequência
-			SSID = args.get('SSID')
-			Freq = args.get('Frequency')
-			ree = "iw wlp1s0 connect " + SSID + Freq
-		elif(len(args) == 3):
-			SSID = args.get('SSID')
-			Freq = args.get('Frequency')
-			WEP = args.get('WEP')
-			ree = "iw wlp1s0 connect " + SSID + Freq + WEP
+			PASS = args.get('PASS')
+			NetwC = args.get('NetwC')
+			command = "wpa_passphrase " + SSID + " " + PASS + " | sudo tee /etc/wpa_supplicant.conf"
+			out = subprocess.check_output(command, shell=True)
+			command2 = "sudo wpa_supplicant -B -c /etc/wpa_supplicant.conf -i " + NetwC
+			out = out + subprocess.check_output(command2, shell=True)
+			command3 = "sudo dhclient " + NetwC
+			out = out + subprocess.check_output(command3, shell=True)
+			out = out.decode("utf-8")
 		else:
-			response = jsonify({'Not the right ammount of args': 'needs to be between 1 and 3'})
+			out = jsonify({'Not the right ammount of args': 'needs to be 3 or 4'})
+		return out
 
-		# response.status_code = 201
-		string =  "iw wlp1s0 connect 1234567890123456789012345679012"
+#curl -H "Content-Type: application/json"  localhost:5000/connection -X post -d '{"NetwC":"wlp1s0","SSID":"IoT-privacy","PASS":"deadpool2"}'
 
-		output = subprocess.run(ree, stdout=subprocess.PIPE, universal_newlines=True)
-		return output.stdout
-		#return ree
 
-# exemplo: curl -H "Content-Type: application/json"  localhost:5000/connection -X post -d '{"SSID":"foo","Frequency":"1234","WEP":"1234123asdgwer"}'
-
-class changeIP(Resource):
+class disconnection(Resource):
 	def get(self):
-		out = subprocess.check_output("ifconfig | grep -m1 'inet'", shell=True)
+		out = subprocess.check_output("sudo killall wpa_supplicant", shell=True)
+		out = out + subprocess.check_output("sudo killall dhclient", shell=True)
 		out = out.decode("utf-8") 
 		return out
 
+
+class changeIP(Resource):
 	def post(self):
-		sudo_password = 'JustGetIn666'
 		args=request.get_json()
 		IP = args.get('IP')
-		if(len(args) == 1):
-			command = "sudo ifconfig enp2s0 " + IP + " netmask 255.255.255.0"
-			command = command.split()
-			cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
-			cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
-			response = cmd2.stdout.read().decode()
+		NetwC = args.get('NetwC')
+		if(len(args) == 2):
+			command = "sudo ifconfig " + NetwC + " " + IP + " netmask 255.255.255.0"
+			out = subprocess.check_output(command, shell=True)
+			out = out.decode("utf-8")
 		else:
-			response = jsonify({'Not the right ammount of args': 'needs to be 1'})
-		temp = subprocess.check_output("curl localhost:5000/changeIP", shell=True)
-		temp = temp.decode("utf-8")
-		return temp
+			out = jsonify({'Not the right ammount of args': 'needs to be 2'})
+		out = subprocess.check_output("curl localhost:5000/changeIP", shell=True)
+		out = out.decode("utf-8")
+		return out
 
 		# exemplo: curl -H "Content-Type: application/json"  localhost:5000/connection -X post -d '{"IP":"192.168.0.16"}'
+
+class getifconfig(Resource):
+	def post(self):
+		args = request.get_json()
+		NetwC = args.get('NetwC')
+		if(len(args) == 1):
+			out = subprocess.check_output("sudo ifconfig | grep -m1 '" + NetwC + "' -A 1", shell=True)
+			out = out.decode("utf-8")
+		else:
+			out = jsonify({"Incorret args": 'needs to be 1'})
+		return out
+
 
 class getlist(Resource):
 	def get(self):
 		out = subprocess.check_output("iw list", shell=True)
-		out = out.decode("utf-8") 
+		out = out.decode("utf-8")
 		return out
 
 # exemplo: curl localhost:5000/getlist
 
+class CreateAcessPoint(Resource):
+	def post(self):
+		args=request.get_json()
+		out = "null"
+		return out
+
 class event(Resource):
-	def get(self):
-		out = subprocess.check_output("iw event", shell=True)
-		out = out.decode("utf-8") 
+	def post(self):
+		args=request.get_json()
+		option = args.get('option')
+		if(len(args) == 1):
+			if(option==1):
+				out = subprocess.check_output("iw event", shell=True)
+				out = out.decode("utf-8")
+			elif(option==2):
+				out = subprocess.check_output("iw event -t", shell=True)
+				out = out.decode("utf-8")
+			elif(option==3):
+				out = subprocess.check_output("iw event -f", shell=True)
+				out = out.decode("utf-8")
+			else:
+				out = jsonify({"Incorret option": 'needs to be 1-3'})
+		else:
+			out = jsonify({"Incorret args": 'needs to be 1'})
+
 		return out
 # exemplo: curl localhost:5000/event
 
-class eventt(Resource):
-	def get(self):
-		out = subprocess.check_output("iw event -t", shell=True)
-		out = out.decode("utf-8") 
-		return out
-#exemplo: curl localhost:5000/eventt
-
-class eventf(Resource):
-	def get(self):
-		out = subprocess.check_output("iw event -f", shell=True)
-		out = out.decode("utf-8") 
-		return out
-#exemplo: curl localhost:5000/eventf
-
 class scan(Resource):
-	def get(self):
-		sudo_password = 'JustGetIn666'
-		command = "sudo iw dev wlp1s0 scan"
-		command = command.split()
-		cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
-		cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
-		response = cmd2.stdout.read().decode()
-		return response
+	def post(self):
+		args = request.get_json()
+		NetwC = args.get('NetwC')
+		if(len(args) == 1):
+			out = subprocess.check_output("sudo iw dev'" + NetwC + "' scan", shell=True)
+			out = out.decode("utf-8")
+		else:
+			out = jsonify({'Not the right ammount of args': 'needs to receive NetworkCard'})
+		return out
 #exemplo: curl localhost:5000/scan
 
 class localwireless(Resource):
-	def get(self):
-		out = subprocess.check_output("nmcli dev wifi", shell=True)
-		out = out.decode("utf-8") 
+	def post(self):
+		args = request.get_json()
+		NetwC = args.get('NetwC')
+		if(len(args) == 1):
+			out = subprocess.check_output("sudo iw " + NetwC + " scan | grep 'SSID\|freq\|signal'", shell=True)
+			out = out.decode("utf-8")
+		else:
+			out = jsonify({'Not the right ammount of args': 'needs to receive NetworkCard'})
 		return out
-#exemplo: curl localhost:5000/localwireless
-
+		# exemplo: curl -H "Content-Type: application/json"  localhost:5000/localwireless -X post -d '{"NetwC":"wlp1s0"}'
+	
 class link(Resource):
-	def get(self):
-		out = subprocess.check_output("iw dev wlp1s0 link", shell=True)
-		out = out.decode("utf-8") 
+	def post(self):
+		args = request.get_json()
+		NetwC = args.get('NetwC')
+		if(len(args) == 1):
+			out = subprocess.check_output("iw dev " + NetwC + " link", shell=True)
+			out = out.decode("utf-8")
+		else:
+			out = jsonify({'Not the right ammount of args': 'needs to receive NetworkCard'})
 		return out
 #exemplo: curl localhost:5000/link
 
 class stationstats(Resource):
-	def get(self):
-		out = subprocess.check_output("iw dev wlp1s0 station dump", shell=True)
-		out = out.decode("utf-8") 
+	def post(self):
+		args = request.get_json()
+		NetwC = args.get('NetwC')
+		if(len(args) == 1):
+			out = subprocess.check_output("iw dev " + NetwC + " station dump", shell=True)
+			out = out.decode("utf-8")
+		else:
+			out = jsonify({'Not the right ammount of args': 'needs to receive NetworkCard'})
 		return out
 #exemplo: curl localhost:5000/stationstats
 
 class stationpeerstats(Resource):
 	def get(self):
-		sudo_password = 'JustGetIn666'
 		args=request.get_json()
+		NetwC = args.get('NetwC')
 		MAC = args.get('MAC')
-		if(len(args) == 1):
-			command = "sudo iw dev wlp1s0 station get " + MAC
-			command = command.split()
-			cmd1 = subprocess.Popen(['echo',sudo_password], stdout=subprocess.PIPE)
-			cmd2 = subprocess.Popen(['sudo','-S'] + command, stdin=cmd1.stdout, stdout=subprocess.PIPE)
-			response = cmd2.stdout.read().decode()
+		if(len(args) == 2):
+			out = subprocess.check_output("sudo iw dev " + NetwC + " station get " + MAC, shell=True)
+			out = out.decode("utf-8")
 		else:
-			response = jsonify({'Not the right ammount of args': 'needs to be 1'})
-		return response
+			out = jsonify({'Not the right ammount of args': 'needs to receive NetworkCard'})
+		return out
 		
 # exemplo: curl -H "Content-Type: application/json"  localhost:5000/stationpeerstats -X post -d '{"MAC":"<mac-address>"}'
 
-class modlegacytxbitrates(Resource):
-	def post(self):
-		# args=request.get_json()
-		response = jsonify('implementada alteração com $ iw wlan0 set bitrates legacy-2.4 x y z')
-		return response
-
-# exemplo: curl -H "Content-Type: application/json"  localhost:5000/modlegacytxbitrates -X post -d '{"x":"1","y":"2","z":"3"}'
-
 class modtxhtmcsbitrates(Resource):
 	def post(self):
-		# args=request.get_json()
-		response = jsonify('implementada alteração com $ iw dev wlan0 set bitrates mcs-5 4 (ou mcs-2.4 10)')
-		return response
+		args = request.get_json()
+		NetwC = args.get('NetwC')
+		Lbits = args.get('Lbits')
+		if(len(args) == 1):
+			out = subprocess.check_output("iw " + NetwC + " set bitrates " + Lbits, shell=True)
+			out = out.decode("utf-8")
+		else:
+			out = jsonify({"Not the right ammount of args": 'needs to receive NetworkCard and Lbits'})
+		return out
 # exemplo: curl -H "Content-Type: application/json"  localhost:5000/modtxhtmcsbitrates -X post -d '{"mcs":"numeros"}'
 
 class settingtxpowerdev(Resource):
 	def post(self):
-		# args=request.get_json()
-		response = jsonify('implementada alteração com $ iw dev <devname> set txpower <auto|fixed|limit> [<tx power in mBm>]')
-		return response
+		args = request.get_json()
+		NetwC = args.get('NetwC')
+		Type = args.get('Type')
+		Power = args.get('Power')
+		if(len(args) == 1):
+			out = subprocess.check_output("iw dev " + NetwC + " " + Type + " " + Power, shell=True)
+			out = out.decode("utf-8")
+		else:
+			out = jsonify({'Not the right ammount of args': 'needs to receive NetworkCard'})
+		return out
 # exemplo: curl -H "Content-Type: application/json"  localhost:5000/settingtxpowerdev -X post -d '{"mcs":"numeros"}'
 
 
-#class settingtxpowerphy(Resource):
-#	def post(self):
-		# args=request.get_json()
-#		response = jsonify('implementada alteração com $ iw phy <phyname> set txpower <auto|fixed|limit> [<tx power in mBm>]')
-#		return response
-# exemplo: curl -H "Content-Type: application/json"  localhost:5000/settingtxpowerphy -X post -d '{"mcs":"numeros"}'
-
 api.add_resource(connection, '/connection')					#POST e GET
+api.add_resource(disconnection, '/disconnection')			#GET
 api.add_resource(changeIP, '/changeIP')						#POST e GET
+api.add_resource(getifconfig,'/getifconfig')				#POST
 api.add_resource(getlist, '/getlist')						#GET
-api.add_resource(event, '/event')							#GET
-api.add_resource(eventt,'/eventt')							#GET
-api.add_resource(eventf,'/eventf')							#GET
-api.add_resource(scan,'/scan')								#GET
-api.add_resource(localwireless,'/localwireless')			#GET
-api.add_resource(link,'/link')								#GET
-api.add_resource(stationstats,'/stationstats')				#GET
+api.add_resource(CreateAcessPoint, '/CreateAcessPoint')		#POST
+api.add_resource(event, '/event')							#POST
+api.add_resource(scan,'/scan')								#POST
+api.add_resource(localwireless,'/localwireless')			#POST
+api.add_resource(link,'/link')								#POST
+api.add_resource(stationstats,'/stationstats')				#POST
 api.add_resource(stationpeerstats, '/stationpeerstats')		#POST
-api.add_resource(modlegacytxbitrates,'/modlegacytxbitrates')#POST
 api.add_resource(modtxhtmcsbitrates,'/modtxhtmcsbitrates')	#POST
 api.add_resource(settingtxpowerdev,'/settingtxpowerdev')	#POST
-# api.add_resource(settingtxpowerphy,'/settingtxpowerphy')	#POST
-
-
-
 
 if __name__ == '__main__':
 	app.run(debug=True,host='0.0.0.0')
