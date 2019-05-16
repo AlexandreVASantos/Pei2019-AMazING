@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from dateutil import relativedelta
 from django.http import JsonResponse
+from background_task import background
 import json
 import requests
 import os
@@ -14,11 +15,40 @@ import datetime
 
 user = {'username' : None, 'authenticated' : False }
 url = 'http://10.110.1.149/rest/v3/'
+
+headers = {'Content-Type': 'application/json'}
+
 grid = {}
 cookie = {}
 alert = False
 node_up=0
 power_supply=0
+
+count_alerts={"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0,"24":0 }
+
+@background(schedule=1)
+def check_reading_messages():
+	while(True):
+		time.sleep(60)
+		print("fskdfkjsdf")
+		for i in range(1,25):
+			if count_alerts[str(i)] == 0:
+				try:
+					connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+					c=connection.cursor()
+					query = "Update node Set value='OFF', dateOn = '0' where id=" + str(i) +";"
+					c.execute(query)
+					connection.commit()
+					connection.close()
+				except sqlite3.Error as e:
+					continue
+
+		
+		
+
+
+
+
 #function to receive data from node sensors, do not need csrf_cookie
 @csrf_exempt
 def sensors(request):
@@ -31,6 +61,7 @@ def sensors(request):
 
 			todays_date = datetime.datetime.now()
 			date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
+			count_alerts['node'] +=1
 			
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
@@ -67,6 +98,7 @@ def node_up(request):
 			args = json.loads(request.body.decode('utf-8'))
 			node = args.get('node')
 			up_date = datetime.datetime.now()
+			time2 = up_date
 			date = up_date.strftime("%Y-%m-%d %H:%M:%S")
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
@@ -103,7 +135,6 @@ def home(request):
 	return render(request,'templates/Controller/home.html', {'user': user, 'alert' : alert})
 
 
-	query = "Update node Set value='OFF', dateOn = '0' where id=" + str(node) +";"
 def getlogin(request):
 	return render(request,'templates/Controller/login.html', {'user': user})
 
@@ -346,19 +377,42 @@ def notifications(request):
 	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications': notifications})
 
 
+def stats(request):
 
-
-def getNumHours():
 	try:
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
+
+		##count how many alerts exist
+		query1="Select count(*) from alerts;" 	
+		c.execute(query1)
+		numAlerts = c.fetchone()[0]
+
+		##count how many nodes are ON
+		query2="Select count(id) from node where value='ON';" 	
+		c.execute(query2)
+		numOn = c.fetchone()[0]
+
+		## fill dict to alerts graphic
+		query3 = "Select node_id, count(alert) from alerts group by node_id;"
+		c.execute(query3)
+		fetch_alerts = c.fetchall()
+		numAlertsNode={}
+		for info in fetch_alerts:
+			numAlertsNode[info[0]] = int(info[1])
+
+		for i in range(1,25):
+			if i not in list(numAlertsNode.keys()):
+				numAlertsNode[i] = 0
+
+		## fill dict to hours graphic
 		todays_date = datetime.datetime.now()
-		query = "Select id, dateOn from node where dateOn != '0';"
-		c.execute(query)
-		fetch = c.fetchall()
+		query4 = "Select id, dateOn from node where dateOn != '0';"
+		c.execute(query4)
+		fetch_hours = c.fetchall()
 
 		numHours={}
-		for info in fetch:
+		for info in fetch_hours:
 			#date when node was turned on
 			up_date = datetime.datetime.strptime(info[1],'%Y-%m-%d %H:%M:%S') 
 			#difference between actual date and up_date
@@ -368,65 +422,11 @@ def getNumHours():
 		for i in range(1,25):
 			if i not in list(numHours.keys()):
 				numHours[i] = 0
+	except sqlite3.Error as e:
+		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
 		
-	except sqlite3.Error as e:
-		return 1,e
-
-	return 0,numHours
-
-
-def getNumAlertsByNode():
-	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-		c=connection.cursor()
-		query = "Select node_id, count(alert) from alerts group by node_id;"
-		c.execute(query)
-		fetch = c.fetchall()
-		numAlertsNode={}
-		for info in fetch:
-			numAlertsNode[info[0]] = int(info[1])
-
-		for i in range(1,25):
-			if i not in list(numAlertsNode.keys()):
-				numAlertsNode[i] = 0
-
-	except sqlite3.Error as e:
-		return 1,e
-
-	return 0,numAlertsNode
-
-
-def getNumNodesOn():
-	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-		c=connection.cursor()
-		query="Select count(id) from node where value='ON';" 	
-		c.execute(query)
-		numOn = c.fetchone()[0]
 		
-
-	except sqlite3.Error as e:
-		return 1,e
-
-	return 0,numOn
-
-
-def getNumAlerts():
-	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-		c=connection.cursor()
-		query="Select count(*) from alerts;" 	
-		c.execute(query)
-		numAlerts = c.fetchone()[0]
-		
-
-	except sqlite3.Error as e:
-		return 1,e
-
-	return 0,numAlerts
-
-def stats(request):
 	#commands = "interface" + str(portId) + "\npower-over-ethernet\n"
 
 		#can't update database immediately, need to wait for node to go up
@@ -434,16 +434,10 @@ def stats(request):
 
 	#if code != 202:
 	#	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-	c1,numAlerts = getNumAlerts()
-	c2,numOn = getNumNodesOn()
-	c3,numHours = getNumHours()
-	c4,numAlertsNode = getNumAlertsByNode()
+	
 
 	if request.is_ajax():
 		return JsonResponse({'node_up':str(numOn[1]), 'hours' : numHours[1],'n_alerts_node': numAlertsNode[1] ,'n_alerts': str(numAlerts[1])})
-
-	if c1 == 1 or c2 == 1 or  c3 == 1 or c4 == 1: 
-		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
 	
 	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(numOn[1]), 'hours' : numHours[1],'n_alerts_node': numAlertsNode[1] ,'n_alerts': str(numAlerts[1])})
@@ -462,6 +456,8 @@ def send_commands_power(command):
 
 @csrf_exempt
 def send_grid(request):
+
+
 	
 	code = refresh_grid()
 
@@ -486,6 +482,13 @@ def send_grid(request):
 
 			
 			(val,color,portId) = grid[int(node)]
+
+			elastic = {'node_id': str(node),'up_date': '2019-05-20 11:11:11','value': 'ON','alerts': 3 }
+
+			data_json = json.dumps(elastic)
+			send = requests.post('http://localhost:9200/controller/_doc/' + str(node), data=data_json, headers= headers)
+
+			print(send.status_code)
 
 			# if value == 'OFF':
 			# 		#if value OFF turn on

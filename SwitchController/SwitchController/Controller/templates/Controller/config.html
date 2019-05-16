@@ -75,7 +75,7 @@
 					</div>
 					<br>
 					<br>
-					<button class="btn" id="5" style="background-color:{{node_grid.5.1}};color:#FFFF"  onclick="send_request()" name="5" value= {{node_grid.5.0}} type="submit">
+					<button class="btn" id="5" style="background-color:{{node_grid.5.1}};color:#FFFF"  name="5" value= {{node_grid.5.0}} type="submit">
 						{{node_grid.5.0}}
 					</button>
 				
@@ -90,7 +90,7 @@
 					</div>
 					<br>
 					<br>
-					<button class="btn" id="6" style="background-color:{{node_grid.6.1}};color:#FFFF" onclick="send_request()" name="6" value= {{node_grid.6.0}} type="submit">
+					<button class="btn" id="6" style="background-color:{{node_grid.6.1}};color:#FFFF" name="6" value= {{node_grid.6.0}} type="submit">
 						{{node_grid.6.0}}
 					</button>
 
@@ -111,7 +111,7 @@
 					</div>
 					<br>
 					<br>
-					<button class="btn" id="7" style="background-color:{{node_grid.7.1}};color:#FFFF" onclick="send_request()" name="7" value= {{node_grid.7.0}} type="submit">
+					<button class="btn" id="7" style="background-color:{{node_grid.7.1}};color:#FFFF"  name="7" value= {{node_grid.7.0}} type="submit">
 						{{node_grid.7.0}}
 					</button>
 				</div>
@@ -125,7 +125,7 @@
 					</div>
 					<br>
 					<br>
-					<button class="btn" id="8" style="background-color:{{node_grid.8.1}};color:#FFFF"  onclick="send_request()" name="8" value= {{node_grid.8.0}} type="submit">
+					<button class="btn" id="8" style="background-color:{{node_grid.8.1}};color:#FFFF"  name="8" value= {{node_grid.8.0}} type="submit">
 						{{node_grid.8.0}}
 					</button>
 
@@ -139,7 +139,7 @@
 					</div>
 					<br>
 					<br>
-					<button class="btn" id="9" style="background-color:{{node_grid.9.1}};color:#FFFF"  onclick="send_request()" name="9" value= {{node_grid.9.0}} type="submit">
+					<button class="btn" id="9" style="background-color:{{node_grid.9.1}};color:#FFFF"  name="9" value= {{node_grid.9.0}} type="submit">
 						{{node_grid.9.0}}
 					</button>
 			
@@ -387,14 +387,22 @@
 
 		</div>
 <script>
+	var count = 0;
+	var nodes = {};
+	for(var i = 1;i<25 ;i++){ 
+        nodes[i]=document.getElementById(i).value;        
+	};
+
 	
+
+
 	$("button").click(function(){
 		var id = $(this).attr('id');
 		data= { 
 			'id': $(this).attr('id'),
 			'value' : $(this).attr('value')};
     	$.post("/config/", data ,function (data) {
-            
+            count +=1;
             document.getElementById(id).innerHTML = data[id.toString()][0];
             document.getElementById(id).value = data[id.toString()][0];
             document.getElementById(id).style.backgroundColor = data[id.toString()][1];
@@ -411,17 +419,33 @@
   	function change_grid(){
 	    $.get("/config/", function (data) {
 	          for(var i = 1;i<25 ;i++){
-	            document.getElementById(i).innerHTML = data[i.toString()][0];
-	            document.getElementById(i).value = data[i.toString()][0];
-	            document.getElementById(i).style.backgroundColor = data[i.toString()][1];
+	          	if(nodes[i] != data[i.toString()][0]){
+	          		count -=1;
+		            document.getElementById(i).innerHTML = data[i.toString()][0];
+		            document.getElementById(i).value = data[i.toString()][0];
+		            document.getElementById(i).style.backgroundColor = data[i.toString()][1];
+	        	}
 	               
 	        
 	        };
 
 	    });
-  	} 
- 
-  	setInterval(change_grid,500)
+
+		
+  	}
+
+
+  	function compare() {
+  		if(count > 0){
+			setInterval(function(){change_grid();},30000);
+		}else{
+			change_grid();
+		}
+  	}
+
+  	setInterval(function(){compare();},60000);
+  	
+
 
 
     
