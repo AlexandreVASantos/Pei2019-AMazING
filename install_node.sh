@@ -10,6 +10,8 @@ echo 'amazing' | sudo -S apt-get install wireless-tools -y
 
 echo 'amazing' | sudo -S apt-get install wpasupplicant -y
 
+echo 'amazing' | sudo -S apt-get install unzip -y
+
 echo 'amazing' | sudo -S mkdir /home/amazing/dont_delete
 
 mkdir /home/amazing/it_user
