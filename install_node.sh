@@ -20,7 +20,7 @@ echo 'amazing' | sudo -S unzip /home/amazing/dont_delete/pei.zip -d /home/amazin
 
 echo 'amazing' | sudo -S rm -r /home/amazing/dont_delete/pei.zip
 
-echo 'amazing' | sudo -S mv /home/amazing/dont_delete/pei/ ../
+echo 'amazing' | sudo -S mv /home/amazing/dont_delete/pei/* /home/amazing/dont_delete/
 
 echo 'amazing' | sudo -S rm -r /home/amazing/dont_delete/pei/
 
