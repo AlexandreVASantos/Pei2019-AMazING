@@ -8,6 +8,8 @@ echo 'amazing' | sudo -S apt-get install lm-sensors -y
 
 echo 'amazing' | sudo -S apt-get install wireless-tools -y
 
+echo 'amazing' | sudo -S apt-get install hostapd -y
+
 echo 'amazing' | sudo -S apt-get install wpasupplicant -y
 
 echo 'amazing' | sudo -S apt-get install unzip -y
