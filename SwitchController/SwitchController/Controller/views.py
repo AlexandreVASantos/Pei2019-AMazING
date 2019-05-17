@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from dateutil import relativedelta
 from django.http import JsonResponse
 from background_task import background
+from kafka import KafkaConsumer
 import json
 import requests
 import os
@@ -25,23 +26,64 @@ node_up=0
 power_supply=0
 
 count_alerts={"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0,"24":0 }
+count_time=0
+
+@background(schedule=1)
+def check_alive():
+	while(True):
+		try:
+			time.sleep(60)
+			consumer = KafkaConsumer('switch', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest', enable_auto_commit=True, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')))
+			connection = sqlite3.connect("test.db")
+			cursor = connection.cursor()
+			for message in consumer:
+				message = message.value
+				for (n_id, reading) in message.items():
+					if str(reading) == 'wake_up':
+						todays_date = datetime.datetime.now()
+						date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
+						query = "Update node Set value='ON', dateOn = '" + str(date) +"' where id=" + str(n_id) +";"
+						cursor.execute(query)
+						connection.commit()
+					else:
+						count_alerts[str(n_id)] +=1
+			if count_time == 5:
+				for i in range(1,25):
+					if count_alerts[str(i)] == 0:
+							query = "Update node Set value='OFF', dateOn = '0' where id=" + str(i) +";"
+							c.execute(query)
+							connection.commit()
+				count_time = 0
+				
+			connection.close()
+			count_time+=1
+		except sqlite3.Error as e:
+			continue
+
+		
+
 
 @background(schedule=1)
 def check_reading_messages():
 	while(True):
-		time.sleep(60)
-		print("fskdfkjsdf")
-		for i in range(1,25):
-			if count_alerts[str(i)] == 0:
-				try:
-					connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-					c=connection.cursor()
-					query = "Update node Set value='OFF', dateOn = '0' where id=" + str(i) +";"
-					c.execute(query)
-					connection.commit()
-					connection.close()
-				except sqlite3.Error as e:
-					continue
+		try:
+			time.sleep(60)
+			consumer = KafkaConsumer('switch', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest', enable_auto_commit=True, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')))
+			connection = sqlite3.connect("test.db")
+			cursor = connection.cursor()
+			if consumer is not None or consumer != {}:	
+				for message in consumer:
+					message = message.value
+					for (n_id, info) in message.items():
+						query = "Insert into alerts values(" + str(node_id)+ ",'" + str(info[1])+ "','"+ str(info[0]) +"','False');"
+						
+						cursor.execute(query)
+						connection.commit()
+				global alert
+				alert = True	
+			connection.close()
+		except sqlite3.Error as e:
+			continue
 
 		
 		
@@ -53,32 +95,33 @@ def check_reading_messages():
 @csrf_exempt
 def sensors(request):
 	if request.method == 'POST':
-		try:
-			args = json.loads(request.body.decode('utf-8'))
+		#try:
+		args = json.loads(request.body.decode('utf-8'))
+		
+		node = args.get('alive')
+			# node = args.get('node')
+			# info = args.get('readings')
+
+			# todays_date = datetime.datetime.now()
+			# date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
+		count_alerts['node'] +=1
 			
-			node = args.get('node')
-			info = args.get('readings')
+			# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			# c=connection.cursor()
 
-			todays_date = datetime.datetime.now()
-			date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
-			count_alerts['node'] +=1
-			
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-			c=connection.cursor()
+			# query = "Insert into alerts values(" + str(node)+ ",'" + str(info)+ "','"+ str(date) +"','False');"
+			# #Only at this time we can update the value of the node in the database
+			# c.execute(query)
+			# connection.commit()
+			# connection.close()
+			# global alert
+			# alert = True
 
-			query = "Insert into alerts values(" + str(node)+ ",'" + str(info)+ "','"+ str(date) +"','False');"
-			#Only at this time we can update the value of the node in the database
-			c.execute(query)
-			connection.commit()
-			connection.close()
-			global alert
-			alert = True
+			#return render(request, 'templates/Controller/home.html', {'message' : 0})
 
-			return render(request, 'templates/Controller/home.html', {'message' : 0})
-
-		except sqlite3.Error as e:			
-			return render(request, 'templates/Controller/home.html', {'message' : 'database error'})
-
+		#except sqlite3.Error as e:			
+		#	return render(request, 'templates/Controller/home.html', {'message' : 'database error'})
+		return JsonResponse({'code':0})
 
 	else:
 		return render(request, 'templates/Controller/home.html')
