@@ -4,6 +4,8 @@ from dateutil import relativedelta
 from django.http import JsonResponse
 from background_task import background
 from kafka import KafkaConsumer
+from kafka.structs import OffsetAndMetadata
+from kafka.errors import NoBrokersAvailable
 import json
 import requests
 import os
@@ -28,16 +30,50 @@ power_supply=0
 count_alerts={"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0,"24":0 }
 count_time=0
 
+
 @background(schedule=1)
-def check_alive():
+def check_reading_messages():
 	while(True):
+		count = 0
 		try:
-			time.sleep(60)
-			consumer = KafkaConsumer('switch', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest', enable_auto_commit=True, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')))
-			connection = sqlite3.connect("test.db")
-			cursor = connection.cursor()
-			for message in consumer:
+			print("blablab")
+			time.sleep(10)
+			consumerA = KafkaConsumer('alerts', bootstrap_servers=['localhost:9095'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')), consumer_timeout_ms=3000)
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			c = connection.cursor()
+			print("blablab")
+			for message in consumerA:
+		
+				meta = consumer.partitions_for_topic(topic)
+				options = {}
+				options[partition] = OffsetAndMetadata(message.offset + 1, meta)
+				consumer.commit(options)
+				print("sfdjsdkfhsdj")
 				message = message.value
+		
+				for (n_id, info) in message.items():
+					query = "Insert into alerts values(" + str(node_id)+ ",'" + str(info[1])+ "','"+ str(info[0]) +"','False');"
+					count +=1
+					cursor.execute(query)
+					connection.commit()
+
+			if count != 0:
+				global alert
+				alert = True
+		
+			consumerA.close()
+		
+			time.sleep(15)
+		
+
+			consumerS = KafkaConsumer('switch', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')), consumer_timeout_ms=3000)
+			for message in consumerS:
+			
+				meta = consumer.partitions_for_topic(topic)
+				options = {}
+				options[partition] = OffsetAndMetadata(message.offset + 1, meta)
+				consumer.commit(options)
+			
 				for (n_id, reading) in message.items():
 					if str(reading) == 'wake_up':
 						todays_date = datetime.datetime.now()
@@ -47,6 +83,9 @@ def check_alive():
 						connection.commit()
 					else:
 						count_alerts[str(n_id)] +=1
+			
+			consumerS.close()
+			
 			if count_time == 5:
 				for i in range(1,25):
 					if count_alerts[str(i)] == 0:
@@ -54,36 +93,18 @@ def check_alive():
 							c.execute(query)
 							connection.commit()
 				count_time = 0
-				
-			connection.close()
+			
+
 			count_time+=1
-		except sqlite3.Error as e:
-			continue
 
-		
-
-
-@background(schedule=1)
-def check_reading_messages():
-	while(True):
-		try:
-			time.sleep(60)
-			consumer = KafkaConsumer('switch', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest', enable_auto_commit=True, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')))
-			connection = sqlite3.connect("test.db")
-			cursor = connection.cursor()
-			if consumer is not None or consumer != {}:	
-				for message in consumer:
-					message = message.value
-					for (n_id, info) in message.items():
-						query = "Insert into alerts values(" + str(node_id)+ ",'" + str(info[1])+ "','"+ str(info[0]) +"','False');"
-						
-						cursor.execute(query)
-						connection.commit()
-				global alert
-				alert = True	
+			c.close()	
 			connection.close()
+		
 		except sqlite3.Error as e:
 			continue
+		except NoBrokersAvailable as e:
+			print(e)
+
 
 		
 		
@@ -150,6 +171,7 @@ def node_up(request):
 			#Only at this time we can update the value of the node in the database
 			c.execute(query)
 			connection.commit()
+			c.close()
 			connection.close()
 			return render(request, 'templates/Controller/home.html', {'message' : 0})
 
@@ -195,7 +217,7 @@ def request(request):
 		#Only at this time we can update the value of the node in the database
 		c.execute(query)
 		fetch = c.fetchone()
-
+		c.close()
 		connection.close()
 		print(fetch[1])
 
@@ -223,6 +245,7 @@ def alerts():
 		c.execute(query)
 		fetch= c.fetchone()[0]
 		print(fetch)
+		c.close()
 		connection.close()
 		if fetch != 0:
 			return True
@@ -241,8 +264,10 @@ def compLogin(username, password):
 		fetch= c.fetchall()
 		print(fetch)
 		if fetch[0][1] != password:
+			c.close()
 			connection.close()
 			return 1, 'Wrong password'
+		c.close()
 		connection.close()
 		return 0,None
 	except sqlite3.Error as e:
@@ -317,6 +342,7 @@ def change_pass(request):
 			query2 = "Update users set password='" +  str(n_pass) + "'where username= '" + str(username) + "';"
 			c.execute(query2)
 			connection.commit()
+			c.close()
 			connection.close()
 			return render(request, 'templates/Controller/login.html',{'message' :'Password changed with success' ,'user' : user, 'success': True  })
 		except sqlite3.Error as e:
@@ -386,6 +412,7 @@ def get_notifications_with_date(request):
 				
 			c.execute(query)
 			fetch= c.fetchall()
+			c.close()
 			connection.close()
 			value = [('node '+str(x[0]), x[1].split('\n'), x[2]) for x in fetch]
 		except sqlite3.Error as e:
@@ -430,16 +457,20 @@ def stats(request):
 		query1="Select count(*) from alerts;" 	
 		c.execute(query1)
 		numAlerts = c.fetchone()[0]
+		print(numAlerts)
 
 		##count how many nodes are ON
 		query2="Select count(id) from node where value='ON';" 	
 		c.execute(query2)
 		numOn = c.fetchone()[0]
-
+		print(numOn)
+		
 		## fill dict to alerts graphic
 		query3 = "Select node_id, count(alert) from alerts group by node_id;"
 		c.execute(query3)
 		fetch_alerts = c.fetchall()
+
+		print(fetch_alerts)
 		numAlertsNode={}
 		for info in fetch_alerts:
 			numAlertsNode[info[0]] = int(info[1])
@@ -448,11 +479,14 @@ def stats(request):
 			if i not in list(numAlertsNode.keys()):
 				numAlertsNode[i] = 0
 
+
+		print(numAlertsNode)
 		## fill dict to hours graphic
 		todays_date = datetime.datetime.now()
 		query4 = "Select id, dateOn from node where dateOn != '0';"
 		c.execute(query4)
 		fetch_hours = c.fetchall()
+		print(fetch_hours)
 
 		numHours={}
 		for info in fetch_hours:
@@ -460,11 +494,16 @@ def stats(request):
 			up_date = datetime.datetime.strptime(info[1],'%Y-%m-%d %H:%M:%S') 
 			#difference between actual date and up_date
 			difference = relativedelta.relativedelta(todays_date,up_date)			
-			numHours[info[0]] = difference.hours
+			numHours[info[0]] = int(difference.hours)
 
 		for i in range(1,25):
 			if i not in list(numHours.keys()):
 				numHours[i] = 0
+
+		print(numHours)
+		c.close()
+		connection.close()
+	
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
@@ -480,10 +519,10 @@ def stats(request):
 	
 
 	if request.is_ajax():
-		return JsonResponse({'node_up':str(numOn[1]), 'hours' : numHours[1],'n_alerts_node': numAlertsNode[1] ,'n_alerts': str(numAlerts[1])})
+		return JsonResponse({'node_up':str(numOn), 'hours' : numHours,'n_alerts_node': numAlertsNode ,'n_alerts': str(numAlerts)})
 
 	
-	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(numOn[1]), 'hours' : numHours[1],'n_alerts_node': numAlertsNode[1] ,'n_alerts': str(numAlerts[1])})
+	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(numOn), 'hours' : numHours,'n_alerts_node': numAlertsNode ,'n_alerts': str(numAlerts)})
 
 
 	
@@ -526,12 +565,12 @@ def send_grid(request):
 			
 			(val,color,portId) = grid[int(node)]
 
-			elastic = {'node_id': str(node),'up_date': '2019-05-20 11:11:11','value': 'ON','alerts': 3 }
+			#elastic = {'node_id': str(node),'up_date': '2019-05-20 11:11:11','value': 'ON','alerts': 3 }
 
-			data_json = json.dumps(elastic)
-			send = requests.post('http://localhost:9200/controller/_doc/' + str(node), data=data_json, headers= headers)
+			#data_json = json.dumps(elastic)
+			#send = requests.post('http://localhost:9200/controller/_doc/' + str(node), data=data_json, headers= headers)
 
-			print(send.status_code)
+			#print(send.status_code)
 
 			# if value == 'OFF':
 			# 		#if value OFF turn on
@@ -565,6 +604,7 @@ def send_grid(request):
 				#update value of node state in database
 				c.execute(query)
 				connection.commit()
+				c.close()
 				connection.close()
 
 
@@ -601,6 +641,8 @@ def refresh_grid():
 			else:
 				color = 'red'
 			grid[row[0]] = (row[1],color,row[2])
+
+		c.close()
 		connection.close()
 		return 0,grid
 	except sqlite3.Error as e:
