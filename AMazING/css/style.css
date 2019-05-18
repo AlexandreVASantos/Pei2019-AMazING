@@ -961,6 +961,14 @@ form label {
   color: #4d4d4d;
   font-weight: 300;
 }
+
+.gtco-heading h3 {
+  font-size: 30px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  color: #4d4d4d;
+  font-weight: 300;
+}
 .gtco-heading p {
   font-size: 18px;
   line-height: 1.7;
@@ -1880,5 +1888,137 @@ form label {
   background: none;
   background: #4d4d4d;
 }
+
+
+
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 1400px;
+  position: relative;
+  margin:auto;
+
+}
+
+/* Next & previous buttons */
+.prev1, .next1 {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0px 0px 0px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next1 {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev1:hover, .next1:hover {
+  background-color: rgba(0,0,0,1);
+}
+
+/* Next & previous buttons */
+.prev2, .next2 {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0px 0px 0px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next2 {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev2:hover, .next2:hover {
+  background-color: rgba(0,0,0,1);
+}
+
+/* Caption text */
+.textM {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* The dots/bullets/indicators */
+.dot1 {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.dot1:hover {
+  background-color: #717171;
+}
+
+.dot2 {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.dot2:hover {
+  background-color: #717171;
+}
+
+
+/* Fading animation */
+.fadeM {
+  -webkit-animation-name: fadeM;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fadeM;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fadeM {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes fadeM {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+/* On smaller screens, decrease text size */
+@media only screen and (max-width: 300px) {
+  .prev1, .next1, .prev2, .next2,.text {font-size: 11px}
+}
+
 
 /*# sourceMappingURL=style.css.map */

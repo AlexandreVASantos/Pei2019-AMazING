@@ -24,3 +24,5 @@ urlpatterns = [
     path('stationPeer/',views.stationPeer, name='stationPeer'),
     path('addrChange/',views.addrChange, name='addrChange')
 ]
+
+views.consumer()

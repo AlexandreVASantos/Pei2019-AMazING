@@ -46,8 +46,9 @@
 		</div>
 
  <script type="text/javascript">
- 	var hours ={};
- 	var n_alerts_node = {};
+ 	
+ 	var hours = {{hours}};
+ 	var n_alerts_node = {{n_alerts_node}};
 
     google.charts.load('current', {packages: ['corechart', 'bar']});
     google.charts.setOnLoadCallback(HoursNode);
@@ -224,11 +225,10 @@
            	console.log(JSON.stringify(data));
            	n_alerts_node = data['n_alerts_node'];
 	    });
-	}
- 	
- 	setInterval(HoursNode,500);
- 	setInterval(drawAlertsByNode,500);
-  	setInterval(get_stats,500);
+	}	
+ 	setInterval(HoursNode,60000);
+ 	setInterval(drawAlertsByNode,60000);
+  	setInterval(get_stats,60000);
 
   </script>
   {% else %}

@@ -8,13 +8,25 @@ echo 'amazing' | sudo -S apt-get install lm-sensors -y
 
 echo 'amazing' | sudo -S apt-get install wireless-tools -y
 
+echo 'amazing' | sudo -S apt-get install hostapd -y
+
 echo 'amazing' | sudo -S apt-get install wpasupplicant -y
+
+echo 'amazing' | sudo -S apt-get install unzip -y
 
 echo 'amazing' | sudo -S mkdir /home/amazing/dont_delete
 
 mkdir /home/amazing/it_user
 
-echo 'amazing' | sudo -S cp /media/cdrom/* /home/amazing/dont_delete/
+echo 'amazing' | sudo -S mv /home/amazing/pei.zip /home/amazing/dont_delete/
+
+echo 'amazing' | sudo -S unzip /home/amazing/dont_delete/pei.zip -d /home/amazing/dont_delete/
+
+echo 'amazing' | sudo -S rm -r /home/amazing/dont_delete/pei.zip
+
+echo 'amazing' | sudo -S mv /home/amazing/dont_delete/pei/* /home/amazing/dont_delete/
+
+echo 'amazing' | sudo -S rm -r /home/amazing/dont_delete/pei/
 
 echo 'amazing' | sudo -S chown root /home/amazing/dont_delete/init_node.sh
 
