@@ -127,6 +127,10 @@
 					</div>
 					<div class="col-md-8 col-md-offset-2 gtco-heading">
 						<h3 style= "text-align: center"><a id="Sw" style="position:absolute;margin-top:-15%"></a>Switch Controller App</h3>
+						<br>
+						<br>
+						<br>
+						
 						<div class="container" style="width:85%">
 							<div class="slideshow-container">
 
@@ -162,8 +166,8 @@
 
 								
 								
-								<a class="prev1" onclick="plusSlides1(-1)">&#10094;</a>
-								<a class="next1" onclick="plusSlides1(1)">&#10095;</a>
+								<a class="prev1" id="a1" style = "top:30%" onclick="plusSlides1(-1)">&#10094;</a>
+								<a class="next1" id="a2" style = "top:30%" onclick="plusSlides1(1)">&#10095;</a>
 							</div>
 					
 							<br>
@@ -178,7 +182,7 @@
 						  
 
 					</div>
-
+<!--
 					<div class="col-md-8 col-md-offset-2 gtco-heading">
 						<h3 style= "text-align: center"><a id="NC" style="position:absolute;margin-top:-15%"></a>Node Configuration App</h3>
 						<div class="container" style="width:85%">
@@ -231,9 +235,9 @@
 						</div>
 						  
 
-					</div>
+					</div>-->
 						
-				</div>
+				</div> 
 		</div>
 	<footer id="gtco-footer" class="gtco-section" role="contentinfo">
 			<div class="gtco-container">
@@ -266,6 +270,8 @@
 			document.getElementById("nav_sec").remove();
 			document.getElementById("body_text").style.width = "100%";
 			document.getElementById("body_text").style.ccFloat = "none";
+			document.getElementById("a1").removeAttribute("style");
+			document.getElementById("a2").removeAttribute("style");
 			
 		}
 	</script>
