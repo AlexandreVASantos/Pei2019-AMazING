@@ -100,7 +100,7 @@
 		
 
 		<div class="gtco-section gtco-testimonial" >
-			<div class="gtco-container"style= "width:15%;float:left;position:fixed">
+			<div id="nav_sec" class="gtco-container"style= "width:15%;float:left;position:fixed">
 				<nav class="md-nav md-nav--secondary">
 						<ul class="md-nav__list">
 						<!--
@@ -123,7 +123,7 @@
 				
 							
 			</div>
-			<div class="gtco-container"style= "width:90%;float:right;margin-top:1%">
+			<div class="gtco-container" id = "body_text" style= "width:90%;float:right;margin-top:1%">
 
 				<div class="row row-pb-sm">
 					<div class="col-md-8 col-md-offset-2 gtco-heading text-center">
@@ -292,6 +292,16 @@
 	<div class="gototop js-top">
 		<a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
 	</div>
+	
+	<script>
+		var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+		if(width < 600){
+			document.getElementById("nav_sec").remove();
+			document.getElementById("body_text").style.width = "100%";
+			document.getElementById("body_text").style.ccFloat = "none";
+			
+		}
+	</script>
 	
 	<!-- jQuery -->
 	<script src="js/jquery.min.js"></script>
