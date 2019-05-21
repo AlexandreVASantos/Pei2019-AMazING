@@ -4,6 +4,7 @@ from dateutil import relativedelta
 from django.http import JsonResponse
 from background_task import background
 from kafka import KafkaConsumer
+from kafka import TopicPartition
 from kafka.structs import OffsetAndMetadata
 from kafka.errors import NoBrokersAvailable
 import json
@@ -38,48 +39,52 @@ def check_reading_messages():
 		try:
 			print("blablab")
 			time.sleep(10)
-			consumerA = KafkaConsumer('alerts', bootstrap_servers=['localhost:9095'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')), consumer_timeout_ms=3000)
+			#consumerA = KafkaConsumer('alerts', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c = connection.cursor()
 			print("blablab")
-			for message in consumerA:
+			# for message in consumerA:
+			#meta = consumerS.partitions_for_topic(message.topic)
+			#partition = TopicPartition(message.topic, message.partition)
+			#offsets = OffsetAndMetadata(message.offset +1 , meta)
+			#options = {partition: offsets}
+			#consumerS.commit(offsets=options)
+			# 	
+			# 	print(message)
 		
-				meta = consumer.partitions_for_topic(topic)
-				options = {}
-				options[partition] = OffsetAndMetadata(message.offset + 1, meta)
-				consumer.commit(options)
-				print("sfdjsdkfhsdj")
-				message = message.value
-		
-				for (n_id, info) in message.items():
-					query = "Insert into alerts values(" + str(node_id)+ ",'" + str(info[1])+ "','"+ str(info[0]) +"','False');"
-					count +=1
-					cursor.execute(query)
-					connection.commit()
+			# 	for (n_id, info) in message.items():
+			# 		query = "Insert into alerts values(" + str(node_id)+ ",'" + str(info[1])+ "','"+ str(info[0]) +"','False');"
+			# 		count +=1
+			# 		c.execute(query)
+			# 		connection.commit()
 
 			if count != 0:
 				global alert
 				alert = True
 		
-			consumerA.close()
+			#consumerA.close()
 		
 			time.sleep(15)
 		
 
-			consumerS = KafkaConsumer('switch', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:loads(x.decode('utf-8')), consumer_timeout_ms=3000)
+			consumerS = KafkaConsumer('switch', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
 			for message in consumerS:
-			
-				meta = consumer.partitions_for_topic(topic)
-				options = {}
-				options[partition] = OffsetAndMetadata(message.offset + 1, meta)
-				consumer.commit(options)
+				
+				meta = consumerS.partitions_for_topic(message.topic)
+				partition = TopicPartition(message.topic, message.partition)
+				offsets = OffsetAndMetadata(message.offset +1 , meta)
+				options = {partition: offsets}
+				consumerS.commit(offsets=options)
+
+				message = message.value
+				print(message)
 			
 				for (n_id, reading) in message.items():
 					if str(reading) == 'wake_up':
 						todays_date = datetime.datetime.now()
 						date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
 						query = "Update node Set value='ON', dateOn = '" + str(date) +"' where id=" + str(n_id) +";"
-						cursor.execute(query)
+						c.execute(query)
 						connection.commit()
 					else:
 						count_alerts[str(n_id)] +=1
