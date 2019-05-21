@@ -103,7 +103,7 @@
 							<div class="display-t">
  								<div class="display-tc">
 									<div class="row" >
-										<div class="col-md-5 text-center header-img animate-box">
+										<div id="imagem_fundo" class="col-md-5 text-center header-img animate-box">
 											<br>
 											<br>
 											<br>
@@ -112,7 +112,7 @@
 											
 											<img src="images/telhado1.jpg" width="100%" style="border-radius:10%"   alt="">
 										</div>
-										<div class="col-md-8 copy animate-box" style= " width:75%;margin-left:45%; margin-top: -30%">
+										<div id = "description" class="col-md-8 copy animate-box" style= " width:75%;margin-left:45%; margin-top: -30%">
 											<br>
 											<br>
 											<br>
@@ -120,7 +120,7 @@
 											<br>
 											
 											<h1>AMazING <br>(Advanced Mobile wIreless Network playGround)</h1>
-											<p style="width:75%;font-size: 130%">is an <b>leading-edge outdoor wireless test system </b> developed under a concept by <a href="https://www.it.pt/Members/Index/357" target= "blank"style="color:black">Rui Aguiar</a>, 
+											<p style="font-size: 130%">is an <b>leading-edge outdoor wireless test system </b> developed under a concept by <a href="https://www.it.pt/Members/Index/357" target= "blank"style="color:black">Rui Aguiar</a>, 
 											which intended to differentiate itself from the other by  increased controllability and an high reproducibility of the tests.</b>
 											<b>The platform itself consists in a wireless testbed </b> 
 											composed by 24 fixed nodes, in a 6x4 grid, located at the rooftop of Instituto de Telecomunicações - Aveiro</p>
@@ -138,8 +138,8 @@
 			<br>
 
 			<div class="gtco-client">
-				<div class="gtco-container">
-					<div class="row">
+				<div id="add" class="gtco-container">
+					<div id= "remove" class="row">
 						<div class="col-md-2" style= "width: auto; left:10%" >
 							<img style="filter:grayscale(100%)"src="images/logo-IT_25years.png" alt=""  height="125" width="400">
 						</div>
@@ -178,6 +178,20 @@
 	<div class="gototop js-top">
 		<a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
 	</div>
+	
+	<script>
+		var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+		if(width < 600){
+			document.getElementById("imagem_fundo").className= "text-center header-img animate-box";
+			document.getElementById("description").className = "copy animate-box";
+			document.getElementById("description").style.width = "100%";
+			document.getElementById("description").style.marginLeft = "0%";
+			document.getElementById("description").style.marginTop = "0%";
+			document.getElementById("remove").remove();
+			document.getElementById("add").appendChild('<div style= "width: auto ><img style="filter:grayscale(100%)"src="images/logo-IT_25years.png" alt=""  height="125" width="400"></div><div style= "width:auto" ><img style="filter:grayscale(100%)" src="images/logo_deti.png" alt="" height="100" width="500"></div>');
+			
+		}
+	</script>
 	
 	<!-- jQuery -->
 	<script src="js/jquery.min.js"></script>
