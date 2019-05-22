@@ -25,4 +25,4 @@ urlpatterns = [
     path('addrChange/',views.addrChange, name='addrChange')
 ]
 
-views.consumer()
+views.consumer(repeat_until=None)
