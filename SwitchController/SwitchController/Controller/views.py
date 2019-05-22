@@ -577,57 +577,56 @@ def send_grid(request):
 
 			#print(send.status_code)
 
-			# if value == 'OFF':
-			# 		#if value OFF turn on
-			# 		commands = "interface" + str(portId) + "\npower-over-ethernet\n"
+			if value == 'OFF':
+					#if value OFF turn on
+					commands = "conf t\ninterface " + str(portId) + "\npower-over-ethernet\nwrite memory"
 
-			# 		#can't update database immediately, need to wait for node to go up
-			# 		post = send_commands(commands)
+					#can't update database immediately, need to wait for node to go up
+					post = send_commands(commands)
 
-			# 		if post.status_code != 202:
-			# 			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-			# else:
-			try:
-				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-				c=connection.cursor()
+
+					if post.status_code != 202:
+						return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+
+					return JsonResponse(node_grid)
+			else:
+				try:
+					connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+					c=connection.cursor()
+					
+					#if value ON turn off
+					commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
+
+					query = "Update node Set value='OFF', dateOn = '0' where id=" + str(node) +";"
 				
-				#if value ON turn off
-				commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
-
-				query = "Update node Set value='OFF', dateOn = '0' where id=" + str(node) +";"
-			
-			
-				# post = send_commands(commands)
-				# if post.status_code != 202:
-				# 	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-
-
-
-				# verify_response = post.json()['result_base64_encoded']
-				# decoded_r = base64.b64decode(verify_response).decode('utf-8')
-				# print(decoded_r)
-				#update value of node state in database
-				c.execute(query)
-				connection.commit()
-				c.close()
-				connection.close()
-
-
-				E_id,error = refresh_grid()
-				if E_id == 1:
-					return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
-
-			except sqlite3.Error as e:
-				return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
 				
+					post = send_commands(commands)
+					if post.status_code != 202:
+						return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+
+
+					#update value of node state in database
+					c.execute(query)
+					connection.commit()
+					c.close()
+					connection.close()
+
+
+					E_id,error = refresh_grid()
+					if E_id == 1:
+						return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
+
+				except sqlite3.Error as e:
+					return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
+					
+				
+
+				node_grid = grid
+
 			
-
-			node_grid = grid
-
-		
-			print ('asdakjsdhiadhah')
-			return JsonResponse(node_grid)
-		
+				print ('asdakjsdhiadhah')
+				return JsonResponse(node_grid)
+			
 
 	
 	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
