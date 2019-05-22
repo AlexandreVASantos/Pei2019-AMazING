@@ -27,6 +27,7 @@ cookie = {}
 alert = False
 node_up=0
 power_supply=0
+request_node = False
 
 count_alerts={"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0,"24":0 }
 count_time=0
@@ -37,6 +38,8 @@ def check_reading_messages():
 	while(True):
 		count = 0
 		try:
+			global count_time
+			global alert
 			print("blablab")
 			time.sleep(10)
 			#consumerA = KafkaConsumer('alerts', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
@@ -59,7 +62,6 @@ def check_reading_messages():
 			# 		connection.commit()
 
 			if count != 0:
-				global alert
 				alert = True
 		
 			#consumerA.close()
@@ -91,6 +93,7 @@ def check_reading_messages():
 			
 			consumerS.close()
 			
+
 			if count_time == 5:
 				for i in range(1,25):
 					if count_alerts[str(i)] == 0:
@@ -213,6 +216,7 @@ def getlogin(request):
 @csrf_exempt
 def request(request):
 	if request.method == 'POST':
+		global request_node
 		args = json.loads(request.body.decode('utf-8'))
 		node = args.get('node')
 		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
@@ -229,6 +233,8 @@ def request(request):
 		if fetch[1] == 'ON':
 			return JsonResponse({'code':0})
 		else:
+
+			request_node = True
 			#se for pedir manager a ligar mandar pop up
 			#se quiser logo ligar mandar para sw
 			return JsonResponse({'code':1})
@@ -240,6 +246,40 @@ def request(request):
 
 	else:
 		return render(request, 'templates/Controller/home.html')
+
+
+@csrf_exempt
+def requests_on(request):
+	if request.method== 'GET':
+		if request.is_ajax():
+			return JsonResponse({'user':user, 'request':request})
+		requests={'id':[1,2,4,7,8,9,10]}
+		return render(request, 'templates/Controller/requests.html',{'user': user, 'alert': alert, 'requests': requests})
+	else:
+		if request.method == 'POST':
+			if request.is_ajax():
+				node_id = request.POST.get('id')[0]
+
+				print(node_id)
+				print(request.POST)
+				try:
+					# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+					# c=connection.cursor()
+					# query = "Update requests set requested = 'False' where node_id=" + str(node_id) + ";"
+					# c.execute(query)
+					# connection.commit()
+					# c.close()
+					# connection.close()
+
+					return JsonResponse({"code" : 200})
+
+				except sqlite3.Error as e:
+					return 0
+			return 0
+		return 0
+
+
+
 
 ##Check if there is any alert not read yet
 def alerts():
@@ -552,7 +592,6 @@ def send_grid(request):
 		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
 	
 	
-	
 	node_grid = grid
 
 	if request.is_ajax():
@@ -566,7 +605,9 @@ def send_grid(request):
 					node=dic[key]
 				elif key == 'value':
 					value=dic[key]
+			print(node)
 
+			print(value)
 			
 			(val,color,portId) = grid[int(node)]
 
@@ -595,7 +636,7 @@ def send_grid(request):
 					c=connection.cursor()
 					
 					#if value ON turn off
-					commands = "interface" + str(portId) + "\nno power-over-ethernet\n"
+					commands = "conf t\ninterface" + str(portId) + "\nno power-over-ethernet\nwrite memory"
 
 					query = "Update node Set value='OFF', dateOn = '0' where id=" + str(node) +";"
 				

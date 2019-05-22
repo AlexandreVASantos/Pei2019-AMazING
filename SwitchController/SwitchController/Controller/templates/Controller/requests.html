@@ -1,0 +1,72 @@
+{% extends "Controller/base.html" %}
+{% block content %}
+	{% if user.authenticated %}
+		<div class="container" id ="fillreq" style="text-align:left;min-height: 35vh;background-color: #1111;">
+			<h2>Pending requests:</h2>
+			{% for i in requests.id %}
+			<div id="form{{i}}">
+				<br>
+				<p>Someone requested node {{i}} to turn on </p>
+				<button class="btn" id="1" style="background-color:red;color:#FFFF"  name="{{i}}" value="Decline" >
+					Decline
+				</button>
+				<button class="btn" id="2" style="background-color:green;color:#FFFF"  name="{{i}}" value="Accept" >
+					Accept
+				</button>
+			</div>
+			{% endfor %}
+		</div>
+
+
+<script type="text/javascript">
+	
+	$("button").click(function(){
+		var id = $(this).attr('name');
+		var id_div = "form" + $(this).attr('name').toString();
+
+		console.log(id_div)
+		data= { 
+			'id': id,
+			'value' : $(this).attr('value')};
+
+		if(data["value"] == "Accept"){
+			$.post("/requests/", data ,function (data) {
+        		if (data["code"]== 200){
+        			data= { 
+						'id': id,
+						'value' : "OFF"};
+        			$.post("/config/", data ,function (data) {
+        		
+       				});
+        		}
+       		});
+		}
+		$("#"+ id_div).remove(); 
+    });
+
+   
+
+</script>
+	{% else %}
+
+		<div class="row" style="margin-bottom: 10%; min-height: 26vh">
+	        <!-- Boxes de Acoes -->
+			<div class="box">							
+				<div class="icon">
+					<div class="image"><img class="fa fa-thumbs-o-up"></div>
+					<div class="info">
+						<div class ="container">
+							<h3 class="title">Welcome to the AMazING Switch Controller!</h3>
+							<p style="font-size: 120%">Log In to access requests!</p>
+							<a  class="btn btn-primary" href="{% url 'getLogin' %}">Log In</a>
+						
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	{% endif %}
+
+{% endblock %}

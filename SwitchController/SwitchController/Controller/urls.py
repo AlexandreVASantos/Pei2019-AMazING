@@ -16,6 +16,6 @@ urlpatterns = [
     path('manual/', views.manual, name='manual'),
     path('stats/', views.stats, name='stats'),
     path('request/', views.request, name='request'),
-    #path('requests/', views.get_request, name='get_request'),  
+    path('requests/', views.requests_on, name='requests'),
 ]
 

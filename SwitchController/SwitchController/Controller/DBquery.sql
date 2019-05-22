@@ -24,6 +24,13 @@ PRIMARY KEY (node_id,alert,date_alert),
 FOREIGN KEY (node_id) REFERENCES node(id)
 );
 
+CREATE TABLE requests(
+node_id int,
+requested varchar(5),
+PRIMARY KEY (node_id,requested),
+FOREIGN KEY (node_id) REFERENCES node(id)
+);
+
 
 CREATE TABLE users (
 username varchar(255) PRIMARY KEY,
