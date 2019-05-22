@@ -19,12 +19,12 @@ def consumer():
 	count = 0
 	for message in consumer:
 		count = count+1
-		connection = sqlite3.connect("test.db")
+		connection = sqlite3.connect("main/Logs/Logs.db")
 		cursor = connection.cursor()
 		message = message.value
 		for (a,b) in message.items():
-			print("("+str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2]) +"','"+str(b[3]) +") values entered")
-			cursor.execute("INSERT INTO test VALUES('"+ str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2])+"','"+str(b[3])+"');")
+			print("("+str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2]) +"','"+str(b[3]) +"','"+str(b[4]) +") values entered")
+			cursor.execute("INSERT INTO Logs VALUES('"+ str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2])+"','"+str(b[3])+"','"+str(b[4]) +"');")
 			connection.commit()
 		cursor.close()
 		connection.close()
@@ -84,11 +84,11 @@ def postEventListening(request):
 	#print(data)
 	if "option" in data:
 		if data["option"] == '2':
-			data = {'User: '+username : [curdate, 'Event List' ,'Frames', 'output']}   #curdate= current date, req.json() = output
+			data = {'User: '+username : [curdate, 'Event List',1 ,'Frames', 'output']}   #curdate= current date, req.json() = output
 		elif data["option"] == '3':
-			data = {'User: '+username : [curdate, 'Event List' ,'Timings', 'output']}   #curdate= current date, req.json() = output
+			data = {'User: '+username : [curdate, 'Event List' ,1,'Timings', 'output']}   #curdate= current date, req.json() = output
 	else:
-		data = {'User: '+username : [curdate, 'Event List' ,'Emtpy', 'output']}   #curdate= current date, req.json() = output
+		data = {'User: '+username : [curdate, 'Event List' ,1,'Emtpy', 'output']}   #curdate= current date, req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -117,7 +117,7 @@ def postScanning(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Scan' ,dic["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Scan',1 ,dic["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -131,7 +131,7 @@ def postScanning(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Scan' ,data["WLan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Scan',1 ,data["WLan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -158,7 +158,7 @@ def postLinkStatus(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Link Status' ,data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Link Status',1 ,data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -173,7 +173,7 @@ def postLinkStatus(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Link Status' ,data["WLan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Link Status',1 ,data["WLan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -201,7 +201,7 @@ def postIPChange(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Change Ip' ,'IP: '+data["IP"]+', Wlan: '+data["WLan"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Change Ip',1 ,'IP: '+data["IP"]+', Wlan: '+data["WLan"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -218,7 +218,7 @@ def postIPChange(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Change Ip' ,'IP: '+data["IP"]+', Wlan: '+data["WLan"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Change Ip',1 ,'IP: '+data["IP"]+', Wlan: '+data["WLan"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -263,7 +263,7 @@ def postConnection(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {'User: '+username : [curdate, 'Connection' ,'WEP: '+data["WEP"]+', Wlan: '+data["Wlan"]+', Frequency: '+data["Frequency"]+', SSID: '+data["SSID"],'output']}   #curdate= current date, req.json() = output
+			data = {'User: '+username : [curdate, 'Connection',1 ,'WEP: '+data["WEP"]+', Wlan: '+data["Wlan"]+', Frequency: '+data["Frequency"]+', SSID: '+data["SSID"],'output']}   #curdate= current date, req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
@@ -277,7 +277,7 @@ def postConnection(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Connection' ,'null','output']}   #curdate= current date, req.json() = output
+	data = {'User: '+username : [curdate, 'Connection',1 ,'null','output']}   #curdate= current date, req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -306,7 +306,7 @@ def postStationStats(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Station Stats' ,data["WLan"], 'output']}   #curdate= current date, dic["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Station Stats',1 ,data["WLan"], 'output']}   #curdate= current date, dic["Wlan"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -325,7 +325,7 @@ def postStationStats(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Station Stats' ,data["WLan"], 'output']}   #curdate= current date, dic["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Station Stats',1 ,data["WLan"], 'output']}   #curdate= current date, dic["Wlan"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -358,7 +358,7 @@ def postStationPeer(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {'User: '+username : [curdate, 'Station Peer' ,'Wlan: '+data["Wlan"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
+			data = {'User: '+username : [curdate, 'Station Peer',1 ,'Wlan: '+data["Wlan"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
@@ -372,7 +372,7 @@ def postStationPeer(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Station Peer' ,'Wlan: '+data["Wlan"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Station Peer',1 ,'Wlan: '+data["Wlan"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -403,7 +403,7 @@ def postTxPower(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Tx Power' ,'TxPower: '+dic["TxPower"]+', Wlan: '+data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Tx Power',1 ,'TxPower: '+dic["TxPower"]+', Wlan: '+data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 		
@@ -417,7 +417,7 @@ def postTxPower(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Tx Power' ,'TxPower: '+dic["TxPower"]+', Wlan: '+data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Tx Power',1 ,'TxPower: '+dic["TxPower"]+', Wlan: '+data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
