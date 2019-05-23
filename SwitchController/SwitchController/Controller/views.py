@@ -217,32 +217,56 @@ def getlogin(request):
 def request(request):
 	if request.method == 'POST':
 		global request_node
-		args = json.loads(request.body.decode('utf-8'))
-		node = args.get('node')
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-		c=connection.cursor()
+		try:
+			args = json.loads(request.body.decode('utf-8'))
+			node = args.get('node')
+			username = args.get('username') 
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			c=connection.cursor()
 
-		query = "Select id,value from node where id="+ str(node) +";"
-		#Only at this time we can update the value of the node in the database
-		c.execute(query)
-		fetch = c.fetchone()
-		c.close()
-		connection.close()
-		print(fetch[1])
+			query = "Select id,value from node where id="+ str(node) +";"
+			c.execute(query)
+			fetch = c.fetchone()
+			c.close()
+			connection.close()
+		except sqlite3.Error as e:
+			return JsonResponse({'code':2})
 
 		if fetch[1] == 'ON':
 			return JsonResponse({'code':0})
 		else:
 
 			request_node = True
-			#se for pedir manager a ligar mandar pop up
-			#se quiser logo ligar mandar para sw
+
+			try:
+				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+				c=connection.cursor()
+				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node_id) + "and requested != 'False';"
+				c.execute(query)
+				fetch1 = c.fetchone()
+				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node_id) + "and requested == 'False';"
+				c.execute(query)
+				fetch2 = c.fetchone()
+				if fetch1 is None:
+					if fetch2 is None:
+						query = "Insert into requests values (" +str(node_id) + ",'"+ str(username)+"' ,'True')"
+						c.execute(query)
+						connection.commit()
+					else:
+						query = "Update requests set requested= 'True' where node_id = "+ str(node_id)+" and username='" + str(username)+ "';"
+						c.execute(query)
+						connection.commit()
+				else:
+					c.close()
+					connection.close()
+					return JsonResponse({'code':1})
+
+				c.close()
+				connection.close()
+			except sqlite3.Error as e:
+				return JsonResponse({'code':2})
+			
 			return JsonResponse({'code':1})
-
-
-
-
-
 
 	else:
 		return render(request, 'templates/Controller/home.html')
@@ -252,7 +276,7 @@ def request(request):
 def requests_on(request):
 	if request.method== 'GET':
 		if request.is_ajax():
-			return JsonResponse({'user':user, 'request':request})
+			return JsonResponse({'user':user, 'request':request_node})
 		try:
 			# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			# c=connection.cursor()
@@ -276,7 +300,7 @@ def requests_on(request):
 
 
 		requests={'user':[1,2,3,4,5,6,7]}
-		return render(request, 'templates/Controller/requests.html',{'user': user, 'alert': alert, 'requests': requests})
+		return render(request, 'templates/Controller/requests.html',{'user': user, 'alert': alert, 'request':request_node,'requests': requests})
 	else:
 		if request.method == 'POST':
 			if request.is_ajax():
