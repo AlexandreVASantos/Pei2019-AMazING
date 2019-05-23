@@ -26,8 +26,9 @@ FOREIGN KEY (node_id) REFERENCES node(id)
 
 CREATE TABLE requests(
 node_id int,
+username varchar(255),
 requested varchar(5),
-PRIMARY KEY (node_id,requested),
+PRIMARY KEY (node_id,username),
 FOREIGN KEY (node_id) REFERENCES node(id)
 );
 

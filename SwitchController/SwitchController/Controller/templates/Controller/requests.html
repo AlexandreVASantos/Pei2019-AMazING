@@ -13,14 +13,10 @@
 								<p>User {{user}} requested node {{id}} to turn on </p>
 							</div>
 							<div class="col-md-1">
-								<button class="btn" id="2" style="background-color:green;color:#FFFF"  name="{{id}}" value="Accept" >
-									Accept
-								</button>
+								<button class="btn" id="2" style="background-color:green;color:#FFFF"  name="{{id}}" value={{user}} >Accept</button>
 							</div>
 							<div class="col-md-1">	
-								<button class="btn" id="1" style="background-color:red;color:#FFFF"  name="{{id}}" value="Decline" >
-									Decline
-								</button>
+								<button class="btn" id="1" style="background-color:red;color:#FFFF"  name="{{id}}" value={{user}} >Decline</button>
 							</div>
 							
 						</div>
@@ -31,8 +27,6 @@
 
 				{% endfor %}
 
-			
-			
 			{% endfor %}
 		</div>
 
@@ -42,11 +36,13 @@
 	$("button").click(function(){
 		var id = $(this).attr('name');
 		var id_div = "form" + $(this).attr('name').toString();
-
-		console.log(id_div)
+		
 		data= { 
 			'id': id,
-			'value' : $(this).attr('value')};
+			'username' : $(this).attr('value'), 
+			'value' : $(this).html().toString()};
+
+		console.log(JSON.stringify(data));
 
 		if(data["value"] == "Accept"){
 			$.post("/requests/", data ,function (data) {

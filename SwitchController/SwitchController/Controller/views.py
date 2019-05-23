@@ -253,19 +253,42 @@ def requests_on(request):
 	if request.method== 'GET':
 		if request.is_ajax():
 			return JsonResponse({'user':user, 'request':request})
+		try:
+			# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			# c=connection.cursor()
+			# query = "Delete from requests where requested = 'False';"
+			# c.execute(query)
+			# connection.commit()
+			#query = "Select username, node_id from requests where requested='True';"
+			#c.execute(query)
+			#fetch = c.fechall()
+			# c.close()
+			# connection.close()
+			#for row in fecth:
+				#if row[0] in requests:
+					#requests[row[0]].append(row[1])
+				#else:
+					#requests[row[0]] = row[1] 
+			print("o")
+
+		except sqlite3.Error as e:
+			return render(request, 'templates/Controller/error.html',{'error' :"Can't access database at the moment ",'user' : user  })
+
+
 		requests={'user':[1,2,3,4,5,6,7]}
 		return render(request, 'templates/Controller/requests.html',{'user': user, 'alert': alert, 'requests': requests})
 	else:
 		if request.method == 'POST':
 			if request.is_ajax():
-				node_id = request.POST.get('id')[0]
+				node_id = request.POST.get('id')
+				username = request.POST.get('username')
 
 				print(node_id)
-				print(request.POST)
+				print(username)
 				try:
 					# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 					# c=connection.cursor()
-					# query = "Update requests set requested = 'False' where node_id=" + str(node_id) + ";"
+					# query = "Update requests set requested = 'False' where node_id=" + str(node_id) + " AND username='" + str(username) + "';"
 					# c.execute(query)
 					# connection.commit()
 					# c.close()
