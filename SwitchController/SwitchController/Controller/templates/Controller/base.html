@@ -26,13 +26,13 @@
       </div>
       <div class="container-fluid" style="width: 100%">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="{%url 'home' %}"><span class="glyphicon glyphicon-home"></span></a></li>
-           <li><a href="{% url 'manual' %}"><span class="glyphicon glyphicon-book"></span></a></li>
+          <li><a href="{%url 'home' %}"><span title="Home" class="glyphicon glyphicon-home"></span></a></li>
+           <li><a href="{% url 'manual' %}"><span title="Manual" class="glyphicon glyphicon-book"></span></a></li>
           {% if user.authenticated %}
-            <li><a id="req" href="{% url 'requests' %}"><span class="glyphicon glyphicon-exclamation-sign"></span></a></li>
-            <li><a id="alert" href="{% url 'notifications' %}"><span class="glyphicon glyphicon-bell"></span></a></li>
-            <li><a href="{% url 'stats' %}"><span class="glyphicon glyphicon-stats"></span></a></li>
-            <li><a href="{% url 'config' %}"><span class="glyphicon glyphicon-refresh"></span></a></li>
+            <li><a id="req" href="{% url 'requests' %}"><span title="Requests" class="glyphicon glyphicon-exclamation-sign"></span></a></li>
+            <li><a id="alert" href="{% url 'notifications' %}"><span title="Notifications" class="glyphicon glyphicon-bell"></span></a></li>
+            <li><a href="{% url 'stats' %}"><span title="Statistics" class="glyphicon glyphicon-stats"></span></a></li>
+            <li><a href="{% url 'config' %}"><span title="Node Grid" class="glyphicon glyphicon-refresh"></span></a></li>
             <li><a href="{% url 'logout'%}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
           {% endif %}
         </ul>

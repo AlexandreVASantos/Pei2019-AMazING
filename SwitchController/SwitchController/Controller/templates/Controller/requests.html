@@ -1,19 +1,38 @@
 {% extends "Controller/base.html" %}
 {% block content %}
 	{% if user.authenticated %}
-		<div class="container" id ="fillreq" style="text-align:left;min-height: 35vh;background-color: #1111;">
-			<h2>Pending requests:</h2>
-			{% for i in requests.id %}
-			<div id="form{{i}}">
-				<br>
-				<p>Someone requested node {{i}} to turn on </p>
-				<button class="btn" id="1" style="background-color:red;color:#FFFF"  name="{{i}}" value="Decline" >
-					Decline
-				</button>
-				<button class="btn" id="2" style="background-color:green;color:#FFFF"  name="{{i}}" value="Accept" >
-					Accept
-				</button>
-			</div>
+		<div class="container" id ="fillreq" style="text-align:left;min-height: 35vh;background-color: #FFFF;">
+			
+			<h3 class="title">Pending Requests:</h3>
+			{% for user, node in requests.items %}
+				{% for id in node %}		
+					<div id="form{{id}}" style="background-color: #1111">
+						<br>
+						<div class="row" style="margin-left: 1%;margin-right: 1%">	
+							<div class="col-md-10">
+								<p>User {{user}} requested node {{id}} to turn on </p>
+							</div>
+							<div class="col-md-1">
+								<button class="btn" id="2" style="background-color:green;color:#FFFF"  name="{{id}}" value="Accept" >
+									Accept
+								</button>
+							</div>
+							<div class="col-md-1">	
+								<button class="btn" id="1" style="background-color:red;color:#FFFF"  name="{{id}}" value="Decline" >
+									Decline
+								</button>
+							</div>
+							
+						</div>
+						<br>
+						
+					</div>
+					<div style="background-color: #FFFF"><br></div>
+
+				{% endfor %}
+
+			
+			
 			{% endfor %}
 		</div>
 

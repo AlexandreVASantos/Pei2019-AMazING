@@ -253,7 +253,7 @@ def requests_on(request):
 	if request.method== 'GET':
 		if request.is_ajax():
 			return JsonResponse({'user':user, 'request':request})
-		requests={'id':[1,2,4,7,8,9,10]}
+		requests={'user':[1,2,3,4,5,6,7]}
 		return render(request, 'templates/Controller/requests.html',{'user': user, 'alert': alert, 'requests': requests})
 	else:
 		if request.method == 'POST':
@@ -274,9 +274,12 @@ def requests_on(request):
 					return JsonResponse({"code" : 200})
 
 				except sqlite3.Error as e:
-					return 0
-			return 0
-		return 0
+					return render(request, 'templates/Controller/error.html',{'error' :"Can't access database at the moment ",'user' : user  })
+			
+			return render(request, 'templates/Controller/home.html',{'user' : user  })
+		
+		return render(request, 'templates/Controller/home.html',{'user' : user  })
+		
 
 
 
@@ -611,12 +614,6 @@ def send_grid(request):
 			
 			(val,color,portId) = grid[int(node)]
 
-			#elastic = {'node_id': str(node),'up_date': '2019-05-20 11:11:11','value': 'ON','alerts': 3 }
-
-			#data_json = json.dumps(elastic)
-			#send = requests.post('http://localhost:9200/controller/_doc/' + str(node), data=data_json, headers= headers)
-
-			#print(send.status_code)
 
 			if value == 'OFF':
 					#if value OFF turn on
