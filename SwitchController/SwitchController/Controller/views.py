@@ -603,14 +603,20 @@ def stats(request):
 		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
 		
-		
-	#commands = "interface" + str(portId) + "\npower-over-ethernet\n"
+	
+	
 
-		#can't update database immediately, need to wait for node to go up
-	#code = send_commands(commands)
+	#command to show poe info
+	code = send_commands_power()
+	print(code)
 
-	#if code != 202:
-	#	return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+	if code.status_code != 202:
+		return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+	else:
+		response = code.json()['result_base64_encoded']
+		decoded_r = base64.b64decode(code).decode('utf-8')
+
+		print(decoded_r)
 	
 
 	if request.is_ajax():
@@ -621,12 +627,11 @@ def stats(request):
 
 
 	
-def send_commands_power(command):
-	##sequence to turn and send commands to se switch, to check power consumption
-	command_bytes = command.encode()
-	command_base64 = base64.b64encode(command_bytes)
-	command_dict={'service_poe_base64_encoded': command_base64.decode('utf-8')}
-	post_command = requests.post(url + 'system/status/power/consumption', data=json.dumps(command_dict), timeout=1)
+def send_commands_power():
+	##sequence to turn and send commands to se switch, to check power 
+	command = "show power-over-ethernet brief"
+	command_dict={'cmd': command}
+	post_command = requests.post(url + 'cli', data=json.dumps(command_dict), timeout=10)
 	return post_command
 
 
@@ -744,7 +749,7 @@ def send_commands(command):
 	command_bytes = command.encode()
 	command_base64 = base64.b64encode(command_bytes)
 	command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
-	post_command = requests.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=1)
+	post_command = requests.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=100)
 	return post_command
 
 
