@@ -16,8 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from Controller import views as Controller_views
-#from django.contrib.auth import views as auth_views
-#from django.views.generic import TemplateView
 from django.conf.urls import handler404,handler500
 
 

@@ -631,7 +631,8 @@ def send_commands_power():
 	##sequence to turn and send commands to se switch, to check power 
 	command = "show power-over-ethernet brief"
 	command_dict={'cmd': command}
-	post_command = requests.post(url + 'cli', data=json.dumps(command_dict), timeout=10)
+	with requests.Session() as s:
+		post_command = s.post(url + 'cli', data=json.dumps(command_dict), timeout=10)
 	return post_command
 
 
@@ -639,8 +640,6 @@ def send_commands_power():
 @csrf_exempt
 def send_grid(request):
 
-
-	
 	code = refresh_grid()
 
 	if code[0] == 1:
@@ -749,7 +748,8 @@ def send_commands(command):
 	command_bytes = command.encode()
 	command_base64 = base64.b64encode(command_bytes)
 	command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
-	post_command = requests.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=100)
+	with requests.Session() as s:
+		post_command = s.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=100)
 	return post_command
 
 
