@@ -5,22 +5,16 @@
 		<div class ="container" style="text-align: center;margin-top:5%;min-height: 32vh">
 			
 			<div class="row">
+				<div class="col-md-2"> </div>
 				<div class="col-md-4">					
-					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
+					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh; ">
 					  <div class="card-body text-secondary">
 					  	<h1 style="width: 55%;margin-top: 15%" ><span class="glyphicon glyphicon-off"></span></h1>
 					    <h3 style="width: 55%; margin-left:55%;margin-top: -15%" id="node_up">{{node_up}}/24</h3>
 					  </div>
 					</div>
 				</div>
-				<div class="col-md-4">
-					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
-					  <div class="card-body text-secondary">
-					  	<h1 style="width: 55%;margin-top: 15%" ><i class="fa fa-plug" aria-hidden="true"></i></h1>
-					    <h3 style="width: 55%; margin-left:45%;margin-top: -15%">{{power}} Watts</h3>
-					  </div>
-					</div>
-				</div>
+				<div class="col-md-2"> </div>
 				<div class="col-md-4">
 					<div class="card border-secondary mb-3" style="max-width: 25rem;min-height: 15vh">
 					  <div class="card-body text-secondary">
@@ -37,6 +31,14 @@
 			<div id="chart_div1" style="width: 100%; height: 500px;"></div>
 
 			<div id="chart_div2" style="width: 100%; height: 500px;"></div>
+			
+			<div class="container" style="text-align:left">
+				<button class="btn" id ="btnpoe" style="background-color: #6495ED ;color:#FFFF" type="submit">Show PoE Info</button>
+			</div>
+			<br>
+			<br>
+			<br>
+			<div  id = "poeinfo" class="container" style="text-align:left;background-color: #1111;"></div>
 
 
 
@@ -225,7 +227,30 @@
            	console.log(JSON.stringify(data));
            	n_alerts_node = data['n_alerts_node'];
 	    });
-	}	
+	}
+
+
+	$("button").click(function(){
+		inHTML = document.getElementById("btnpoe").innerHTML;
+		if(inHTML == "Show PoE Info"){ 
+	    	$.get("/stats/poe", function (data) {
+	            document.getElementById("btnpoe").innerHTML = "Hide PoE Info";
+	            var info = "<p>" + data["info"]+ "</p>";
+	        	$("#poeinfo").append(info);
+	       
+	               
+	        
+	        });
+	    }else{
+	    	document.getElementById("btnpoe").innerHTML = "Show PoE Info";
+	    	$("#poeinfo").remove();
+	    }
+
+
+    });
+
+
+
  	setInterval(HoursNode,60000);
  	setInterval(drawAlertsByNode,60000);
   	setInterval(get_stats,60000);

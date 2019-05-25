@@ -17,5 +17,7 @@ urlpatterns = [
     path('stats/', views.stats, name='stats'),
     path('request/', views.request, name='request'),
     path('requests/', views.requests_on, name='requests'),
+    path('stats/poe/', views.stats_poe, name='stats_poe'),
+    
 ]
 

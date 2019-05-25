@@ -604,20 +604,6 @@ def stats(request):
 
 		
 	
-	
-
-	#command to show poe info
-	code = send_commands_power()
-	print(code)
-
-	if code.status_code != 202:
-		return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
-	else:
-		response = code.json()['result_base64_encoded']
-		decoded_r = base64.b64decode(code).decode('utf-8')
-
-		print(decoded_r)
-	
 
 	if request.is_ajax():
 		return JsonResponse({'node_up':str(numOn), 'hours' : numHours,'n_alerts_node': numAlertsNode ,'n_alerts': str(numAlerts)})
@@ -625,8 +611,24 @@ def stats(request):
 	
 	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(numOn), 'hours' : numHours,'n_alerts_node': numAlertsNode ,'n_alerts': str(numAlerts)})
 
+def stats_poe(request):
+	#command to show poe info
+	if request.is_ajax():
 
-	
+		code = send_commands_power()
+		print(code)
+
+		if code.status_code != 202:
+			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+		else:
+			response = code.json()['result_base64_encoded']
+			decoded_r = base64.b64decode(code).decode('utf-8')
+			decoded_r = "kdsfnsidfhsdfksdnfijshdfkjsdlfksdkfhadsifççççççç ªª*ªº+çççç"
+
+			return JsonResponse({'info': decoded_r})
+	else:
+		return stats(request)
+		
 def send_commands_power():
 	##sequence to turn and send commands to se switch, to check power 
 	command = "show power-over-ethernet brief"

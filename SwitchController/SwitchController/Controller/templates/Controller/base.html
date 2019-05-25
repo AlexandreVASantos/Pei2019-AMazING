@@ -90,6 +90,7 @@
   }
 
   var HasBeenAppended = false;
+  var HasBeenAppendedReq = false;
   function alert(){
     url ="{% url 'home' %}";
     $.get(url, function (data) {
