@@ -11,7 +11,7 @@ import datetime
 from json import dumps
 from background_task import background
 from time import sleep
-
+from django.views.decorators.csrf import csrf_exempt
 
 grid={}
 
@@ -43,6 +43,14 @@ def auth(request):
 	if user is not None:
 		print("ola")
 		login(request,user)
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+		username='username'
+		data = {'User: '+user : [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		producer.send('numtest', value=data)
+		sleep(2)
+
 		return redirect('NodeMenu/')
 	else:
 		messages.warning(request,"Invalid credentials")
@@ -90,7 +98,8 @@ def postAccessP(request):
 	data = request.GET
 	dic={}
 
-	if(verify_Channel(request,data["Channel"]) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
+	if 1:
+	#if(verify_Channel(request,data["Channel"]) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
 		for key in data:
 			print(key)
 			dic[key] = data[key]
@@ -99,6 +108,14 @@ def postAccessP(request):
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
 		updatedReqResp = req.json()
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+		username='username'
+		data = {'User: '+username : [curdate, 'Create Access Point','1' ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["HW_Mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		producer.send('numtest', value=data)
+		sleep(2)
+
 		return render(request, 'main/AccessP.html', {"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":False,"req":updatedReqResp})
 	
 	dataToSend = json.dumps(dic)
@@ -117,6 +134,14 @@ def postDisconnect(request):
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+	username='username'
+	data = {'User: '+username : [curdate, 'Disconnect From Network','1' , 'null' , 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	producer.send('numtest', value=data)
+	sleep(2)
+
 	return render(request,'main/menu.html')	
 
 def postTurnOnNode(request):
@@ -124,10 +149,13 @@ def postTurnOnNode(request):
 	url = "http://httpbin.org/post"
 	data=request.GET
 	dic = {}
+	nodes = ''
 
 	for key in data:
 		if data[key] == "OFF":
 			dic["id"] = key 
+			nodes += ' key'
+
 
 	#print(dic)
 	dataToSend = json.dumps(dic)
@@ -137,6 +165,14 @@ def postTurnOnNode(request):
 	#print(updatedReqResp)
 	node_up(request,dic)
 	refresh_grid()
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+	username='username'
+	data = {'User: '+username : [curdate, 'Turn On Mode',nodes ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	producer.send('numtest', value=data)
+	sleep(2)
+
 	return render(request,'main/NodeMenu.html',{'node_grid':grid})
 
 def postScanning(request):
@@ -146,7 +182,7 @@ def postScanning(request):
 	dic={}
 	#print(data)
 
-	if(verify_Wlan(request,data)):	
+	if(verify_NetwC(request,data)):	
 		
 		for key in data:
 			#print(key)
@@ -159,7 +195,7 @@ def postScanning(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Scan',1 ,dic["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Scan','1' ,dic["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -173,7 +209,7 @@ def postScanning(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Scan',1 ,data["WLan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Scan','1' ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -187,7 +223,7 @@ def postLinkStatus(request):
 	dic={}
 	#print(data)
 
-	if(verify_Wlan(request,data)):	
+	if(verify_NetwC(request,data)):	
 		
 		for key in data:
 			#print(key)
@@ -200,7 +236,7 @@ def postLinkStatus(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Link Status',1 ,data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Link Status','1' ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -215,7 +251,7 @@ def postLinkStatus(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Link Status',1 ,data["WLan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Link Status','1' ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -243,7 +279,7 @@ def postIPChange(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Change Ip',1 ,'IP: '+data["IP"]+', Wlan: '+data["WLan"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Change Ip','1' ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -258,7 +294,7 @@ def postIPChange(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Change Ip',1 ,'IP: '+data["IP"]+', Wlan: '+data["WLan"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Change Ip','1' ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -274,7 +310,7 @@ def postConnection(request):
 	#dic = {"data":"123"}
 	#dic = {"data":"123"}
 
-	if(verify_Wlan(request,data) and not (len(data)==0)):	
+	if(verify_NetwC(request,data) and not (len(data)==0)):	
 			if data["Frequency"]:
 				if not verify_freq(request,data["Frequency"]):
 					dataToSend = json.dumps(dic)
@@ -303,7 +339,7 @@ def postConnection(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {'User: '+username : [curdate, 'Connection',1 ,'WEP: '+data["WEP"]+', Wlan: '+data["Wlan"]+', Frequency: '+data["Frequency"]+', SSID: '+data["SSID"],'output']}   #curdate= current date, req.json() = output
+			data = {'User: '+username : [curdate, 'Connection','1' ,'WEP: '+data["WEP"]+', NetwC: '+data["NetwC"]+', Frequency: '+data["Frequency"]+', SSID: '+data["SSID"],'output']}   #curdate= current date, req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
@@ -317,7 +353,7 @@ def postConnection(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Connection',1 ,'null','output']}   #curdate= current date, req.json() = output
+	data = {'User: '+username : [curdate, 'Connection','1' ,'null','output']}   #curdate= current date, req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -332,7 +368,7 @@ def postStationStats(request):
 	dic={}
 	#print(data)
 
-	if(verify_Wlan(request,data)):	
+	if(verify_NetwC(request,data)):	
 		
 		for key in data:
 			#print(key)
@@ -346,7 +382,7 @@ def postStationStats(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Station Stats',1 ,data["WLan"], 'output']}   #curdate= current date, dic["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Station Stats','1' ,data["NetwC"], 'output']}   #curdate= current date, dic["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -362,7 +398,7 @@ def postStationStats(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Station Stats',1 ,data["WLan"], 'output']}   #curdate= current date, dic["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Station Stats','1' ,data["NetwC"], 'output']}   #curdate= current date, dic["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -376,20 +412,37 @@ def postModBitrate(request):
 	dic={}
 	#print(data)
 
-	if(verify_Wlan(request,data)):	
+	if(verify_NetwC(request,data)):	
 		for key in data:
+			print(key)
 			dic[key] = data[key]
 
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
 		updatedReqResp = req.json()
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+		username='username'
+		data = {'User: '+username : [curdate, 'Modify Transmit Bitrate','1' ,'NetwC: '+dic["NetwC"]+', LBits: '+dic["Lbits"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		producer.send('numtest', value=data)
+		sleep(2)
+
 		return render(request, 'main/modBitrate.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":True,"req":updatedReqResp})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	print(req.json())
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+	username='username'
+	data = {'User: '+username : [curdate, 'Modify Transmit Bitrate','1' ,'NetwC: '+dic["NetwC"]+', LBits: '+dic["Lbits"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	producer.send('numtest', value=data)
+	sleep(2)
+
 	return render(request,'main/menu.html')	
 
 
@@ -403,7 +456,7 @@ def postStationPeer(request):
 	dic={}
 
 	if not (len(data)==0):
-		if(verify_Wlan(request,data) and verify_mac(request,mac)):
+		if(verify_NetwC(request,data) and verify_mac(request,mac)):
 				
 			
 			for key in data:
@@ -418,7 +471,7 @@ def postStationPeer(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {'User: '+username : [curdate, 'Station Peer',1 ,'Wlan: '+data["Wlan"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
+			data = {'User: '+username : [curdate, 'Station Peer','1' ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
@@ -432,7 +485,7 @@ def postStationPeer(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Station Peer',1 ,'Wlan: '+data["Wlan"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Station Peer','1' ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -450,7 +503,7 @@ def postTxPower(request):
 	#dic = {"data":"123"}
 	#dic = {"data":"123"}
 	
-	if(verify_Wlan(request,data) and not (len(data)==0)):	
+	if(verify_NetwC(request,data) and not (len(data)==0)):	
 		
 		for key in data:
 			#print(key)
@@ -463,7 +516,7 @@ def postTxPower(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Tx Power',1 ,'TxPower: '+dic["TxPower"]+', Wlan: '+data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Tx Power','1' ,'TxPower: '+dic["TxPower"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 		
@@ -477,7 +530,7 @@ def postTxPower(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Tx Power',1 ,'TxPower: '+dic["TxPower"]+', Wlan: '+data["Wlan"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {'User: '+username : [curdate, 'Tx Power','1' ,'TxPower: '+dic["TxPower"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -704,10 +757,10 @@ def verify_wep(request,wep):
 	system_messages.used = True
 	return 0	
 
-def verify_Wlan(request,dic):
+def verify_NetwC(request,dic):
 	system_messages = messages.get_messages(request)
 	if "NetwC" not in dic:
-		messages.warning(request, 'Please select Wlan.')
+		messages.warning(request, 'Please select NetwC.')
 		system_messages.used = True
 		return 0
 	return 1
