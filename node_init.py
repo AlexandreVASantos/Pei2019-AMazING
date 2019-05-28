@@ -45,15 +45,15 @@ def node_life_cycle():
 	while True:
 		try:
 			#values = subprocess.check_output('sensors | grep -B 3 "ALARM"', shell=True, universal_newlines=True)
-			values = subprocess.check_output('sensors', shell=True)
-			if values != None or values != "":
-				readings = values.decode('utf-8')
+			#values = subprocess.check_output('sensors', shell=True)
+			#if values != None or values != "":
+			#	readings = values.decode('utf-8')
 				#node_id = get_hostname()
 				
 				
-				current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			#	current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-				data = { str(node_id) : [current_date, readings.encode('utf-8')]}
+			#	data = { str(node_id) : [current_date, readings.encode('utf-8')]}
 				#producer.send('alerts', value=data)
 				
 				

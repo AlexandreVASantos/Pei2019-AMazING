@@ -38,7 +38,7 @@
 			<br>
 			<br>
 			<br>
-			<div  id = "poeinfo" class="container" style="text-align:left;background-color: #1111;"></div>
+			<div  id = "poeinfo" style="text-align:left;background-color: #1111;"></div>
 
 
 
@@ -233,17 +233,20 @@
 	$("button").click(function(){
 		inHTML = document.getElementById("btnpoe").innerHTML;
 		if(inHTML == "Show PoE Info"){ 
-	    	$.get("/stats/poe", function (data) {
-	            document.getElementById("btnpoe").innerHTML = "Hide PoE Info";
-	            var info = "<p>" + data["info"]+ "</p>";
-	        	$("#poeinfo").append(info);
-	       
-	               
+	    	$.get("/stats/poe/", function (data) {
+	       document.getElementById("btnpoe").innerHTML = "Hide PoE Info";
+	        var info = data["info"];
+          var i;
+          for(i=0;i<Object.keys(info).length;i++){
+	          $("#poeinfo").text(info[i]);
+            $("#poeinfo").append("<br>");
+          }
+                    
 	        
 	        });
 	    }else{
 	    	document.getElementById("btnpoe").innerHTML = "Show PoE Info";
-	    	$("#poeinfo").remove();
+	    	$("#poeinfo").empty();
 	    }
 
 
