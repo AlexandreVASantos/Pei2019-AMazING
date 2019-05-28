@@ -1,17 +1,18 @@
 import requests
 import re
 import json
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import HttpResponse
+from django.contrib.auth import login,authenticate,logout
 from kafka import KafkaProducer
 from kafka import KafkaConsumer
 import sqlite3
 import datetime
 from json import dumps
+from django.views.decorators.csrf import csrf_exempt
 from background_task import background
 from time import sleep
-from django.views.decorators.csrf import csrf_exempt
 
 grid={}
 
@@ -39,44 +40,66 @@ def auth(request):
 
 
 	user = authenticate(username=username,password=password)
-	print(user)
 	if user is not None:
-		print("ola")
 		login(request,user)
-
+		refresh_grid()
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+user : [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		return redirect('NodeMenu/')
+		return render(request,'main/NodeMenu.html',{'node_grid':grid})
 	else:
 		messages.warning(request,"Invalid credentials")
-	print("adeus")
+		system_messages.used = True
 	return render(request,'main/login.html')
 
 def AccessP(request):
-	return render(request,'main/AccessP.html')
+	data=request.GET
+	print(data)
+	ident=data['id']
+	return render(request,'main/AccessP.html',{'id':ident})
 
 def home(request):
 	return render(request, 'main/login.html')
 
 def modBitrate(request):
-	return render(request, 'main/modBitrate.html')
+	data=request.GET
+	print(data)
+	ident=data['id']
+	return render(request, 'main/modBitrate.html',{'id':ident})
 
 def about(request):
 	return render(request, 'main/about.html')
 
-def menu(request):
-	return render(request, 'main/menu.html')
+def Logout(request):
+	logout(request)
+	return render(request, 'main/login.html')
+
+def menu(request):	
+	data = request.GET
+	ident=""
+
+	for key in data:
+		if data[key] == "ON":
+			ident = key 
+
+
+	node_busy(request,{'id':ident});
+	refresh_grid()
+	return render(request, 'main/menu.html',{'id':ident})
 
 def connection(request):
-	return render(request, 'main/connection.html')
+	data=request.GET
+	print(data)
+	ident=data['id']
+	return render(request, 'main/connection.html',{'id':ident})
 
 def NodeMenu(request):
-	return render(request, 'main/NodeMenu.html')
+	refresh_grid()
+	return render(request, 'main/NodeMenu.html',{'node_grid':grid})
 
 def main(request):
 	return render(request, 'main/main.html')
@@ -85,55 +108,79 @@ def help(request):
 	return render(request, 'main/help.html')
 
 def stationPeer(request):
-	return render(request, 'main/stationPeer.html')
+	data=request.GET
+	print(data)
+	ident=data['id']
+	return render(request, 'main/stationPeer.html',{'id':ident})
 
 def addrChange(request):
-	return render(request, 'main/addrChange.html')
+	data=request.GET
+	ident=data['id']
+	return render(request, 'main/addrChange.html',{'id':ident})
 
 def setTxPower(request):
-	return render(request, 'main/SetTxPower.html')
+	data=request.GET
+	print(data)
+	ident=data['id']
+	return render(request, 'main/SetTxPower.html',{'id':ident})
 
 def postAccessP(request):
-	url = "http://httpbin.org/post"
 	data = request.GET
+	ident=data['id']
+	url = "http://10.110.1." + ident + ":5000/CreateAcessPoint"
 	dic={}
+	channel = int(data["Channel"])
 
-	if 1:
-	#if(verify_Channel(request,data["Channel"]) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
+	if(verify_Channel(request,channel) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
 		for key in data:
 			print(key)
 			dic[key] = data[key]
 
+		if "id" in dic:
+			del dic["id"]
+
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
-		updatedReqResp = req.json()
+		#updatedReqResp = req.json()
 
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Create Access Point','1' ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["HW_Mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {'User: '+username : [curdate, 'Create Access Point','1' ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		return render(request, 'main/AccessP.html', {"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":False,"req":updatedReqResp})
+		return render(request, 'main/AccessP.html', {"flagAP":True,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":False,'id':ident})#"req":updatedReqResp,
 	
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-	print(req.json())
-	return render(request,'main/AccessP.html')
+	#print(req.json())
+	return render(request,'main/AccessP.html',{'id':ident})
 
-def postDisconnect(request):
-	#url = "http://10.42.0.95:5000/disconnect"
-	url = "http://httpbin.org/post"
+def postStopAccessPoint(request):
 	data = request.GET
+	ident=data['id']
 	dic={}
+	url = "http://10.110.1." +ident + ":5000/StopAccessPoint"
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-	print(req.json())
+	#print(req.json())
+	return render(request,'main/menu.html',{'id':ident})	
+
+def postDisconnect(request):
+	data = request.GET
+	ident=data['id']
+	dic={}
+	url = "http://10.110.1." + ident + ":5000/disconnect"
+
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	#print(req.json())
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -142,7 +189,7 @@ def postDisconnect(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	return render(request,'main/menu.html')	
+	return render(request,'main/menu.html',{'id':ident})	
 
 def postTurnOnNode(request):
 	#url = "http://" 				falar alex
@@ -154,14 +201,13 @@ def postTurnOnNode(request):
 	for key in data:
 		if data[key] == "OFF":
 			dic["id"] = key 
-			nodes += ' key'
-
+	ident = dic["id"]
 
 	#print(dic)
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-	updatedReqResp = req.json()
+	#updatedReqResp = req.json()
 	#print(updatedReqResp)
 	node_up(request,dic)
 	refresh_grid()
@@ -173,21 +219,24 @@ def postTurnOnNode(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	return render(request,'main/NodeMenu.html',{'node_grid':grid})
+	return render(request,'main/NodeMenu.html',{'node_grid':grid,'id':ident})
 
 def postScanning(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/changeIP"
 	data = request.GET
+	ident=data['id']
 	dic={}
-	#print(data)
+	url = "http://10.110.1." + ident + ":5000/scan"
 
 	if(verify_NetwC(request,data)):	
 		
 		for key in data:
-			#print(key)
+			print(key)
 			dic[key] = data[key]
 
+		if "id" in dic:
+			del dic["id"]
+
+		print(dic)	
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
@@ -200,7 +249,7 @@ def postScanning(request):
 		sleep(2)
 
 		#print(req.json())
-		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
+		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -214,20 +263,22 @@ def postScanning(request):
 	sleep(2)
 
 	#print(req.json())
-	return render(request,'main/menu.html')	
+	return render(request,'main/menu.html',{'id':ident})
 
 def postLinkStatus(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/changeIP"
 	data = request.GET
+	ident=data['id']
 	dic={}
-	#print(data)
+	url = "http://10.110.1." + ident + ":5000/link"
 
 	if(verify_NetwC(request,data)):	
 		
 		for key in data:
 			#print(key)
 			dic[key] = data[key]
+
+		if "id" in dic:
+			del dic["id"]
 
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
@@ -241,7 +292,7 @@ def postLinkStatus(request):
 		sleep(2)
 
 		#print(req.json())
-		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":True,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False})
+		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":True,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -256,14 +307,57 @@ def postLinkStatus(request):
 	sleep(2)
 
 	#print(req.json())
-	return render(request,'main/menu.html')
+	return render(request,'main/menu.html',{'id':ident})
 
+def postLocalWireless(request):
+	data = request.GET
+	ident=data['id']
+	dic={}
+	url = "http://10.110.1." + ident + ":5000/localwireless"
+	#print(data)
 
+	if(verify_NetwC(request,data)):	
+		
+		for key in data:
+			#print(key)
+			dic[key] = data[key]
+
+		if "id" in dic:
+			del dic["id"]
+
+		dataToSend = json.dumps(dic)
+		headers = {'Content-Type': 'application/json'}
+		req = requests.post(url,data=dataToSend, headers=headers)
+
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+		username='username'
+		data = {'User: '+username : [curdate, 'Link Status',1 ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		producer.send('numtest', value=data)
+		sleep(2)
+
+		#print(req.json())
+		return render(request, 'main/menu.html', {"flagLC":True,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})
+
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	#print(data)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+	username='username'
+	data = {'User: '+username : [curdate, 'Link Status',1 ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	producer.send('numtest', value=data)
+	sleep(2)
+
+	#print(req.json())
+	return render(request,'main/menu.html',{'id':ident})
 
 def postIPChange(request):
-	url = "http://httpbin.org/post"
-	#url = "http://10.42.0.2:5000/changeIP"
 	data = request.GET
+	ident=data['id']
+	url = "http://10.110.1." + ident + ":5000/changeIP"
 	dic={}
 	
 	if(verify_IP(request,data["IP"]) and verify_netmask(request,data["Netmask"]) and not (len(data)==0)):	
@@ -272,6 +366,9 @@ def postIPChange(request):
 			dic[key] = data[key]
 
 		#print(dic)
+		if "id" in dic:
+			del dic["id"]
+
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
@@ -283,9 +380,9 @@ def postIPChange(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		updatedReqResp = req.json()
+		#updatedReqResp = req.json()
 		#print(req.json())
-		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp})
+		return render(request, 'main/addrChange.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})#"req":updatedReqResp
 	
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -299,16 +396,14 @@ def postIPChange(request):
 	sleep(2)
 
 	#print(req.json())
-	return render(request,'main/addrChange.html')
+	return render(request,'main/addrChange.html',{'id':ident})
 
 def postConnection(request):
-	url = "http://httpbin.org/post"
-	#url = "http://10.42.0.2:5000/connection"
 	data = request.GET
-	dic={}
 	#print(data)
-	#dic = {"data":"123"}
-	#dic = {"data":"123"}
+	ident=data['id']
+	url = "http://10.110.1." + ident +":5000/connection"
+	dic={}
 
 	if(verify_NetwC(request,data) and not (len(data)==0)):	
 			if data["Frequency"]:
@@ -332,6 +427,9 @@ def postConnection(request):
 				#print(key)
 				dic[key] = data[key]
 
+			if "id" in dic:
+				del dic["id"]
+
 			dataToSend = json.dumps(dic)
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post(url,data=dataToSend, headers=headers)
@@ -344,7 +442,7 @@ def postConnection(request):
 			sleep(2)
 
 			#print(req.json())
-			return render(request, 'main/connection.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True})
+			return render(request, 'main/connection.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True,'id':ident})
 			
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -358,21 +456,24 @@ def postConnection(request):
 	sleep(2)
 
 	#print(req.json())
-	return render(request,'main/connection.html')
+	return render(request,'main/connection.html',{'id':ident})
 	
 
 def postStationStats(request):
-	url = "http://httpbin.org/post"
-	#url = "http://10.42.0.2:5000/stationstats"
 	data = request.GET
+	ident=data['id']
+	url = "http://10.110.1." + ident +":5000/stationstats"
 	dic={}
-	#print(data)
+
 
 	if(verify_NetwC(request,data)):	
 		
 		for key in data:
 			#print(key)
 			dic[key] = data[key]
+
+		if "id" in dic:
+			del dic["id"]
 
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
@@ -388,8 +489,8 @@ def postStationStats(request):
 
 
 		#print(req.json())
-		updatedReqResp = req.json()
-		return render(request, 'main/menu.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp})
+		#updatedReqResp = req.json()
+		return render(request, 'main/menu.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})#"req":updatedReqResp,
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -403,24 +504,26 @@ def postStationStats(request):
 	sleep(2)
 
 	#print(req.json())
-	return render(request,'main/menu.html')
+	return render(request,'main/menu.html',{'id':ident})
 
 def postModBitrate(request):
-	url = "http://httpbin.org/post"					
-	#url = "http://10.42.0.95:5000/stationstats"
 	data = request.GET
+	ident=data['id']
+	url = "http://10.110.1." + ident +":5000/modtxhtmcsbitrates"
 	dic={}
-	#print(data)
 
 	if(verify_NetwC(request,data)):	
 		for key in data:
 			print(key)
 			dic[key] = data[key]
 
+		if "id" in dic:
+			del dic["id"]
+
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
-		updatedReqResp = req.json()
+		#updatedReqResp = req.json()
 
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -429,12 +532,12 @@ def postModBitrate(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		return render(request, 'main/modBitrate.html', {"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":True,"req":updatedReqResp})
+		return render(request, 'main/modBitrate.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":True,'id':ident})#"req":updatedReqResp,
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-	print(req.json())
+	#print(req.json())
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -443,15 +546,13 @@ def postModBitrate(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	return render(request,'main/menu.html')	
+	return render(request,'main/modBitrate.html',{'id':ident})		
 
 
 def postStationPeer(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/changeIP"
 	data = request.GET
-	#print(data)
-	#dic = {"data":"123"}
+	ident=data['id']
+	url = "http://10.110.1." + ident + ":5000/stationpeerstats"
 	mac=data["MAC"]
 	dic={}
 
@@ -463,6 +564,9 @@ def postStationPeer(request):
 				dic[key] = data[key]
 
 			#print(dic)	
+
+			if "id" in dic:
+				del dic["id"]
 
 			dataToSend = json.dumps(dic)
 			headers = {'Content-Type': 'application/json'}
@@ -476,7 +580,7 @@ def postStationPeer(request):
 			sleep(2)
 
 			#print(req.json())
-			return render(request, 'main/stationPeer.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":True,"flagTP":False,"flagC":False})
+			return render(request, 'main/stationPeer.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":True,"flagTP":False,"flagC":False,'id':ident})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -490,24 +594,24 @@ def postStationPeer(request):
 	sleep(2)
 
 	#print(req.json())
-	return render(request,'main/stationPeer.html')
+	return render(request,'main/stationPeer.html',{'id':ident})
 	
 	
 
 def postTxPower(request):
-	url = "http://httpbin.org/post"
-	#url = "http://192.168.0.25:5000/settingtxpowerdev"
 	data = request.GET
+	ident=data['id']
+	url = "http://10.110.1." + ident + ":5000/settingtxpowerdev"
 	dic={}
-	#print(data)
-	#dic = {"data":"123"}
-	#dic = {"data":"123"}
 	
 	if(verify_NetwC(request,data) and not (len(data)==0)):	
 		
 		for key in data:
 			#print(key)
 			dic[key] = data[key]
+
+		if "id" in dic:
+			del dic["id"]
 
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
@@ -520,7 +624,7 @@ def postTxPower(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 		
-		return render(request, 'main/SetTxPower.html',{"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":True,"flagC":False})
+		return render(request, 'main/SetTxPower.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":True,"flagC":False,'id':ident})
 
 
 	dataToSend = json.dumps(dic)
@@ -535,18 +639,43 @@ def postTxPower(request):
 	sleep(2)
 
 	#print(req.json())
-	return render(request,'main/SetTxPower.html')
+	return render(request,'main/SetTxPower.html',{'id':ident})
 
 
-def get(request):
-	url = "http://192.168.0.25:5000/changeIP"
-	#producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
-	url = "http://10.42.0.2:5000/getlist"
+@csrf_exempt
+def compare_owner(request):
+	dic=request.GET
+	ident = dic["id"]
+	print("id",ident)
+	ownerList = node_owner(request,dic)
+	owner=ownerList[0]
 
-	headers = {'Content-Type': 'application/json'}
-	req = requests.get(url, headers=headers)
-	#print(req.json())
-	return render(request, 'main/menu.html')
+	refresh_grid()
+	if owner[0] == request.user.get_username():
+		return render(request,'main/menu.html',{"id":ident})
+	else:
+		return render(request,'main/NodeMenu.html',{"node_grid":grid,"id":ident})
+
+
+@csrf_exempt
+def node_owner(request,dic):
+	try:
+		node = dic["id"]
+		print(node)
+		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		c=connection.cursor()
+
+		query = "Select owner From node where id='"+ str(node) +"';"
+		#Only at this time we can update the value of the node in the database
+		
+		c.execute(query)
+		fetch= c.fetchall()
+		connection.close()
+		
+		return fetch
+
+	except sqlite3.Error as e:			
+		return render(request, 'main/NodeMenu.html', {'message' : 'database error'})
 
 @csrf_exempt
 def node_up(request,dic):
@@ -570,16 +699,21 @@ def node_up(request,dic):
 
 @csrf_exempt
 def node_busy(request,dic):
+	 
 	try:
+		user=request.user.get_username()
+		
 		node = dic["id"]
 		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()
 
-		query = "Update node Set value='BUSY' where id="+ str(node) +";"
+		query = "Update node Set value='BUSY', owner='" + str(user) + "' where id="+ str(node) +";"
 		#Only at this time we can update the value of the node in the database
-		
+		#print(query)
 		c.execute(query)
+		
 		connection.commit()
+		
 		connection.close()
 		
 		return render(request, 'main/menu.html', {'message' : 0})
@@ -587,9 +721,8 @@ def node_busy(request,dic):
 	except sqlite3.Error as e:			
 		return render(request, 'main/NodeMenu.html', {'message' : 'database error'})
 
-
 @csrf_exempt
-def send_grid(request):
+def send_grid(request):		#esta funcao tem que ser alterada (grid)
 	
 	code = refresh_grid()
 
@@ -677,7 +810,18 @@ def send_grid(request):
 	
 	return render(request,'main/NodeMenu.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
 	
-	
+
+def get_IP(NOwner,NId):
+	try:	
+		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		c=connection.cursor()	
+		c.execute("Select IP from node where owner="+ str(NOwner) +",id="+ str(NId) +";")
+		fetch= c.fetchall()
+		connection.close()
+		print("ip;",fetch)
+		return fetch
+	except sqlite3.Error as e:
+		return 1,str(e)
 
 def refresh_grid():
 	try:	
@@ -695,6 +839,8 @@ def refresh_grid():
 		return 0,grid
 	except sqlite3.Error as e:
 		return 1,str(e)
+
+
 
 
 def verify_netmask(request,netmask):
@@ -760,7 +906,39 @@ def verify_wep(request,wep):
 def verify_NetwC(request,dic):
 	system_messages = messages.get_messages(request)
 	if "NetwC" not in dic:
-		messages.warning(request, 'Please select NetwC.')
+		messages.warning(request, 'Please select Wlan.')
+		system_messages.used = True
+		return 0
+	return 1
+
+def verify_Range(request,rangeStart,rangeStop):
+	system_messages = messages.get_messages(request)
+	RSta = rangeStart.split('.')
+	RSto = rangeStop.split('.')
+	print("RSta",RSta)
+	print("RSto",RSto)
+
+	if len(RSta) is not 4 :
+		messages.warning(request, 'Please insert a valid IP on range Start.')
+		system_messages.used = True
+		return 0
+	if len(RSto) is not 4 :
+		messages.warning(request, 'Please insert a valid IP on range Stop.')
+		system_messages.used = True
+		return 0
+
+	if RSta[0] <= RSto[0] and RSta[1] <= RSto[1] and RSta[2] <= RSto[2] and RSta[3] <= RSto[3]:
+		return 1
+	
+	messages.warning(request, 'Please insert a valid IP range.')
+	system_messages.used = True
+	return 0
+
+def verify_Channel(request,channel):
+	system_messages = messages.get_messages(request)
+	print(channel)
+	if channel not in range(0,12):
+		messages.warning(request, 'Please insert a valid Channel (1-11).')
 		system_messages.used = True
 		return 0
 	return 1

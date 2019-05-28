@@ -19,7 +19,7 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value='{{id}}' href="{% url 'menu' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
@@ -36,17 +36,17 @@
         </div>
        </form> 
 
-      <form  action="/postDisconnect/" method ='GET'> 
+        <form  action="/StopAccessP/" method ='GET'> 
         <div class="row align-items-stretch program">
           <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value='{{id}}' href="{% url 'menu' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
-                  <h2 style="color:black">Disconnect From Network</h2>  
+                  <h2 style="color:black">Stop Access Point</h2>  
                 </div>
             </div>
             {% if flagEL %}
@@ -65,7 +65,7 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'menu' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
@@ -90,7 +90,7 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'menu' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
@@ -115,18 +115,64 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'connection' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'connection' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
                   <h2 style="color:black">Establish a basic connection</h2>  
-                  <!--<input type="radio" name="NetwC" value="wlp1s0" required="required"> wlp1s0<br>
-                    <input type="radio" name="NetwC" value="wlp5s0"> wlp5s0<br>-->
                 </div>
             </div>
           </div>
         </div>
        </form>
+
+       <form  action="/LocalW/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Local Wireless status</h2>  
+                  <input type="radio" name="NetwC" value="wlp1s0" required="required"> wlp1s0<br>
+                    <input type="radio" name="NetwC" value="wlp5s0"> wlp5s0<br>
+                </div>
+            </div>
+            {% if flagLS %}
+              <br>
+              <div class="container" style="min-height: 27vh">
+                {{req}}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+       </form>
+
+       <form  action="/postDisconnect/" method ='GET'> 
+        <div class="row align-items-stretch program">
+          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
+            <div class="row align-items-stretch">
+                <div class="col-md-3 text-white mb-3 mb-md-0">
+                 <span style="color:black" class="h4">
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'menu' %}">GO!</button>
+                  </span>
+                </div>
+                <div class="col-md-9">
+                  <h2 style="color:black">Disconnect From Network</h2>  
+                </div>
+            </div>
+            {% if flagEL %}
+              <br>
+              <div class="container" style="min-height: 27vh">
+                  {{req}}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+       </form> 
 
        <form  action="/postStationStats/" method ='GET'> 
         <div class="row align-items-stretch program">
@@ -134,7 +180,7 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'menu' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
@@ -159,7 +205,7 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'stationPeer' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'stationPeer' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
@@ -170,38 +216,13 @@
         </div>
        </form>
 
-       <form  action="/menu/" method ='GET'> 
-        <div class="row align-items-stretch program">
-          <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
-            <div class="row align-items-stretch">
-                <div class="col-md-3 text-white mb-3 mb-md-0">
-                 <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
-                  </span>
-                </div>
-                <div class="col-md-9">
-                  <h2 style="color:black">Modifying transmit bitrates (Legacy)</h2>  
-                  <input type="radio" name="NetwC" value="wlp1s0" required="required"> wlp1s0<br>
-                    <input type="radio" name="NetwC" value="wlp5s0"> wlp5s0<br>
-                </div>
-            </div>
-            {% if flag %}
-              <br>
-              <div class="container" style="min-height: 27vh">
-                {{req}}
-              </div>
-            {% endif %}
-          </div>
-        </div>
-       </form> 
-
        <form  action="/modBitrate/" method ='GET'> 
         <div class="row align-items-stretch program">
           <div class="col-12 border-top border-bottom py-5" data-aos="fade" data-aos-delay="200" style="color:black">
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'menu' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'menu' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
@@ -224,7 +245,7 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'setTxPower' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'setTxPower' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">
@@ -241,7 +262,7 @@
             <div class="row align-items-stretch">
                 <div class="col-md-3 text-white mb-3 mb-md-0">
                  <span style="color:black" class="h4">
-                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit"  href="{% url 'addrChange' %}">GO!</button>
+                    <button class="btn" id="1" style="background-color:#0061ff;color:#FFFF" type="submit" name=id value="{{id}}" href="{% url 'addrChange' %}">GO!</button>
                   </span>
                 </div>
                 <div class="col-md-9">

@@ -4,7 +4,11 @@ from . import views
 
 urlpatterns = [
     path('',views.home, name=''),
+    path('LocalW/',views.postLocalWireless,name='LocalW'),
+    path('StopAccessP/',views.postStopAccessPoint,name='StopAccessP'),
+    path('nodeCompare/',views.compare_owner,name='nodeCompare'),
     path('nodeChange/',views.postTurnOnNode,name='nodeChange'),
+    path('logout/',views.Logout,name='logout'),
     path('auth/',views.auth, name='auth'),
     path('about/',views.about, name='about'),
     path('menu/',views.menu, name='menu'),
@@ -21,11 +25,9 @@ urlpatterns = [
     path('postScanning/',views.postScanning, name='postScanning'),
     path('postLinkStatus/',views.postLinkStatus, name='postLinkStatus'),
     path('postStationStats/',views.postStationStats, name='postStationStats'),
-    path('get/',views.get, name='get'),
     path('setTxPower/',views.setTxPower, name='setTxPower'),
     path('postTxPower/',views.postTxPower, name='postTxPower'),
     path('help/',views.help, name='help'),
-    path('get/',views.get, name='get'),
     path('stationPeer/',views.stationPeer, name='stationPeer'),
     path('addrChange/',views.addrChange, name='addrChange')
 ]

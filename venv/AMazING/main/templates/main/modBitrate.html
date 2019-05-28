@@ -1,7 +1,7 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% block content %}
-	
+    
 {% if messages %}
 <ul class="messages">
     {% for msg in messages %}       
@@ -14,25 +14,25 @@
 </ul>
 {% endif %}
 
-	<form action="/postModBitrate/" method ='get'>
+    <form action="/postModBitrate/" method ='get'>
     <div class="form-group" align="center">
         <label style="color:#000" align="center">Lbits</label>
         <input type="text" class="form-control" name="Lbits" placeholder="Lbits">
       </div>
-	  <div class="form-group" align="center">  
+      <div class="form-group" align="center">  
         <input type="radio"  name="NetwC" value="wlp1s0" required="required"> <label style="color:#000">wlp1s0</label>
         <input type="radio"  name="NetwC" value="wlp5s0"> <label style="color:#000">wlp5s0</label>
       </div>
-	  <div class="from-group" align="center">
-	  	<button style="background-color:#0061ff;color:#ffff" type="submit" class="btn">Submit</button>
-	  </div>
-		{% if flagMB %}
+      <div class="from-group" align="center">
+        <button style="background-color:#0061ff;color:#ffff" type="submit"  name=id value="{{id}}" class="btn">Submit</button>
+      </div>
+        {% if flagMB %}
         <br>
         <div class="container" style="min-height:27vh">
             {{req}}
         </div>
       {% endif %}
-	</form>
+    </form>
 
 {% endblock content %}
 
