@@ -129,7 +129,7 @@
 			<div class="gtco-container" id = "body_text" style= "width:90%;float:right;margin-top: 1%">
 				<div class="row row-pb-sm">
 					<div class="col-md-8 col-md-offset-2 gtco-heading" >
-						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Nodes</h2>
+						<h2><a id="N" style="position:absolute; margin-top:-15%"></a>Nodes</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
 						
 						<p style=" text-align: justify;font-size: 110%"> For the nodes we used an <a href="https://www.pcengines.ch/apu2.htm">APU board from PCEngines</a>. </p>
@@ -159,7 +159,7 @@ echo 'password' | sudo -S apt-get install wpasupplicant -y
 
 echo 'password' | sudo -S apt-get install unzip -y
 
-#Uncomment next line if you do not have python3 installed, you can check it with python3 --version
+#Uncomment the next line if you do not have python3 installed, you can check it with python3 --version
 #echo 'password' | sudo -S apt-get install python3 -y
 
 ##dont_delete is were you put all files needed for run apps at boot
@@ -184,10 +184,6 @@ echo 'password' | sudo -S chown root /home/amazing/dont_delete/init_node.sh
 
 echo 'password' | sudo -S chmod 775 /home/amazing/dont_delete/init_node.sh
 
-echo 'password' | sudo -S chown root /home/amazing/dont_delete/wake_up.sh
-
-echo 'password' | sudo -S chmod 775 /home/amazing/dont_delete/wake_up.sh
-
 echo 'password' | sudo -S apt-get install python3-pip -y
 
 echo 'password' | sudo -S pip3 install virtualenv
@@ -200,6 +196,9 @@ echo 'password' | sudo -S pip3 install -r /home/amazing/dont_delete/requirements
 
 
 						</code></pre>
+						
+						<br>
+						<br>
 						<p style=" text-align: justify;font-size: 110%">requirementsAPI.txt content:</p>
 						<pre><code>
 aniso8601==5.1.0
@@ -217,16 +216,37 @@ six==1.12.0
 Werkzeug==0.14.1
 						</code></pre>
 						
+						<br>
+						<br>
+						
+						<p style=" text-align: justify;font-size: 110%">init_node.sh content:</p>
+						<pre><code>
+#!/bin/bash
+
+source /home/amazing/dont_delete/venv/bin/activate
+
+sudo python3 /home/amazing/dont_delete/APIPEI.py &
+
+sudo python3 /home/amazing/dont_delete/node_init.py &
+
+						</code></pre>
+						<br>
+						<br>
 						<p style=" text-align: justify;font-size: 110%"> Next you need to put the scripts to be run at boot, you need to create a crontab as root</p>
 
 						<pre><code>
 $ sudo crontab -e
 						</code></pre>
 						
+						<br>
+						<br>
+						
 						<p style=" text-align: justify;font-size: 110%"> Choose option 1 and at the end of the file put:</p>
 						<pre><code>
 @reboot path/to/script/name_of_script.sh
 						</code></pre>
+						<br>
+						<br>
 						
 						
 
@@ -241,7 +261,7 @@ $ sudo crontab -e
 			
 				<div class="row row-pb-sm">
 					<div class="col-md-8 col-md-offset-2 gtco-heading" >
-						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Restful API</h2>
+						<h2><a id="RA" style="position:absolute; margin-top:-15%"></a>Restful API</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
 						
 						<p style=" text-align: justify;font-size: 110%"> If you have done the previous step correctly you are now able to run a Flask API. </p>
@@ -252,7 +272,7 @@ $ sudo crontab -e
 				
 				<div class="row row-pb-sm">
 					<div class="col-md-8 col-md-offset-2 gtco-heading" >
-						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Node Config App App</h2>
+						<h2><a id="NC" style="position:absolute; margin-top:-15%"></a>Node Config App App</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
 						
 						<p style=" text-align: justify;font-size: 110%"> The Switch Controller App allows the AMazING admin to turn on or off nodes by enabling or disabling the switch PoE ports. 
@@ -262,14 +282,25 @@ $ sudo crontab -e
 						<pre><code>
 $ sudo apt-get update
 $ sudo apt-get install python3-pip
+$ sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
 $ sudo pip3 install virtualenv
 $ sudo virtualenv path/to/virtualenv/name_of_virtualenv
 $ source path/to/virtualenv/name_of_virtualenv
 $ sudo pip3 install -r requirements.txt
 						</code></pre>
-						<h5><a style="position:absolute; margin-top:-15%"></a>requirements.txt content</h5>
+						
+						<br>
+						<br>
+						<p><a style="position:absolute; margin-top:-15%"></a>requirements.txt content:</h5>
 						<pre><code>
-
+python-ldap==3.2.0
+kafka-python==1.4.6
+Django==2.2.1
+django-auth-ldap==1.7.0
+django-background-tasks==1.2.0
+django-crispy-forms==1.7.2
+djangorestframework==3.9.2
+requests==2.21.0
 						</code></pre>
 						
 						
@@ -296,9 +327,53 @@ $ sudo virtualenv path/to/virtualenv/name_of_virtualenv
 $ source path/to/virtualenv/name_of_virtualenv
 $ sudo pip3 install -r requirements.txt
 						</code></pre>
+						<br>
+						<br>
 						<p style=" text-align: justify;font-size: 110%">requirements.txt content</p>
 						<pre><code>
+Django==2.1.7
+django-background-tasks==1.2.0
+kafka-python==1.4.6
+python-dateutil==2.8.0
+requests==2.21.0
 
+						</code></pre>
+						
+						
+						<p style=" text-align: justify;font-size: 110%"> At this moment everything you need to run the App is installed in the virtual environment. If you dont't know how to create a django app please check the <a href="https://docs.djangoproject.com/en/2.2/intro/tutorial01/" >tutorial </a>at the official django web page </p>
+						
+					</div>
+				</div>
+				
+				<div class="row row-pb-sm">
+					<div class="col-md-8 col-md-offset-2 gtco-heading" >
+						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Notes</h2>
+						
+						<p style=" text-align: justify;font-size: 110%"> If you want to have the two web apps running on the same machine you just need to merge the steps above. </p>
+						
+						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing environment</h4>
+						<pre><code>
+$ sudo apt-get update
+$ sudo apt-get install python3-pip
+$ sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
+$ sudo pip3 install virtualenv
+$ sudo virtualenv path/to/virtualenv/name_of_virtualenv
+$ source path/to/virtualenv/name_of_virtualenv
+$ sudo pip3 install -r requirements.txt
+						</code></pre>
+						<br>
+						<br>
+						<p style=" text-align: justify;font-size: 110%">requirements.txt content</p>
+						<pre><code>
+Django==2.2.1
+django-auth-ldap==1.7.0
+django-background-tasks==1.2.0
+django-crispy-forms==1.7.2
+djangorestframework==3.9.2
+kafka-python==1.4.6
+python-dateutil==2.8.0
+python-ldap==3.2.0
+requests==2.21.0
 						</code></pre>
 						
 						
