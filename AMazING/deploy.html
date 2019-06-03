@@ -235,17 +235,18 @@ sudo python3 /home/amazing/dont_delete/node_init.py &
 						</code></pre>
 						<br>
 						<br>
-						<p style=" text-align: justify;font-size: 110%"> Next you need to put the scripts to be run at boot, you need to create a crontab as root</p>
+
+						<p style=" text-align: justify;font-size: 110%"> Next you need to put the scripts running at boot, so you need to create a crontab as root:</p>
+
 
 						<pre><code>
 $ sudo crontab -e
 						</code></pre>
-						
-						<br>
-						<br>
-						
-						<p style=" text-align: justify;font-size: 110%"> Choose option 1 and at the end of the file put:</p>
 
+						<br>
+						<br>
+	
+						<p style=" text-align: justify;font-size: 110%"> Choose option 1 and at the end of the file write:</p>
 						<pre><code>
 @reboot path/to/script/name_of_script.sh
 						</code></pre>
@@ -267,6 +268,9 @@ $ sudo crontab -e
 					<div class="col-md-8 col-md-offset-2 gtco-heading" >
 						<h2><a id="RA" style="position:absolute; margin-top:-15%"></a>Restful API</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
+						<p style=" text-align: justify;font-size: 110%"> For the node restful API running on nodes and communicating with Node Config App we decided to go with Python with a little help of Flask. We even went further and used a microframework, Flask-Restful. Flask is a powerfull framework that
+						in opposition with Django it is better user firendly when no web page is needed.</p>
+						
 						
 						<p style=" text-align: justify;font-size: 110%"> If you have done the previous step correctly you are now able to run a Flask API. </p>
 						
@@ -280,8 +284,7 @@ $ sudo crontab -e
 						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Node Config App</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
 						
-						<p style=" text-align: justify;font-size: 110%"> The Switch Controller App allows the AMazING admin to turn on or off nodes by enabling or disabling the switch PoE ports. 
-						We chose Python with a Flask-Restful microframework to build the backend API, also having some work done by the Django framework. For the front end html, css, javascript with jquery and ajax was used. </p>
+						<p style=" text-align: justify;font-size: 110%">Our Node Config App provides an abstraction layer for the end user when perform wireless configurations. We choose Python for building our app backend in addition with Django framework. For the front end html, css, javascript with jquery and ajax was used. </p>
 						
 						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing environment</h4>
 						<pre><code>
@@ -309,7 +312,26 @@ requests==2.21.0
 						</code></pre>
 						
 						
-						<p style=" text-align: justify;font-size: 110%"> Right now everything you need to run the Node Config App is installed in the virtual environment. </p>
+						<p style=" text-align: justify;font-size: 110%"> Right now everything you need to run the Node Config App is installed in the virtual environment.</p>
+						
+						<p style=" text-align: justify;font-size: 110%">But before you have the app up and running you have to star some services first. First you need to download <a href="https://kafka.apache.org/downloads">Kafka</a>, then if you want you can change files and do your own configurations. Next, to have the service running you have to do 2 commands. Use & at the end of each command if you want to run them both in the same terminal, which means, running in the background, or use 2 terminals.</p>
+						
+						<pre><code>
+sudo path/to/bin/zookeeper-server-start.sh config/zookeeper.properties
+
+sudo path/to/bin/kafka-server-start.sh config/server.properties
+						</code></pre>
+						
+						<br>
+						<br>
+						
+						<p style=" text-align: justify;font-size: 110%"> Next to run the app itself another 2 commands need to be done, 1 to effectively run the app and other to run background_tasks to connect with kafka, and again you can use 2 terminals or just use & at the end of each one.</p>
+						
+						<pre><code>
+sudo pyhton3 path/to/manage.py runserver IP:PORT 
+
+sudo pyhton3 path/to/manage.py process_tasks
+						</code></pre>
 						
 					</div>
 				</div>
@@ -319,9 +341,8 @@ requests==2.21.0
 					<div class="col-md-8 col-md-offset-2 gtco-heading" >
 						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Switch Controller App</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
-						
-						<p style=" text-align: justify;font-size: 110%"> The Switch Controller App allows the AMazING admin to turn on or off nodes by enabling or disabling the switch PoE ports. 
-						We chose Python with a Flask-Restful microframework to build the backend API, also having some work done by the Django framework. For the front end html, css, javascript with jquery and ajax was used. </p>
+						The Switch Controller App allows the AMazING admin to turn on or off nodes by enabling or disabling the switch PoE ports. 
+						Similarly to Node Config App, Python was choosen to build the app backend with the help of Django framework. For the front end html, css, javascript with jquery and ajax was used. </p>
 						
 						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing environment</h4>
 						<pre><code>
@@ -347,6 +368,8 @@ requests==2.21.0
 						
 						<p style=" text-align: justify;font-size: 110%"> Finally everything is installed and you can also run the Switch Controlling App in the virtual environment. 
 							To find out how to create a django app please check the <a href="https://docs.djangoproject.com/en/2.2/intro/tutorial01/" >tutorial </a>at the official django web page </p>
+						
+						<p style=" text-align: justify;font-size: 110%"> To run the app properly and without errors, like the Node Config App you need to have kafka and background-tasks running. </p>
 						
 					</div>
 				</div>
@@ -382,9 +405,29 @@ python-ldap==3.2.0
 requests==2.21.0
 						</code></pre>
 						
+						<br>
+						<br>
 						
-						<p style=" text-align: justify;font-size: 110%"> At this moment everything you need to run the App is installed in the virtual environment. If you dont't know how to create a django app please check the <a href="https://docs.djangoproject.com/en/2.2/intro/tutorial01/" >tutorial </a>at the official django web page </p>
+						<p style=" text-align: justify;font-size: 110%">Since you need to run several things it is better to create a script and use crontab again to make it run at boot.</p>
 						
+						
+						<pre><code>
+#!/bin/bash
+
+source path/to/virtualenv/name_of_virtualenv
+
+sudo path/to/bin/zookeeper-server-start.sh config/zookeeper.properties & 
+
+sudo path/to/bin/kafka-server-start.sh config/server.properties &
+
+sudo python3 /path/to/1stApp/manage.py runserver IP:PORT &
+
+sudo python3 /path/to/1stApp/manage.py process_tasks &
+
+sudo python3 /path/to/2stApp/manage.py runserver IP:PORT & 
+
+sudo python3 /path/to/2stApp/manage.py runserver process_tasks &
+						</code></pre>
 					</div>
 				</div>
 				
