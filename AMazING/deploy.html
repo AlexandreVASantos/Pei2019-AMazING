@@ -1,0 +1,375 @@
+<!DOCTYPE HTML>
+<!--
+	Cube by FreeHTML5.co
+	Twitter: http://twitter.com/gettemplateco
+	URL: http://freehtml5.co
+-->
+<html>
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="icon" href="images/AMazING_logo.png">
+	<title>AMazING</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	
+
+  	<!-- Facebook and Twitter integration -->
+	<meta property="og:title" content=""/>
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content=""/>
+	<meta property="og:site_name" content=""/>
+	<meta property="og:description" content=""/>
+	<meta name="twitter:title" content="" />
+	<meta name="twitter:image" content="" />
+	<meta name="twitter:url" content="" />
+	<meta name="twitter:card" content="" />
+
+	<link href="https://fonts.googleapis.com/css?family=Raleway:100,300,400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="css/icomoon.css">
+	<!-- Themify Icons-->
+	<link rel="stylesheet" href="css/themify-icons.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="css/bootstrap.css">
+
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="css/magnific-popup.css">
+
+	<!-- Owl Carousel  -->
+	<link rel="stylesheet" href="css/owl.carousel.min.css">
+	<link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="css/style.css">
+		
+	 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<!-- Modernizr JS -->
+	<script src="js/modernizr-2.6.2.min.js"></script>
+	<!-- FOR IE9 below -->
+	<!--[if lt IE 9]>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+
+	</head>
+	<body>
+		
+	<div class="gtco-loader"></div>
+	
+	<div id="page">
+
+		<nav class="gtco-nav" role="navigation" style="position:fixed;height:10%">
+			<div class="gtco-container">
+				
+				<div class="row">
+					<div class="col-sm-1 text-left menu-1">
+						<div id="gtco-logo"><a href="index.html"><img src="images/AMazING_logo.png" width="100%" alt=""></a></div>
+					</div> 
+					<div class="col-sm-16 text-right menu-1"  style="width:100%;margin-top: 1%">
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="client.html">Client</a></li>
+							<li><a href="scenarios.html">Vision and Scenarios</a></li>
+							<li><a href="scenarios.html">Architecture</a></li>
+							<li class="has-dropdown">
+								<a style="color:#6495ED">Manual</a>
+								<ul class="dropdown">
+									<li><a href="Manual.html"> Apps Manual</a></li>
+									<li><a href="deploy.html">Deployment</a></li>
+								</ul>
+							</li>
+							<li><a href="logbook.html">LogBook</a></li>
+							<li><a href="deliverables.html">Deliverables</a></li>
+							<li class="active" ><a href="about.html">About</a></li>
+						</ul>
+					</div>
+				</div>
+				
+			</div>
+		</nav>
+		<br>
+		<br>
+		
+		
+
+
+
+		
+		
+
+		<div class="gtco-section gtco-testimonial" >
+			<div class="gtco-container"  id= "nav_sec" style= "width:15%;float:left">
+				<nav class="md-nav md-nav--secondary" style="position:fixed;">
+						<ul class="md-nav__list">
+							<li class="md-nav__item">
+								<a href="#N" title="Log" class="md-nav__link"style="color:#6495ED">Nodes</a>
+							</li>
+							<li class="md-nav__item">
+								<a href="#RA" title="Log" class="md-nav__link"style="color:#6495ED">Restful API</a>
+							</li>
+							<li class="md-nav__item">
+								<a href="#NC" title="Log" class="md-nav__link"style="color:#6495ED">Node Config App</a>
+							</li>
+							<li class="md-nav__item">
+								<a href="#SW" title="Log" class="md-nav__link" style="color:#6495ED">Switch Controller App</a>
+							</li>
+							
+						</ul>
+					
+				</nav>
+				
+							
+			</div>
+		
+			<div class="gtco-container" id = "body_text" style= "width:90%;float:right;margin-top: 1%">
+				<div class="row row-pb-sm">
+					<div class="col-md-8 col-md-offset-2 gtco-heading" >
+						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Nodes</h2>
+						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
+						
+						<p style=" text-align: justify;font-size: 110%"> For the nodes we used an <a href="https://www.pcengines.ch/apu2.htm">APU board from PCEngines</a>. </p>
+						
+						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing OS</h4>
+						
+						<p style=" text-align: justify;font-size: 110%">In our case we choose Ubuntu Server 18.04 LTS to be the OS, which is available <a href= http://cdimage.ubuntu.com/releases/18.04.2/release/>here</a>. In case you choose the APU Board from PCEngines
+						pick the 64-bit PC (AMD64) server install image, since that with others there is no compability and you have to do incrementals updates from Ubuntu Server 14.04 LTS.</p>
+						
+						<p style=" text-align: justify;font-size: 110%">After the OS installation is completed you need to install all software needed to run the Restful API. The scrip should look like this:</p>
+						
+						
+						<pre><code>
+#!/bin/bash
+
+echo 'password' | sudo -S apt-get update -y
+
+echo 'password' | sudo -S apt upgrade -y
+
+echo 'password' | sudo -S apt-get install lm-sensors -y
+
+echo 'password' | sudo -S apt-get install wireless-tools -y
+
+echo 'password' | sudo -S apt-get install hostapd -y
+
+echo 'password' | sudo -S apt-get install wpasupplicant -y
+
+echo 'password' | sudo -S apt-get install unzip -y
+
+#Uncomment next line if you do not have python3 installed, you can check it with python3 --version
+#echo 'password' | sudo -S apt-get install python3 -y
+
+##dont_delete is were you put all files needed for run apps at boot
+
+echo 'password' | sudo -S mkdir /home/amazing/dont_delete
+
+mkdir /home/amazing/it_user
+
+echo 'password' | sudo -S mv /home/amazing/pei.zip /home/amazing/dont_delete/
+
+##pei.zip was sent to the node via scp (secure copy)
+
+echo 'password' | sudo -S unzip /home/amazing/dont_delete/pei.zip -d /home/amazing/dont_delete/
+
+echo 'password' | sudo -S rm -r /home/amazing/dont_delete/pei.zip
+
+echo 'password' | sudo -S mv /home/amazing/dont_delete/pei/* /home/amazing/dont_delete/
+
+echo 'password' | sudo -S rm -r /home/amazing/dont_delete/pei/
+
+echo 'password' | sudo -S chown root /home/amazing/dont_delete/init_node.sh
+
+echo 'password' | sudo -S chmod 775 /home/amazing/dont_delete/init_node.sh
+
+echo 'password' | sudo -S chown root /home/amazing/dont_delete/wake_up.sh
+
+echo 'password' | sudo -S chmod 775 /home/amazing/dont_delete/wake_up.sh
+
+echo 'password' | sudo -S apt-get install python3-pip -y
+
+echo 'password' | sudo -S pip3 install virtualenv
+
+echo 'password' | sudo -S virtualenv /home/amazing/dont_delete/venv
+
+source /home/amazing/dont_delete/venv/bin/activate
+
+echo 'password' | sudo -S pip3 install -r /home/amazing/dont_delete/requirementsAPI.txt
+
+
+						</code></pre>
+						<p style=" text-align: justify;font-size: 110%">requirementsAPI.txt content:</p>
+						<pre><code>
+aniso8601==5.1.0
+Click==7.0
+Flask==1.0.2
+Flask-RESTful==0.3.7
+itsdangerous==1.1.0
+Jinja2==2.10
+MarkupSafe==1.1.1
+numpy==1.16.2
+psutil==5.6.0
+pytz==2018.9
+relativetimebuilder==0.2.0
+six==1.12.0
+Werkzeug==0.14.1
+						</code></pre>
+						
+						<p style=" text-align: justify;font-size: 110%"> Next you need to put the scripts to be run at boot, you need to create a crontab as root</p>
+
+						<pre><code>
+$ sudo crontab -e
+						</code></pre>
+						
+						<p style=" text-align: justify;font-size: 110%"> Choose option 1 and at the end of the file put:</p>
+						<pre><code>
+@reboot path/to/script/name_of_script.sh
+						</code></pre>
+						
+						
+
+						<p style=" text-align: justify;font-size: 110%"> Now just need to CTRL+X and then ENTER. At this moment everything you need is installed in the node and running at boot time.</p>
+						
+					</div>
+				</div>
+				
+				
+				
+				
+			
+				<div class="row row-pb-sm">
+					<div class="col-md-8 col-md-offset-2 gtco-heading" >
+						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Restful API</h2>
+						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
+						
+						<p style=" text-align: justify;font-size: 110%"> If you have done the previous step correctly you are now able to run a Flask API. </p>
+						
+					</div>
+				</div>
+				
+				
+				<div class="row row-pb-sm">
+					<div class="col-md-8 col-md-offset-2 gtco-heading" >
+						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Node Config App App</h2>
+						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
+						
+						<p style=" text-align: justify;font-size: 110%"> The Switch Controller App allows the AMazING admin to turn on or off nodes by enabling or disabling the switch PoE ports. 
+						Python was choosen to build the app backend with the help of django framework. For the front end html, css, javascript with jquery and ajax was used. </p>
+						
+						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing environment</h4>
+						<pre><code>
+$ sudo apt-get update
+$ sudo apt-get install python3-pip
+$ sudo pip3 install virtualenv
+$ sudo virtualenv path/to/virtualenv/name_of_virtualenv
+$ source path/to/virtualenv/name_of_virtualenv
+$ sudo pip3 install -r requirements.txt
+						</code></pre>
+						<h5><a style="position:absolute; margin-top:-15%"></a>requirements.txt content</h5>
+						<pre><code>
+
+						</code></pre>
+						
+						
+						<p style=" text-align: justify;font-size: 110%"> At this moment everything you need to run the App is installed in the virtual environment. </p>
+						
+					</div>
+				</div>
+			
+				
+				<div class="row row-pb-sm">
+					<div class="col-md-8 col-md-offset-2 gtco-heading" >
+						<h2><a id="SW" style="position:absolute; margin-top:-15%"></a>Switch Controller App</h2>
+						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
+						
+						<p style=" text-align: justify;font-size: 110%"> The Switch Controller App allows the AMazING admin to turn on or off nodes by enabling or disabling the switch PoE ports. 
+						Python was choosen to build the app backend with the help of django framework. For the front end html, css, javascript with jquery and ajax was used. </p>
+						
+						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing environment</h4>
+						<pre><code>
+$ sudo apt-get update
+$ sudo apt-get install python3-pip
+$ sudo pip3 install virtualenv
+$ sudo virtualenv path/to/virtualenv/name_of_virtualenv
+$ source path/to/virtualenv/name_of_virtualenv
+$ sudo pip3 install -r requirements.txt
+						</code></pre>
+						<p style=" text-align: justify;font-size: 110%">requirements.txt content</p>
+						<pre><code>
+
+						</code></pre>
+						
+						
+						<p style=" text-align: justify;font-size: 110%"> At this moment everything you need to run the App is installed in the virtual environment. If you dont't know how to create a django app please check the <a href="https://docs.djangoproject.com/en/2.2/intro/tutorial01/" >tutorial </a>at the official django web page </p>
+						
+					</div>
+				</div>
+				
+				
+				
+				
+				
+				
+				
+				
+			</div>	
+
+				
+		</div>
+
+		<footer id="gtco-footer" class="gtco-section" role="contentinfo">
+			<div class="gtco-container">
+				<div class="row">
+					<div class="col-md-12 text-right">
+						<ul class="gtco-social-icons pull-right">
+							<li><a href="https://www.ua.pt" target="_blank"><img  src="images/logo_UA.png" alt=""  width="12%" height="12%"></a></li>
+						</ul>
+					
+					</div>
+					<div class="col-md-12 text-left">
+						<p><small>&copy; PEI - AMazING 2019 </small></p>
+					</div>
+					
+				</div>
+			</div>
+				
+			
+		</footer>
+
+	
+
+	<div class="gototop js-top">
+		<a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+	</div>
+	
+	<script>
+		var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+		if(width < 600){
+			document.getElementById("nav_sec").remove();
+			document.getElementById("body_text").style.width = "100%";
+			document.getElementById("body_text").style.ccFloat = "none";
+			
+		}
+	</script>
+	
+	<!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Carousel -->
+	<script src="js/owl.carousel.min.js"></script>
+	<!-- Magnific Popup -->
+	<script src="js/jquery.magnific-popup.min.js"></script>
+	<script src="js/magnific-popup-options.js"></script>
+	<!-- Main -->
+	<script src="js/main.js"></script>
+
+	</body>
+</html>
+
