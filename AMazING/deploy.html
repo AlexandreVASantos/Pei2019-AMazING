@@ -136,10 +136,10 @@
 						
 						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing OS</h4>
 						
-						<p style=" text-align: justify;font-size: 110%">For an Operative System we chose Ubuntu Server 18.04 LTS, which is available <a href= http://cdimage.ubuntu.com/releases/18.04.2/release/>here</a>. In case you choose the APU Board from PCEngines
+						<p style=" text-align: justify;font-size: 110%">To Operating System we chose Ubuntu Server 18.04 LTS, which is available <a href= http://cdimage.ubuntu.com/releases/18.04.2/release/>here</a>. In case you choose the APU Board from PCEngines
 						pick the 64-bit PC (AMD64) server install image, because with the others there is no compability and you have to do incrementals updates from Ubuntu Server 14.04 LTS.</p>
 						
-						<p style=" text-align: justify;font-size: 110%">After the OS installation is completed you need to install the packages needed by our software to run the Restful API. The script looks like this:</p>
+						<p style=" text-align: justify;font-size: 110%">After the OS installation is completed you need to install the packages needed by our software to run the Restful API and connect nodes to kafka in order to manage if their running fine. If you desire to have separated virtual environment, please change the following script to your needs. The for one virtual environment with all software needed looks like this:</p>
 						
 						
 						<pre><code>
@@ -170,17 +170,17 @@ echo 'password' | sudo -S mkdir /home/amazing/dont_delete
 
 mkdir /home/amazing/it_user
 
-echo 'password' | sudo -S mv /home/amazing/pei.zip /home/amazing/dont_delete/
+echo 'password' | sudo -S mv /home/amazing/files.zip /home/amazing/dont_delete/
 
-##pei.zip was sent to the node via scp (secure copy)
+##files.zip was sent to the node via scp (secure copy)
 
-echo 'password' | sudo -S unzip /home/amazing/dont_delete/pei.zip -d /home/amazing/dont_delete/
+echo 'password' | sudo -S unzip /home/amazing/dont_delete/files.zip -d /home/amazing/dont_delete/
 
-echo 'password' | sudo -S rm -r /home/amazing/dont_delete/pei.zip
+echo 'password' | sudo -S rm -r /home/amazing/dont_delete/files.zip
 
-echo 'password' | sudo -S mv /home/amazing/dont_delete/pei/* /home/amazing/dont_delete/
+echo 'password' | sudo -S mv /home/amazing/dont_delete/files/* /home/amazing/dont_delete/
 
-echo 'password' | sudo -S rm -r /home/amazing/dont_delete/pei/
+echo 'password' | sudo -S rm -r /home/amazing/dont_delete/files/
 
 echo 'password' | sudo -S chown root /home/amazing/dont_delete/init_node.sh
 
@@ -209,6 +209,7 @@ Flask==1.0.2
 Flask-RESTful==0.3.7
 itsdangerous==1.1.0
 Jinja2==2.10
+kafka-python==1.4.6
 MarkupSafe==1.1.1
 numpy==1.16.2
 psutil==5.6.0
@@ -268,7 +269,7 @@ $ sudo crontab -e
 					<div class="col-md-8 col-md-offset-2 gtco-heading" >
 						<h2><a id="RA" style="position:absolute; margin-top:-15%"></a>Restful API</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
-						<p style=" text-align: justify;font-size: 110%"> For the node restful API running on nodes and communicating with Node Config App we decided to go with Python with a little help of Flask. We even went further and used a microframework, Flask-Restful. Flask is a powerfull framework that
+						<p style=" text-align: justify;font-size: 110%"> For the node restful API, running on nodes and being the bridge between the nodes and the Node Config App, we decided to go with Python with a little help of Flask. We even went further and used a microframework, Flask-Restful. Flask is a powerfull framework that
 						in opposition with Django it is better user firendly when no web page is needed.</p>
 						
 						
@@ -302,12 +303,12 @@ $ sudo pip3 install -r requirements.txt
 						<p><a style="position:absolute; margin-top:-15%"></a>requirements.txt content:</h5>
 						<pre><code>
 python-ldap==3.2.0
-kafka-python==1.4.6
 Django==2.2.1
 django-auth-ldap==1.7.0
 django-background-tasks==1.2.0
 django-crispy-forms==1.7.2
 djangorestframework==3.9.2
+kafka-python==1.4.6
 requests==2.21.0
 						</code></pre>
 						
