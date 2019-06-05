@@ -26,7 +26,7 @@ def consumer():
 		cursor = connection.cursor()
 		message = message.value
 		for (a,b) in message.items():
-			print("("+str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2]) +"','"+str(b[3]) +"','"+str(b[4]) +") values entered")
+			print("('"+str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2]) +"','"+str(b[3]) +"','"+str(b[4]) +"') values entered")
 			cursor.execute("INSERT INTO Logs VALUES('"+ str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2])+"','"+str(b[3])+"','"+str(b[4]) +"');")
 			connection.commit()
 		cursor.close()
@@ -45,8 +45,7 @@ def auth(request):
 		refresh_grid()
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
-		username='username'
-		data = {'User: '+username : [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {username: [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -147,7 +146,7 @@ def postAccessP(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Create Access Point','1' ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Create Access Point',ident ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -156,6 +155,13 @@ def postAccessP(request):
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+	username='username'
+	data = {request.user.get_username() : [curdate, 'Create Access Point',ident ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	producer.send('numtest', value=data)
+	sleep(2)
 	#print(req.json())
 	return render(request,'main/AccessP.html',{'id':ident})
 
@@ -169,6 +175,14 @@ def postStopAccessPoint(request):
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	#print(req.json())
+
+	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+	username='username'
+	data = {request.user.get_username() : [curdate, 'Stop Access Point',ident ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	producer.send('numtest', value=data)
+	sleep(2)
+
 	return render(request,'main/menu.html',{'id':ident})	
 
 def postDisconnect(request):
@@ -185,7 +199,7 @@ def postDisconnect(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Disconnect From Network','1' , 'null' , 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Disconnect From Network',ident , 'null' , 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -215,7 +229,7 @@ def postTurnOnNode(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Turn On Mode',nodes ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Turn On Mode',nodes ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -244,7 +258,7 @@ def postScanning(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Scan','1' ,dic["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Scan',ident ,dic["NetwC"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -258,7 +272,7 @@ def postScanning(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Scan','1' ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Scan',ident ,data["NetwC"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -287,7 +301,7 @@ def postLinkStatus(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Link Status','1' ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Link Status',ident ,data["NetwC"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -302,7 +316,7 @@ def postLinkStatus(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Link Status','1' ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Link Status',ident ,data["NetwC"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -332,7 +346,7 @@ def postLocalWireless(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Link Status',1 ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Link Status',1 ,data["NetwC"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -347,7 +361,7 @@ def postLocalWireless(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Link Status',1 ,data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Link Status',1 ,data["NetwC"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -376,7 +390,7 @@ def postIPChange(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Change Ip','1' ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Change Ip',ident ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'Successful']}   #curdate= current date, data["IP"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -391,7 +405,7 @@ def postIPChange(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Change Ip','1' ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["IP"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Change Ip',ident ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'Failed']}   #curdate= current date, data["IP"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -437,7 +451,7 @@ def postConnection(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {'User: '+username : [curdate, 'Connection','1' ,'WEP: '+data["WEP"]+', NetwC: '+data["NetwC"]+', Frequency: '+data["Frequency"]+', SSID: '+data["SSID"],'output']}   #curdate= current date, req.json() = output
+			data = {request.user.get_username() : [curdate, 'Connection',ident ,'WEP: '+data["WEP"]+', NetwC: '+data["NetwC"]+', Frequency: '+data["Frequency"]+', SSID: '+data["SSID"], 'Successful']}   #curdate= current date, req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
@@ -451,7 +465,7 @@ def postConnection(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Connection','1' ,'null','output']}   #curdate= current date, req.json() = output
+	data = {request.user.get_username() : [curdate, 'Connection',ident ,'null' 'Failed']}   #curdate= current date, req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -483,7 +497,7 @@ def postStationStats(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Station Stats','1' ,data["NetwC"], 'output']}   #curdate= current date, dic["NetwC"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Station Stats',ident ,data["NetwC"], 'Successful']}   #curdate= current date, dic["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -499,7 +513,7 @@ def postStationStats(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Station Stats','1' ,data["NetwC"], 'output']}   #curdate= current date, dic["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Station Stats',ident ,data["NetwC"], 'Failed']}   #curdate= current date, dic["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -528,7 +542,7 @@ def postModBitrate(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Modify Transmit Bitrate','1' ,'NetwC: '+dic["NetwC"]+', LBits: '+dic["Lbits"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Modify Transmit Bitrate',ident ,'NetwC: '+dic["NetwC"]+', LBits: '+dic["Lbits"], 'Successful']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -542,7 +556,7 @@ def postModBitrate(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Modify Transmit Bitrate','1' ,'NetwC: '+dic["NetwC"]+', LBits: '+dic["Lbits"], 'output']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Modify Transmit Bitrate',ident ,'NetwC: '+dic["NetwC"]+', LBits: '+dic["Lbits"], 'Failed']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -575,7 +589,7 @@ def postStationPeer(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {'User: '+username : [curdate, 'Station Peer','1' ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
+			data = {request.user.get_username() : [curdate, 'Station Peer',ident ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'Successful']}   #curdate= current date, mac=input , req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
@@ -589,7 +603,7 @@ def postStationPeer(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Station Peer','1' ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'output']}   #curdate= current date, mac=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Station Peer',ident ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'Failed']}   #curdate= current date, mac=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -620,7 +634,7 @@ def postTxPower(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {'User: '+username : [curdate, 'Tx Power','1' ,'TxPower: '+dic["TxPower"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Tx Power',ident ,'TxPower: '+dic["TxPower"]+', NetwC: '+data["NetwC"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 		
@@ -634,7 +648,7 @@ def postTxPower(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {'User: '+username : [curdate, 'Tx Power','1' ,'TxPower: '+dic["TxPower"]+', NetwC: '+data["NetwC"], 'output']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Tx Power',ident ,'TxPower: '+dic["TxPower"]+', NetwC: '+data["NetwC"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -662,7 +676,7 @@ def node_owner(request,dic):
 	try:
 		node = dic["id"]
 		print(node)
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()
 
 		query = "Select owner From node where id='"+ str(node) +"';"
@@ -681,7 +695,7 @@ def node_owner(request,dic):
 def node_up(request,dic):
 	try:
 		node = dic["id"]
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()
 
 		query = "Update node Set value='ON' where id="+ str(node) +";"
@@ -704,7 +718,7 @@ def node_busy(request,dic):
 		user=request.user.get_username()
 		
 		node = dic["id"]
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()
 
 		query = "Update node Set value='BUSY', owner='" + str(user) + "' where id="+ str(node) +";"
@@ -767,7 +781,7 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 			# 			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 			# else:
 			try:
-				connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+				connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
 				c=connection.cursor()
 				
 				#if value ON turn off
@@ -813,7 +827,7 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 
 def get_IP(NOwner,NId):
 	try:	
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()	
 		c.execute("Select IP from node where owner="+ str(NOwner) +",id="+ str(NId) +";")
 		fetch= c.fetchall()
@@ -825,7 +839,7 @@ def get_IP(NOwner,NId):
 
 def refresh_grid():
 	try:	
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()	
 		c.execute("Select id, value from node;")
 		fetch= c.fetchall()
