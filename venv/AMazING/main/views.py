@@ -1,6 +1,7 @@
 import requests
 import re
 import json
+import string
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import HttpResponse
@@ -13,6 +14,7 @@ from json import dumps
 from django.views.decorators.csrf import csrf_exempt
 from background_task import background
 from time import sleep
+
 
 grid={}
 
@@ -45,6 +47,7 @@ def auth(request):
 		refresh_grid()
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
+		username='username'
 		data = {username: [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
@@ -126,11 +129,11 @@ def setTxPower(request):
 def postAccessP(request):
 	data = request.GET
 	ident=data['id']
-	url = "http://10.110.1." + ident + ":5000/CreateAcessPoint"
+	url = "http://10.110.1." + ident + ":5000/CreateAccessPoint"
 	dic={}
 	channel = int(data["Channel"])
 
-	if(verify_Channel(request,channel) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
+	if(verify_Channel(request,channel) and verify_passw(request,data["APPW"]) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
 		for key in data:
 			print(key)
 			dic[key] = data[key]
@@ -138,10 +141,11 @@ def postAccessP(request):
 		if "id" in dic:
 			del dic["id"]
 
+		print(dic)
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
-		#updatedReqResp = req.json()
+		updatedReqResp = req.json()
 
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -150,12 +154,12 @@ def postAccessP(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		return render(request, 'main/AccessP.html', {"flagAP":True,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":False,'id':ident})#"req":updatedReqResp,
+		return render(request, 'main/AccessP.html', {"flagAP":True,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp,
 	
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-
+	
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
@@ -182,7 +186,6 @@ def postStopAccessPoint(request):
 	data = {request.user.get_username() : [curdate, 'Stop Access Point',ident ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
-
 	return render(request,'main/menu.html',{'id':ident})	
 
 def postDisconnect(request):
@@ -206,8 +209,8 @@ def postDisconnect(request):
 	return render(request,'main/menu.html',{'id':ident})	
 
 def postTurnOnNode(request):
-	#url = "http://" 				falar alex
-	url = "http://httpbin.org/post"
+	url = "http://192.168.85.228:8000/request/" 				
+	#url = "http://httpbin.org/post"
 	data=request.GET
 	dic = {}
 	nodes = ''
@@ -218,11 +221,15 @@ def postTurnOnNode(request):
 	ident = dic["id"]
 
 	#print(dic)
+	dic["username"]=request.user.get_username();
+	system_messages = messages.get_messages(request)
+	messages.warning(request, 'Please wait a few minutes before configuring node')
+	system_messages.used = True
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-	#updatedReqResp = req.json()
-	#print(updatedReqResp)
+	updatedReqResp = req.json()
+	print(updatedReqResp)
 	node_up(request,dic)
 	refresh_grid()
 
@@ -262,8 +269,10 @@ def postScanning(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		#print(req.json())
-		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})
+		updatedReqResp = req.json()
+		
+		print(updatedReqResp)
+		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -305,8 +314,8 @@ def postLinkStatus(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		#print(req.json())
-		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":True,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})
+		updatedReqResp=req.json()
+		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":True,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -350,8 +359,8 @@ def postLocalWireless(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		#print(req.json())
-		return render(request, 'main/menu.html', {"flagLC":True,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})
+		updatedReqResp=req.json()
+		return render(request, 'main/menu.html', {"flagLC":True,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -390,13 +399,13 @@ def postIPChange(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {request.user.get_username() : [curdate, 'Change Ip',ident ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'Successful']}   #curdate= current date, data["IP"]=input , req.json() = output
+		ddata = {request.user.get_username() : [curdate, 'Change Ip',ident ,'IP: '+data["IP"]+', NetwC: '+data["NetwC"], 'Successful']}   #curdate= current date, data["IP"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		#updatedReqResp = req.json()
+		updatedReqResp = req.json()
 		#print(req.json())
-		return render(request, 'main/addrChange.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})#"req":updatedReqResp
+		return render(request, 'main/addrChange.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp
 	
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -420,21 +429,6 @@ def postConnection(request):
 	dic={}
 
 	if(verify_NetwC(request,data) and not (len(data)==0)):	
-			if data["Frequency"]:
-				if not verify_freq(request,data["Frequency"]):
-					dataToSend = json.dumps(dic)
-					headers = {'Content-Type': 'application/json'}
-					req = requests.post(url,data=dataToSend, headers=headers)
-					#print(req.json())
-					return render(request,'main/connection.html')
-
-			if data["WEP"]:
-				if not verify_wep(request,data["WEP"]):
-					dataToSend = json.dumps(dic)
-					headers = {'Content-Type': 'application/json'}
-					req = requests.post(url,data=dataToSend, headers=headers)
-					#print(req.json())
-					return render(request,'main/connection.html')
 
 			#print(data)
 			for key in data:
@@ -455,8 +449,8 @@ def postConnection(request):
 			producer.send('numtest', value=data)
 			sleep(2)
 
-			#print(req.json())
-			return render(request, 'main/connection.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True,'id':ident})
+			updatedReqResp=req.json()
+			return render(request, 'main/connection.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True,"req":updatedReqResp,'id':ident})
 			
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -503,8 +497,8 @@ def postStationStats(request):
 
 
 		#print(req.json())
-		#updatedReqResp = req.json()
-		return render(request, 'main/menu.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,'id':ident})#"req":updatedReqResp,
+		updatedReqResp = req.json()
+		return render(request, 'main/menu.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp,
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -537,7 +531,7 @@ def postModBitrate(request):
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
-		#updatedReqResp = req.json()
+		updatedReqResp = req.json()
 
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -546,7 +540,7 @@ def postModBitrate(request):
 		producer.send('numtest', value=data)
 		sleep(2)
 
-		return render(request, 'main/modBitrate.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":True,'id':ident})#"req":updatedReqResp,
+		return render(request, 'main/modBitrate.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":True,"req":updatedReqResp,'id':ident})#"req":updatedReqResp,
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -589,12 +583,12 @@ def postStationPeer(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {request.user.get_username() : [curdate, 'Station Peer',ident ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'Successful']}   #curdate= current date, mac=input , req.json() = output
+			data = {request.user.get_username() : [curdate, 'Station Peer',ident ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'Successful']}  #curdate= current date, mac=input , req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
-			#print(req.json())
-			return render(request, 'main/stationPeer.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":True,"flagTP":False,"flagC":False,'id':ident})
+			updatedReqResp=req.json()
+			return render(request, 'main/stationPeer.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":True,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -637,8 +631,8 @@ def postTxPower(request):
 		data = {request.user.get_username() : [curdate, 'Tx Power',ident ,'TxPower: '+dic["TxPower"]+', NetwC: '+data["NetwC"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
-		
-		return render(request, 'main/SetTxPower.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":True,"flagC":False,'id':ident})
+		updatedReqResp=req.json()
+		return render(request, 'main/SetTxPower.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":True,"flagC":False,"req":updatedReqResp,'id':ident})
 
 
 	dataToSend = json.dumps(dic)
@@ -654,6 +648,8 @@ def postTxPower(request):
 
 	#print(req.json())
 	return render(request,'main/SetTxPower.html',{'id':ident})
+
+
 
 
 @csrf_exempt
@@ -676,7 +672,7 @@ def node_owner(request,dic):
 	try:
 		node = dic["id"]
 		print(node)
-		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()
 
 		query = "Select owner From node where id='"+ str(node) +"';"
@@ -695,7 +691,7 @@ def node_owner(request,dic):
 def node_up(request,dic):
 	try:
 		node = dic["id"]
-		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()
 
 		query = "Update node Set value='ON' where id="+ str(node) +";"
@@ -718,7 +714,7 @@ def node_busy(request,dic):
 		user=request.user.get_username()
 		
 		node = dic["id"]
-		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()
 
 		query = "Update node Set value='BUSY', owner='" + str(user) + "' where id="+ str(node) +";"
@@ -781,7 +777,7 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 			# 			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 			# else:
 			try:
-				connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
+				connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
 				c=connection.cursor()
 				
 				#if value ON turn off
@@ -827,7 +823,7 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 
 def get_IP(NOwner,NId):
 	try:	
-		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()	
 		c.execute("Select IP from node where owner="+ str(NOwner) +",id="+ str(NId) +";")
 		fetch= c.fetchall()
@@ -839,7 +835,7 @@ def get_IP(NOwner,NId):
 
 def refresh_grid():
 	try:	
-		connection = sqlite3.connect("/home/miguewinho/Desktop/test/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
 		c=connection.cursor()	
 		c.execute("Select id, value from node;")
 		fetch= c.fetchall()
@@ -953,6 +949,14 @@ def verify_Channel(request,channel):
 	print(channel)
 	if channel not in range(0,12):
 		messages.warning(request, 'Please insert a valid Channel (1-11).')
+		system_messages.used = True
+		return 0
+	return 1
+
+def verify_passw(request,password):
+	system_messages = messages.get_messages(request)
+	if len(password) < 8:
+		messages.warning(request, 'Please insert a valid Password (8 or more characters).')
 		system_messages.used = True
 		return 0
 	return 1

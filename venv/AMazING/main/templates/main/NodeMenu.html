@@ -2,6 +2,19 @@
 {% load static %}
 {% block content %}
 
+{% if messages %}
+<ul class="messages">
+    {% for msg in messages %}       
+    <li>
+        <div class="alert alert-{{msg.level_tag}}" style="width: 450px;right:50px" role="alert">
+        {{msg.message}}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
 <div class="container text-center" style="background-color:#FFFF" >
 	<br>
 	<br>
@@ -19,20 +32,15 @@
 				
 				  {% if node_grid.1.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
-						  <button class="dropbtn" style="background-color:{{node_grid.1.1}};color:#FFFF" name="1" value={{node_grid.1.0}} >{{node_grid.1.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  <button class="dropbtn" style="background-color:{{node_grid.1.1}};color:#FFFF" id='1' name="1" value={{node_grid.1.0}} >{{node_grid.1.0}}</button>
 				  	</form>
 				  {% elif node_grid.1.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
-				  	  	<button class="dropbtn" style="background-color:{{node_grid.1.1}};color:#FFFF" href="{% url 'nodeChange' %}" type="submit" name="1" value={{node_grid.1.0}} >{{node_grid.1.0}}</button>
+				  	  	<button class="dropbtn" style="background-color:{{node_grid.1.1}};color:#FFFF" href="{% url 'nodeChange' %}" type="submit" id='1' name="1" value={{node_grid.1.0}} >{{node_grid.1.0}}</button>
 				  	 </form>
 				  {% elif node_grid.1.0 == "BUSY" %}				  	
 				  	<form action="/nodeCompare/" method ='GET'>
-						<button class="dropbtn" style="background-color:{{node_grid.1.1}};color:#FFFF" name="id" value='1' >{{node_grid.1.0}}</button>
+						<button class="dropbtn" style="background-color:{{node_grid.1.1}};color:#FFFF" id='1' name="id" value='1' >{{node_grid.1.0}}</button>
 				  	</form>				  	
 				  {% endif %}
 				</div>
@@ -47,20 +55,16 @@
 				<div class="dropdown">
 				  {% if node_grid.2.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
-						  <button class="dropbtn" style="background-color:{{node_grid.2.1}};color:#FFFF" name="2" value={{node_grid.2.0}} >{{node_grid.2.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  <button class="dropbtn" style="background-color:{{node_grid.2.1}};color:#FFFF" id='2' name="2" value={{node_grid.2.0}} >{{node_grid.2.0}}</button>
+						  
 				  	</form>
 				  {% elif node_grid.2.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
-				  	  	<button class="dropbtn" style="background-color:{{node_grid.2.1}};color:#FFFF" href="{% url 'nodeChange' %}" type="submit" name="2" value={{node_grid.2.0}} >{{node_grid.2.0}}</button>
+				  	  	<button class="dropbtn" style="background-color:{{node_grid.2.1}};color:#FFFF" id='2' href="{% url 'nodeChange' %}" type="submit" name="2" value={{node_grid.2.0}} >{{node_grid.2.0}}</button>
 				  	 </form>
 				  {% elif node_grid.2.0 == "BUSY" %}				  	
 				  	<form action="/nodeCompare/" method ='GET'>
-						<button class="dropbtn" style="background-color:{{node_grid.2.1}};color:#FFFF" name="id" value='2' >{{node_grid.2.0}}</button>
+						<button class="dropbtn" style="background-color:{{node_grid.2.1}};color:#FFFF" id='2' name="id" value='2' >{{node_grid.2.0}}</button>
 				  	</form>				  	
 				  {% endif %}
 				</div>
@@ -76,11 +80,7 @@
 				  {% if node_grid.3.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.3.1}};color:#FFFF" name="3" value={{node_grid.3.0}} >{{node_grid.3.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.3.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -104,11 +104,7 @@
 				 {% if node_grid.4.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.4.1}};color:#FFFF" name="4" value={{node_grid.4.0}} >{{node_grid.4.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.4.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -132,11 +128,7 @@
 				 {% if node_grid.5.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.5.1}};color:#FFFF" name="5" value={{node_grid.5.0}} >{{node_grid.5.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.5.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -160,11 +152,7 @@
 				  {% if node_grid.6.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.6.1}};color:#FFFF" name="6" value={{node_grid.6.0}} >{{node_grid.6.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.6.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -195,11 +183,7 @@
 				  {% if node_grid.7.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.7.1}};color:#FFFF" name="7" value={{node_grid.7.0}} >{{node_grid.7.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.7.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -223,11 +207,7 @@
 				  {% if node_grid.8.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.8.1}};color:#FFFF" name="8" value={{node_grid.8.0}} >{{node_grid.8.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.8.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -251,11 +231,7 @@
 				  {% if node_grid.9.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.9.1}};color:#FFFF" name="9" value={{node_grid.9.0}} >{{node_grid.9.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.9.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -279,11 +255,7 @@
 				  {% if node_grid.10.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.10.1}};color:#FFFF" name="10" value={{node_grid.10.0}} >{{node_grid.10.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.10.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -307,11 +279,7 @@
 				 {% if node_grid.11.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.11.1}};color:#FFFF" name="11" value={{node_grid.11.0}} >{{node_grid.11.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.11.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -335,11 +303,7 @@
 				 {% if node_grid.12.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.12.1}};color:#FFFF" name="12" value={{node_grid.12.0}} >{{node_grid.12.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.12.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -369,11 +333,7 @@
 				  {% if node_grid.13.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.13.1}};color:#FFFF" name="13" value={{node_grid.13.0}} >{{node_grid.13.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.13.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -397,11 +357,7 @@
 				  {% if node_grid.14.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.14.1}};color:#FFFF" name="14" value={{node_grid.14.0}} >{{node_grid.14.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.14.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -425,11 +381,7 @@
 				  {% if node_grid.15.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.15.1}};color:#FFFF" name="15" value={{node_grid.15.0}} >{{node_grid.15.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.15.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -453,11 +405,7 @@
 				  {% if node_grid.16.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.16.1}};color:#FFFF" name="16" value={{node_grid.16.0}} >{{node_grid.16.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.16.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -481,11 +429,7 @@
 				  {% if node_grid.17.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.17.1}};color:#FFFF" name="17" value={{node_grid.17.0}} >{{node_grid.17.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.17.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -509,11 +453,7 @@
 				  {% if node_grid.18.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.18.1}};color:#FFFF" name="18" value={{node_grid.18.0}} >{{node_grid.18.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.18.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -543,11 +483,7 @@
 				  {% if node_grid.19.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.19.1}};color:#FFFF" name="19" value={{node_grid.19.0}} >{{node_grid.19.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.19.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -571,11 +507,7 @@
 				  {% if node_grid.20.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.20.1}};color:#FFFF" name="20" value={{node_grid.20.0}} >{{node_grid.20.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.20.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -599,11 +531,7 @@
 				  {% if node_grid.21.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.21.1}};color:#FFFF" name="21" value={{node_grid.21.0}} >{{node_grid.21.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.21.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -627,11 +555,7 @@
 				  {% if node_grid.22.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.22.1}};color:#FFFF" name="22" value={{node_grid.22.0}} >{{node_grid.22.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.22.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -655,11 +579,7 @@
 				  {% if node_grid.23.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.23.1}};color:#FFFF" name="23" value={{node_grid.23.0}} >{{node_grid.23.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.23.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
@@ -683,11 +603,7 @@
 				  {% if node_grid.23.0 == "ON" %}
 					<form action="/menu/" method ='GET'>
 						  <button class="dropbtn" style="background-color:{{node_grid.24.1}};color:#FFFF" name="24" value={{node_grid.1.0}} >{{node_grid.1.0}}</button>
-						  <div class="dropdown-content">
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "60">1 Hour </button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "120">2 Hours</button>
-						    <button class = "btn" style="background-color: #f1f1f1;" href="{% url 'menu' %}" type="submit" name="time" value= "180">3 Hours</button>
-						  </div>
+						  
 				  	</form>
 				  {% elif node_grid.24.0 == "OFF" %}
 				  	 <form action="/nodeChange/" method ='GET'> 
