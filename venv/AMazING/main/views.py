@@ -196,7 +196,7 @@ def postStopAccessPoint(request):
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {request.user.get_username() : [curdate, 'Stop Access Point',ident ,'Channel: '+data["Channel"]+', APPW: '+data["APPW"]+', HW_Mode: '+data["hw_mode"]+', RangeStart: ' +data["RangeStart"]+ ', DFGateway: ' +data["DFGateway"]+ ',APSSID: '+data["APSSID"]+',Netmask: ' +data["Netmask"]+',RangeEnd: ' +data["RangeEnd"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Stop Access Point',ident,'null', 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 	return render(request,'main/menu.html',{'id':ident})	
