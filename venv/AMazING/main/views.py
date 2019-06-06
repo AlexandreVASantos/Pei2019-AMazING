@@ -126,6 +126,19 @@ def setTxPower(request):
 	ident=data['id']
 	return render(request, 'main/SetTxPower.html',{'id':ident})
 
+def postGetApIP(request):
+	data=request.GET
+	url = "http://10.110.1." + ident + ":5000/"
+	for key in data:
+		print(key)
+		dic[key] = data[key]
+
+	dataToSend = json.dumps(dic)
+	headers = {'Content-Type': 'application/json'}
+	req = requests.post(url,data=dataToSend, headers=headers)
+	updatedReqResp = req.json()
+	return render(request,'main/menu.html',{'id':ident})
+
 def postAccessP(request):
 	data = request.GET
 	ident=data['id']
