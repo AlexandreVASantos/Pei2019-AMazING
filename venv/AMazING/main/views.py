@@ -146,7 +146,10 @@ def postAccessP(request):
 	dic={}
 	channel = int(data["Channel"])
 
-	if(verify_Channel(request,channel) and verify_passw(request,data["APPW"]) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
+
+	if( verify_Channel(request,channel) and verify_passw(request,data["APPW"]) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
 		for key in data:
 			print(key)
 			dic[key] = data[key]
@@ -188,6 +191,9 @@ def postStopAccessPoint(request):
 	dic={}
 	url = "http://10.110.1." +ident + ":5000/StopAccessPoint"
 
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
+
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
@@ -206,6 +212,9 @@ def postDisconnect(request):
 	ident=data['id']
 	dic={}
 	url = "http://10.110.1." + ident + ":5000/disconnect"
+
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
 
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
@@ -261,6 +270,9 @@ def postScanning(request):
 	dic={}
 	url = "http://10.110.1." + ident + ":5000/scan"
 
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
+
 	if(verify_NetwC(request,data)):	
 		
 		for key in data:
@@ -307,6 +319,9 @@ def postLinkStatus(request):
 	dic={}
 	url = "http://10.110.1." + ident + ":5000/link"
 
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
+
 	if(verify_NetwC(request,data)):	
 		
 		for key in data:
@@ -352,6 +367,9 @@ def postLocalWireless(request):
 	url = "http://10.110.1." + ident + ":5000/localwireless"
 	#print(data)
 
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
+
 	if(verify_NetwC(request,data)):	
 		
 		for key in data:
@@ -395,6 +413,9 @@ def postIPChange(request):
 	ident=data['id']
 	url = "http://10.110.1." + ident + ":5000/changeIP"
 	dic={}
+
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
 	
 	if(verify_IP(request,data["IP"]) and verify_netmask(request,data["Netmask"]) and not (len(data)==0)):	
 		
@@ -441,6 +462,9 @@ def postConnection(request):
 	url = "http://10.110.1." + ident +":5000/connection"
 	dic={}
 
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
+
 	if(verify_NetwC(request,data) and not (len(data)==0)):	
 
 			#print(data)
@@ -485,6 +509,9 @@ def postStationStats(request):
 	ident=data['id']
 	url = "http://10.110.1." + ident +":5000/stationstats"
 	dic={}
+
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
 
 
 	if(verify_NetwC(request,data)):	
@@ -533,6 +560,9 @@ def postModBitrate(request):
 	url = "http://10.110.1." + ident +":5000/modtxhtmcsbitrates"
 	dic={}
 
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
+
 	if(verify_NetwC(request,data)):	
 		for key in data:
 			print(key)
@@ -576,6 +606,9 @@ def postStationPeer(request):
 	url = "http://10.110.1." + ident + ":5000/stationpeerstats"
 	mac=data["MAC"]
 	dic={}
+
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
 
 	if not (len(data)==0):
 		if(verify_NetwC(request,data) and verify_mac(request,mac)):
@@ -624,6 +657,9 @@ def postTxPower(request):
 	ident=data['id']
 	url = "http://10.110.1." + ident + ":5000/settingtxpowerdev"
 	dic={}
+
+	if not verify_nodeID(request,ident):
+		return render(request,'main/NodeMenu.html')
 	
 	if(verify_NetwC(request,data) and not (len(data)==0)):	
 		
@@ -833,6 +869,14 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 	
 	return render(request,'main/NodeMenu.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
 	
+
+def verify_nodeID(request,ident):
+	system_messages = messages.get_messages(request)
+	if not ident.isdigit():
+		messages.warning(request, 'Before Any Configuration, Please select a Node.')
+		system_messages.used = True
+		return 0
+	return 1
 
 def get_IP(NOwner,NId):
 	try:	
