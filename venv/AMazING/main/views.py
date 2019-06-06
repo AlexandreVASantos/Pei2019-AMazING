@@ -172,14 +172,10 @@ def postAccessP(request):
 
 		return render(request, 'main/AccessP.html', {"flagAP":True,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp,
 	
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
-	
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {request.user.get_username() : [curdate, 'Create Access Point',ident ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Create Access Point',ident ,'Channel: '+data["Channel"]+', APPW: '+data["APPW"]+', HW_Mode: '+data["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 	#print(req.json())
@@ -194,15 +190,13 @@ def postStopAccessPoint(request):
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
+	req = requests.get(url)
 	#print(req.json())
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {request.user.get_username() : [curdate, 'Stop Access Point',ident ,'Channel: '+dic["Channel"]+', APPW: '+dic["APPW"]+', HW_Mode: '+dic["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Stop Access Point',ident ,'Channel: '+data["Channel"]+', APPW: '+data["APPW"]+', HW_Mode: '+data["hw_mode"]+', RangeStart: ' +data["RangeStart"]+ ', DFGateway: ' +data["DFGateway"]+ ',APSSID: '+data["APSSID"]+',Netmask: ' +data["Netmask"]+',RangeEnd: ' +data["RangeEnd"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 	return render(request,'main/menu.html',{'id':ident})	
@@ -299,10 +293,6 @@ def postScanning(request):
 		print(updatedReqResp)
 		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
 
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
-
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
@@ -338,17 +328,12 @@ def postLinkStatus(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {request.user.get_username() : [curdate, 'Link Status',ident ,data["NetwC"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = {request.user.get_username() : [curdate, 'Link Status',ident ,dic["NetwC"], 'Successful']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
 		updatedReqResp=req.json()
 		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":True,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
-
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
-	#print(data)
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -393,11 +378,6 @@ def postLocalWireless(request):
 		updatedReqResp=req.json()
 		return render(request, 'main/menu.html', {"flagLC":True,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
 
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
-	#print(data)
-
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
@@ -440,10 +420,6 @@ def postIPChange(request):
 		updatedReqResp = req.json()
 		#print(req.json())
 		return render(request, 'main/addrChange.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp
-	
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -488,10 +464,6 @@ def postConnection(request):
 
 			updatedReqResp=req.json()
 			return render(request, 'main/connection.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":True,"req":updatedReqResp,'id':ident})
-			
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -540,10 +512,6 @@ def postStationStats(request):
 		updatedReqResp = req.json()
 		return render(request, 'main/menu.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp,
 
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
-
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
@@ -585,15 +553,10 @@ def postModBitrate(request):
 
 		return render(request, 'main/modBitrate.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"flagMB":True,"req":updatedReqResp,'id':ident})#"req":updatedReqResp,
 
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
-	#print(req.json())
-
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 	username='username'
-	data = {request.user.get_username() : [curdate, 'Modify Transmit Bitrate',ident ,'NetwC: '+dic["NetwC"]+', LBits: '+dic["Lbits"], 'Failed']}   #curdate= current date, data["Wlan"]=input , req.json() = output
+	data = {request.user.get_username() : [curdate, 'Modify Transmit Bitrate',ident ,'NetwC: '+data["NetwC"]+', LBits: '+data["Lbits"], 'Failed']}   #curdate= current date, data["Wlan"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
 
@@ -629,16 +592,12 @@ def postStationPeer(request):
 			producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 			curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 			username='username'
-			data = {request.user.get_username() : [curdate, 'Station Peer',ident ,'NetwC: '+data["NetwC"]+', MAC: '+data["MAC"], 'Successful']}  #curdate= current date, mac=input , req.json() = output
+			data = {request.user.get_username() : [curdate, 'Station Peer',ident ,'NetwC: '+dic["NetwC"]+', MAC: '+dic["MAC"], 'Successful']}  #curdate= current date, mac=input , req.json() = output
 			producer.send('numtest', value=data)
 			sleep(2)
 
 			updatedReqResp=req.json()
 			return render(request, 'main/stationPeer.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":True,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
-
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -682,11 +641,6 @@ def postTxPower(request):
 		sleep(2)
 		updatedReqResp=req.json()
 		return render(request, 'main/SetTxPower.html',{"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":True,"flagC":False,"req":updatedReqResp,'id':ident})
-
-
-	dataToSend = json.dumps(dic)
-	headers = {'Content-Type': 'application/json'}
-	req = requests.post(url,data=dataToSend, headers=headers)
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
