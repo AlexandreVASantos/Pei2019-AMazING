@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('',views.home, name=''),
+    path('getApIp/',views.postGetApIP,name='getApIp'),
     path('LocalW/',views.postLocalWireless,name='LocalW'),
     path('StopAccessP/',views.postStopAccessPoint,name='StopAccessP'),
     path('nodeCompare/',views.compare_owner,name='nodeCompare'),
