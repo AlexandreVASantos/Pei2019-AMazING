@@ -148,7 +148,7 @@
 
 						pick the 64-bit PC (AMD64) server install image, because with the others there is no compability and you have to do incrementals updates from Ubuntu Server 14.04 LTS.</p>
 						
-						<p style=" text-align: justify;font-size: 110%">After the OS installation is completed you need to install the packages needed by our software to run the Restful API and connect nodes to kafka in order to manage if their running fine. If you desire to have separated virtual environment, please change the following script to your needs. The for one virtual environment with all software needed looks like this:</p>
+						<p style=" text-align: justify;font-size: 110%">After the OS installation is completed you need to install the packages needed by our software to run the Restful API and connect nodes to kafka in order to manage if their running fine. If you desire to have separated virtual environment, please change the following script to your needs. The script for one virtual environment with all software needed looks like this:</p>
 						
 						
 						<pre><code>
@@ -175,7 +175,7 @@ echo 'password' | sudo -S apt-get install unzip -y
 ##echo 'password' | sudo -S apt-get install python3 -y
 
 ## dont_delete is the folder with all the
-## Files needed in order to run the software with the boot
+## Files needed in order to run the software in the boot
 
 echo 'password' | sudo -S mkdir /home/amazing/dont_delete
 
@@ -272,7 +272,7 @@ $ sudo crontab -e
 						
 						
 
-						<p style=" text-align: justify;font-size: 110%"> Now just need to CTRL+X and then ENTER. At this moment everything you need is installed in the node and running at boot time.</p>
+						<p style=" text-align: justify;font-size: 110%"> Now just need to CTRL+X and then ENTER. At this moment everything you need is installed in the node and running at boot time. If you reboot, you can check if it is running fine with <code> $ ps -aux</code> or <code>$ curl localhost:5000</code></p>
 						
 					</div>
 				</div>
@@ -301,7 +301,7 @@ $ sudo crontab -e
 						<h2><a id="NC" style="position:absolute; margin-top:-15%"></a>Node Config App</h2>
 						<h4><a style="position:absolute; margin-top:-15%"></a>Overview</h4>
 						
-						<p style=" text-align: justify;font-size: 110%">Our Node Config App provides an abstraction layer for the end user when perform wireless configurations. We choose Python for building our app backend in addition with Django framework. For the front end html, css, javascript with jquery and ajax was used. </p>
+						<p style=" text-align: justify;font-size: 110%">Our Node Config App provides an abstraction layer for the end user when performing wireless configurations. We chose Python for building our app backend in addition with Django framework. For the front end html, css and javascript was used. </p>
 						
 						<h4><a style="position:absolute; margin-top:-15%"></a>Preparing environment</h4>
 						<pre><code>
@@ -469,7 +469,7 @@ sudo python3 /path/to/2ndApp/manage.py runserver process_tasks &
 						<br>
 						<br>
 						
-						<p style=" text-align: justify;font-size: 110%">This processes take a bit to initiate so, sleep 5, which means wait 5 seconds let the previous process fully load before a new one star, this is important because some of them needed others to start.</p>
+						<p style=" text-align: justify;font-size: 110%">This processes take a bit to initiate so, sleep 5, which means wait 5 seconds let the previous process fully load before a new one start, this is important because some of them depend on each other..</p>
 						
 						
 						
@@ -482,11 +482,11 @@ sudo python3 /path/to/2ndApp/manage.py runserver process_tasks &
 						
 						<p style=" text-align: justify;font-size: 110%">1. Virtual environment can be divided in four groups, pip, pip with sudo, pip3 and pip3 with sudo, and all this combinations can have different outcomes when trying to run something. So, make sure you use the same style for installing requirements and running processes, ex, if you installed requests with sudo and pip3, running the app or process without sudo and python3 will not work because it will get requirements from other sub group.</p>
 						
-						<p style=" text-align: justify;font-size: 110%">2. Use & at the end of process initialization for making them run in the background. Removes the need of multiple terminals open and allows a script to initiate multiple processes.</p>
+						<p style=" text-align: justify;font-size: 110%">2. Use & at the end of process initialization for making them run in the background. Removes the need of multiple terminals open and allows scripts to initiate multiple processes.</p>
 						
-						<p style=" text-align: justify;font-size: 110%">3. Before doing anything in django apps update settings.py file and run migrations, this will be important especially with background-tasks.</p>
+						<p style=" text-align: justify;font-size: 110%">3. Before doing anything in django apps, after requirements instalations or middle app software installation, update settings.py file and run migrations, this will be important especially with background-tasks.</p>
 						
-						<p style=" text-align: justify;font-size: 110%">4. If you use different endpoints make sure you change them in every function that communicates with them.</p>
+						<p style=" text-align: justify;font-size: 110%">4. If you use different endpoints make sure you change them in every function or requests will trigger exceptions.</p>
 						
 						<p style=" text-align: justify;font-size: 110%">5. Always make sure to run zookeeper before running kafka-server. In case you run multiple servers, don't forget to use different ids, ports and log-dirs for each one of them.</p>
 						
