@@ -29,3 +29,4 @@ urlpatterns = [
 handler404 = Controller_views.error_404
 handler500 = Controller_views.error_500
 Controller_views.check_reading_messages(repeat_until=None)
+

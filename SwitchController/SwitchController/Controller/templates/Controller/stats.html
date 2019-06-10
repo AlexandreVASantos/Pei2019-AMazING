@@ -38,7 +38,9 @@
 			<br>
 			<br>
 			<br>
-			<div  id = "poeinfo" style="text-align:left;background-color: #1111;"></div>
+			<div style="text-align:left;background-color: #1111;">
+      <pre id = "poeinfo"></pre>   
+      </div>
 
 
 
@@ -221,11 +223,13 @@
 
   	function get_stats(){
 	    $.get("/stats/", function (data) {
+          if(!("code" in data)){
             document.getElementById("node_up").innerHTML = data["node_up"] + "/24";
            	document.getElementById("node_alerts").innerHTML = data["n_alerts"] + " Alerts";
            	hours = data['hours'];
            	console.log(JSON.stringify(data));
            	n_alerts_node = data['n_alerts_node'];
+          }
 	    });
 	}
 
@@ -234,16 +238,24 @@
 		inHTML = document.getElementById("btnpoe").innerHTML;
 		if(inHTML == "Show PoE Info"){ 
 	    	$.get("/stats/poe/", function (data) {
-	       document.getElementById("btnpoe").innerHTML = "Hide PoE Info";
-	        var info = data["info"];
-          var i;
-          for(i=0;i<Object.keys(info).length;i++){
-	          $("#poeinfo").text(info[i]);
-            $("#poeinfo").append("<br>");
+          if (data["code"] == "-1"){
+            var info = data['error'];
+          }else{
+            var info = data["info"];  
           }
-                    
+	        document.getElementById("btnpoe").innerHTML = "Hide PoE Info";
 	        
-	        });
+          var i;
+          
+          for(i=0;i<Object.keys(info).length;i++){
+	          $("#poeinfo").append(info[i]);
+            $("#poeinfo").append("<br>");
+             
+          }
+
+                  
+        
+        });
 	    }else{
 	    	document.getElementById("btnpoe").innerHTML = "Show PoE Info";
 	    	$("#poeinfo").empty();

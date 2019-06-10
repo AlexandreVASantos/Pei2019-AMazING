@@ -24,13 +24,14 @@ headers = {'Content-Type': 'application/json'}
 
 grid = {}
 cookie = {}
-alert = True
+alert = False
 node_up=0
 power_supply=0
-request_node = True
+request_node = False
 
-count_alerts={"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0,"24":0 }
+count_alive={"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0,"24":0 }
 count_time=0
+
 
 
 @background(schedule=1)
@@ -40,36 +41,38 @@ def check_reading_messages():
 		try:
 			global count_time
 			global alert
-			print("blablab")
+			print("wait 10sec")
 			time.sleep(10)
-			#consumerA = KafkaConsumer('alerts', bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			consumerA = KafkaConsumer('alerts', bootstrap_servers=['192.168.85.228:9093'], auto_offset_reset='earliest',enable_auto_commit=False, group_id="get_alerts", value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
+			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 			c = connection.cursor()
-			print("blablab")
-			# for message in consumerA:
-			#meta = consumerS.partitions_for_topic(message.topic)
-			#partition = TopicPartition(message.topic, message.partition)
-			#offsets = OffsetAndMetadata(message.offset +1 , meta)
-			#options = {partition: offsets}
-			#consumerS.commit(offsets=options)
-			# 	
-			# 	print(message)
+			
+			for message in consumerA:
+				meta = consumerS.partitions_for_topic(message.topic)
+				partition = TopicPartition(message.topic, message.partition)
+				offsets = OffsetAndMetadata(message.offset +1 , meta)
+				options = {partition: offsets}
+				consumerS.commit(offsets=options)
+				
+				print(message)
+
+				message= message.value
 		
-			# 	for (n_id, info) in message.items():
-			# 		query = "Insert into alerts values(" + str(node_id)+ ",'" + str(info[1])+ "','"+ str(info[0]) +"','False');"
-			# 		count +=1
-			# 		c.execute(query)
-			# 		connection.commit()
+				for (n_id, info) in message.items():
+					query = "Insert into alerts values(" + str(node_id)+ ",'" + str(info[1])+ "','"+ str(info[0]) +"','False');"
+					count +=1
+					c.execute(query)
+					connection.commit()
 
 			if count != 0:
 				alert = True
 		
-			#consumerA.close()
+			consumerA.close()
 		
-			time.sleep(15)
+			time.sleep(50)
 		
-
-			consumerS = KafkaConsumer('switch', bootstrap_servers=['192.168.85.228:9092'], auto_offset_reset='earliest',enable_auto_commit=False, group_id='my_group', value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
+			print("waited")
+			consumerS = KafkaConsumer('switch', bootstrap_servers=['192.168.85.228:9093'], auto_offset_reset='earliest',enable_auto_commit=False, group_id="get_alive", value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
 			for message in consumerS:
 				
 				meta = consumerS.partitions_for_topic(message.topic)
@@ -89,18 +92,30 @@ def check_reading_messages():
 						c.execute(query)
 						connection.commit()
 					else:
-						count_alerts[str(n_id)] +=1
+						query = "Select value from node where id=" + str(n_id)+";"
+						c.execute(query)
+						fetch = c.fetchone()[0]
+						if fetch == "OFF" and count_alive[str(n_id)] > 1:
+							todays_date = datetime.datetime.now()
+							date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
+							"Update node Set value='ON', dateOn = '" + str(date) +"' where id=" + str(n_id) +";"
+							c.execute(query)
+							connection.commit()
+						count_alive[str(n_id)] +=1
 			
 			consumerS.close()
 			
 
 			if count_time == 5:
 				for i in range(1,25):
-					if count_alerts[str(i)] == 0:
+					if count_alive[str(i)] == 0:
 							query = "Update node Set value='OFF', dateOn = '0' where id=" + str(i) +";"
 							c.execute(query)
 							connection.commit()
+					else:
+						count_alive[str(i)] = 0
 				count_time = 0
+
 			
 
 			count_time+=1
@@ -112,6 +127,7 @@ def check_reading_messages():
 			continue
 		except NoBrokersAvailable as e:
 			print(e)
+			pass
 
 
 		
@@ -120,40 +136,40 @@ def check_reading_messages():
 
 
 
-#function to receive data from node sensors, do not need csrf_cookie
-@csrf_exempt
-def sensors(request):
-	if request.method == 'POST':
-		#try:
-		args = json.loads(request.body.decode('utf-8'))
+# #function to receive data from node sensors, do not need csrf_cookie
+# @csrf_exempt
+# def sensors(request):
+# 	if request.method == 'POST':
+# 		#try:
+# 		args = json.loads(request.body.decode('utf-8'))
 		
-		node = args.get('alive')
-			# node = args.get('node')
-			# info = args.get('readings')
+# 		node = args.get('alive')
+# 			# node = args.get('node')
+# 			# info = args.get('readings')
 
-			# todays_date = datetime.datetime.now()
-			# date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
-		count_alerts['node'] +=1
+# 			# todays_date = datetime.datetime.now()
+# 			# date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
+# 		count_alerts['node'] +=1
 			
-			# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-			# c=connection.cursor()
+# 			# connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+# 			# c=connection.cursor()
 
-			# query = "Insert into alerts values(" + str(node)+ ",'" + str(info)+ "','"+ str(date) +"','False');"
-			# #Only at this time we can update the value of the node in the database
-			# c.execute(query)
-			# connection.commit()
-			# connection.close()
-			# global alert
-			# alert = True
+# 			# query = "Insert into alerts values(" + str(node)+ ",'" + str(info)+ "','"+ str(date) +"','False');"
+# 			# #Only at this time we can update the value of the node in the database
+# 			# c.execute(query)
+# 			# connection.commit()
+# 			# connection.close()
+# 			# global alert
+# 			# alert = True
 
-			#return render(request, 'templates/Controller/home.html', {'message' : 0})
+# 			#return render(request, 'templates/Controller/home.html', {'message' : 0})
 
-		#except sqlite3.Error as e:			
-		#	return render(request, 'templates/Controller/home.html', {'message' : 'database error'})
-		return JsonResponse({'code':0})
+# 		#except sqlite3.Error as e:			
+# 		#	return render(request, 'templates/Controller/home.html', {'message' : 'database error'})
+# 		return JsonResponse({'code':0})
 
-	else:
-		return render(request, 'templates/Controller/home.html')
+# 	else:
+# 		return render(request, 'templates/Controller/home.html')
 
 
 
@@ -163,37 +179,37 @@ def sensors(request):
 
 
 #function to receive wake up message from node, do not need csrf_cookie
-@csrf_exempt
-def node_up(request):
-	if request.method == 'POST':
-		try:
-			args = json.loads(request.body.decode('utf-8'))
-			node = args.get('node')
-			up_date = datetime.datetime.now()
-			time2 = up_date
-			date = up_date.strftime("%Y-%m-%d %H:%M:%S")
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-			c=connection.cursor()
+# @csrf_exempt
+# def node_up(request):
+# 	if request.method == 'POST':
+# 		try:
+# 			args = json.loads(request.body.decode('utf-8'))
+# 			node = args.get('node')
+# 			up_date = datetime.datetime.now()
+# 			time2 = up_date
+# 			date = up_date.strftime("%Y-%m-%d %H:%M:%S")
+# 			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+# 			c=connection.cursor()
 
-			query = "Update node Set value='ON', dateOn='"+ str(date) + "' where id="+ str(node) +";"
-			#Only at this time we can update the value of the node in the database
-			c.execute(query)
-			connection.commit()
-			c.close()
-			connection.close()
-			return render(request, 'templates/Controller/home.html', {'message' : 0})
+# 			query = "Update node Set value='ON', dateOn='"+ str(date) + "' where id="+ str(node) +";"
+# 			#Only at this time we can update the value of the node in the database
+# 			c.execute(query)
+# 			connection.commit()
+# 			c.close()
+# 			connection.close()
+# 			return render(request, 'templates/Controller/home.html', {'message' : 0})
 
-		except sqlite3.Error as e:			
-			return render(request, 'templates/Controller/home.html', {'message' : 'database error'})
+# 		except sqlite3.Error as e:			
+# 			return render(request, 'templates/Controller/home.html', {'message' : 'database error'})
 
 
-	else:
-		return render(request, 'templates/Controller/home.html')
+# 	else:
+# 		return render(request, 'templates/Controller/home.html')
 
 
 
 def manual(request):
-	return render(request,'templates/Controller/manual.html', {'user': user, 'alert' : alert})
+	return render(request,'templates/Controller/manual.html', {'user': user, 'alert' : alert, 'request':request_node})
 
 
 
@@ -221,7 +237,7 @@ def request(request):
 			args = json.loads(request.body.decode('utf-8'))
 			node = args.get('node')
 			username = args.get('username') 
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
 			query = "Select id,value from node where id="+ str(node) +";"
@@ -230,16 +246,16 @@ def request(request):
 			c.close()
 			connection.close()
 		except sqlite3.Error as e:
-			return JsonResponse({'code':2})
+			return json.dumps({'code':2})
 
 		if fetch[1] == 'ON':
-			return JsonResponse({'code':0})
+			return json.dumps({'code':0})
 		else:
 
 			request_node = True
 
 			try:
-				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+				connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 				c=connection.cursor()
 				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node_id) + "and requested != 'False';"
 				c.execute(query)
@@ -256,50 +272,49 @@ def request(request):
 						query = "Update requests set requested= 'True' where node_id = "+ str(node_id)+" and username='" + str(username)+ "';"
 						c.execute(query)
 						connection.commit()
-				else:
-					c.close()
-					connection.close()
-					return JsonResponse({'code':1})
-
+				
 				c.close()
 				connection.close()
+				return json.dumps({'code':1})
 			except sqlite3.Error as e:
-				return JsonResponse({'code':2})
+				return json.dumps({'code':2})
 			
-			return JsonResponse({'code':1})
+			return json.dumps({'code':1})
 
 	else:
-		return render(request, 'templates/Controller/home.html')
+		return render(request, 'templates/Controller/home.html',{'user': user, 'alert': alert, 'request':request_node})
 
 
 @csrf_exempt
 def requests_on(request):
 	if request.method== 'GET':
+		global request_node
+		#if request is ajax and request_node is True then a notification is shown to the user
 		if request.is_ajax():
 			return JsonResponse({'user':user, 'request':request_node})
 		try:
-			# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-			# c=connection.cursor()
-			# query = "Delete from requests where requested = 'False';"
-			# c.execute(query)
-			# connection.commit()
-			#query = "Select username, node_id from requests where requested='True';"
-			#c.execute(query)
-			#fetch = c.fechall()
-			# c.close()
-			# connection.close()
-			#for row in fecth:
-				#if row[0] in requests:
-					#requests[row[0]].append(row[1])
-				#else:
-					#requests[row[0]] = row[1] 
-			print("o")
+			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+			c=connection.cursor()
+			query = "Delete from requests where requested = 'False';"
+			c.execute(query)
+			connection.commit()
+			query = "Select username, node_id from requests where requested='True';"
+			c.execute(query)
+			fetch = c.fetchall()
+			c.close()
+			connection.close()
+			for row in fetch:
+				if row[0] in requests:
+					requests[row[0]].append(row[1])
+				else:
+					requests[row[0]] = row[1] 
 
 		except sqlite3.Error as e:
 			return render(request, 'templates/Controller/error.html',{'error' :"Can't access database at the moment ",'user' : user  })
 
+		request_node = False
 
-		requests={'user':[1,2,3,4,5,6,7]}
+		
 		return render(request, 'templates/Controller/requests.html',{'user': user, 'alert': alert, 'request':request_node,'requests': requests})
 	else:
 		if request.method == 'POST':
@@ -307,16 +322,14 @@ def requests_on(request):
 				node_id = request.POST.get('id')
 				username = request.POST.get('username')
 
-				print(node_id)
-				print(username)
 				try:
-					# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-					# c=connection.cursor()
-					# query = "Update requests set requested = 'False' where node_id=" + str(node_id) + " AND username='" + str(username) + "';"
-					# c.execute(query)
-					# connection.commit()
-					# c.close()
-					# connection.close()
+					connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+					c=connection.cursor()
+					query = "Update requests set requested = 'False' where node_id=" + str(node_id) + " AND username='" + str(username) + "';"
+					c.execute(query)
+					connection.commit()
+					c.close()
+					connection.close()
 
 					return JsonResponse({"code" : 200})
 
@@ -334,7 +347,7 @@ def requests_on(request):
 ##Check if there is any alert not read yet
 def alerts():
 	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query="Select count(*) from alerts where read = 'False';" 
 		c.execute(query)
@@ -352,7 +365,7 @@ def alerts():
 
 def compLogin(username, password):
 	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query="Select username, password from users where username= '" + str(username) + "';"
 		c.execute(query)
@@ -369,67 +382,6 @@ def compLogin(username, password):
 		return 1,str(e)
 
 
-@csrf_exempt
-def reset_node(request):
-	if request.method == 'POST':
-		if request.is_ajax():
-			try:
-				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
-				c=connection.cursor()
-				
-				node = request.POST.get('id')
-				
-				code = refresh_grid()
-
-				if code[0] == 1:
-					return JsonResponse({'code': str(-1)})
-
-				(val,color,portId) = grid[int(node)]
-
-				print((val,color,portId))
-		
-				commands = "conf t\ninterface " + str(portId) + "\nno power-over-ethernet\nwrite memory"
-
-				
-				post = send_commands(commands)
-
-
-				if post.status_code != 202:
-					return JsonResponse({'code': str(-1)})
-
-				query = query = "Update node Set value='OFF', dateOn = '0' where id=" + str(node) +";"
-
-				c.execute(query)
-				connection.commit()
-
-				commands = "conf t\ninterface " + str(portId) + "\npower-over-ethernet\nwrite memory"
-
-				
-				post = send_commands(commands)
-
-
-				if post.status_code != 202:
-					return JsonResponse({'code': str(-1)})
-
-				todays_date = datetime.datetime.now()
-				date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
-				query = "Update node Set value='ON', dateOn = '" + str(date) +"' where id=" + str(n_id) +";"
-
-				c.execute(query)
-				connection.commit()
-
-				c.close
-				connection.close()
-
-				return JsonResponse({'code' : str(200)})
-
-			except sqlite3.Error as e:
-				return JsonResponse({'code' : str(-1)})
-
-			
-		return JsonResponse({'code' : str(-1)})
-
-	return render(request, 'templates/Controller/home.html', {'user':user})
 
 def log_in(request):
 	if request.method == 'POST':
@@ -484,7 +436,7 @@ def change_pass(request):
 			return render(request, 'templates/Controller/password.html',{'message' :'New passwords did not match' ,'user' : user, 'failed': True  })
 
 		try:
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 			query1="Select username, password from users where username='" + str(username) + "';"
 			c.execute(query1)
@@ -563,7 +515,7 @@ def get_notifications_with_date(request):
 					date_fin = str(date_final) + ' 23:59:59'
 					query = query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_in)+ "' AND date_alert <='" +str(date_fin)+ "' AND node_id=" + str(node) + ";"
 			
-			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 				
 			c.execute(query)
@@ -574,7 +526,7 @@ def get_notifications_with_date(request):
 		except sqlite3.Error as e:
 			return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
 
-		return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications':value, 'date1' : str(date_init), 'date2': str(date_final), 'node' : str(node)})
+		return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert,  'request':request_node,'notifications':value, 'date1' : str(date_init), 'date2': str(date_final), 'node' : str(node)})
 	else:
 		return render(request, 'templates/Controller/notifications.html',{'user': user})
 	
@@ -585,7 +537,7 @@ def notifications(request):
 	try:
 		global alert
 		alert = False
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query="Select node_id, alert, date_alert from alerts where read = 'False' Order by date_alert Desc;" 
 		c.execute(query)
@@ -600,13 +552,13 @@ def notifications(request):
 	except sqlite3.Error as e:
 		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
-	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'notifications': notifications})
+	return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert, 'request':request_node, 'notifications': notifications})
 
 
 def stats(request):
 
 	try:
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 
 		##count how many alerts exist
@@ -661,6 +613,8 @@ def stats(request):
 		connection.close()
 	
 	except sqlite3.Error as e:
+		if request.is_ajax():
+			return JsonResponse('code': str(-1))
 		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
 		
@@ -670,23 +624,25 @@ def stats(request):
 		return JsonResponse({'node_up':str(numOn), 'hours' : numHours,'n_alerts_node': numAlertsNode ,'n_alerts': str(numAlerts)})
 
 	
-	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'node_up':str(numOn), 'hours' : numHours,'n_alerts_node': numAlertsNode ,'n_alerts': str(numAlerts)})
+	return render(request, 'templates/Controller/stats.html', {'user' : user,'alert' : alert, 'request':request_node, 'node_up':str(numOn), 'hours' : numHours,'n_alerts_node': numAlertsNode ,'n_alerts': str(numAlerts)})
 
 def stats_poe(request):
 	#command to show poe info
 	if request.is_ajax():
 
-		code = send_commands_power()
-		print(code)
-
-		if code.status_code != 202:
-			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+		code,info = send_commands_power()
+		if code == 1:
+			return JsonResponse({'code': str(-1),'error': 'Cannot access swith at the moment'})
+		print(code.text)
+		
+		if info.status_code != 200 :
+			return JsonResponse({'code':str(-1), 'error': 'commands not accepted'})
 		else:
-			response = code.json()['result_base64_encoded']
-			decoded_r = base64.b64decode(code).decode('utf-8')
-			decoded_r = "kdsfnsidfhsdfksdnfijshdfkjsdlfksdkfhadsifççççççç ªª*ªº+çççç"
-
-			return JsonResponse({'info': decoded_r})
+			response = info.json()['result_base64_encoded']
+			decoded_r = base64.b64decode(response).decode('utf-8')
+			print(decoded_r)
+			
+			return JsonResponse({'code':str(200), 'info': decoded_r.split('\n')})
 	else:
 		return stats(request)
 		
@@ -694,19 +650,24 @@ def send_commands_power():
 	##sequence to turn and send commands to se switch, to check power 
 	command = "show power-over-ethernet brief"
 	command_dict={'cmd': command}
-	with requests.Session() as s:
-		post_command = s.post(url + 'cli', data=json.dumps(command_dict), timeout=10)
-	return post_command
+	try:
+		with requests.Session() as s:
+			post_command = s.post(url + 'cli', data=json.dumps(command_dict), timeout=10)
+		return 0,post_command
+	except requests.exceptions.RequestException as e:
+		return 1,str(e)
 
 
 
 @csrf_exempt
 def send_grid(request):
 
-	code = refresh_grid()
+	code,info = refresh_grid()
 
-	if code[0] == 1:
-		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
+	if code == 1:
+		if request.is_ajax():
+			return JsonResponse({"code": str(-1)})
+		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user})
 	
 	
 	node_grid = grid
@@ -734,27 +695,40 @@ def send_grid(request):
 					commands = "conf t\ninterface " + str(portId) + "\npower-over-ethernet\nwrite memory"
 
 					#can't update database immediately, need to wait for node to go up
-					post = send_commands(commands)
+					code,post = send_commands(commands)
+
+					if code == 1:
+						return JsonResponse({'error': 'Connection to switch timed out'})
+
 
 
 					if post.status_code != 202:
-						return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+						return JsonResponse({'error': 'commands not accepted'})
 
 					return JsonResponse(node_grid)
 			else:
 				try:
-					connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+					connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 					c=connection.cursor()
 					
 					#if value ON turn off
-					commands = "conf t\ninterface" + str(portId) + "\nno power-over-ethernet\nwrite memory"
+					commands = "conf t\ninterface " + str(portId) + "\nno power-over-ethernet\nwrite memory"
 
 					query = "Update node Set value='OFF', dateOn = '0' where id=" + str(node) +";"
 				
 				
-					post = send_commands(commands)
+					code,post = send_commands(commands)
+
+
+					if code == 1:
+						c.close()
+						connection.close()
+						return JsonResponse({'error': 'Connection to switch timed out'})
+
 					if post.status_code != 202:
-						return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
+						c.close()
+						connection.close()
+						return JsonResponse({'error': 'commands not accepted'})
 
 
 					#update value of node state in database
@@ -763,13 +737,15 @@ def send_grid(request):
 					c.close()
 					connection.close()
 
+					count_alive[str(node)] = 0
+
 
 					E_id,error = refresh_grid()
 					if E_id == 1:
-						return render(request, 'templates/Controller/error.html', {'error': error,'user' : user})
+						return JsonResponse({'error': error})
 
 				except sqlite3.Error as e:
-					return render(request, 'templates/Controller/error.html', {'error': str(e),'user' : user})
+					return JsonResponse({'error': str(e)})
 					
 				
 
@@ -781,13 +757,13 @@ def send_grid(request):
 			
 
 	
-	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'alert': alert})
+	return render(request,'templates/Controller/config.html',{'node_grid':node_grid, 'user' : user, 'request':request_node, 'alert': alert})
 	
 	
 
 def refresh_grid():
 	try:	
-		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()	
 		c.execute("Select node_id, value, portId from node as N Join switch as S on N.id = S.node_id;")
 		fetch= c.fetchall()
@@ -807,19 +783,21 @@ def refresh_grid():
 
 	
 def send_commands(command):
-	##sequence to turn and send commands to se switch, to send sequence of cli commands
-	command_bytes = command.encode()
-	command_base64 = base64.b64encode(command_bytes)
-	command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
-	with requests.Session() as s:
-		post_command = s.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=100)
-	return post_command
-
+	try:
+		##sequence to turn and send commands to se switch, to send sequence of cli commands
+		command_bytes = command.encode()
+		command_base64 = base64.b64encode(command_bytes)
+		command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
+		with requests.Session() as s:
+			post_command = s.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=100)
+		return 0,post_command
+	except requests.exceptions.RequestException as e:
+		1,str(e)
 
 
 
 def error_404(request,exception):
-	return render(request, 'templates/Controller/notfound.html', {"error":"404 Page not found",'user' : user,'alert': alert})
+	return render(request, 'templates/Controller/notfound.html', {"error":"404 Page not found",'user' : user,'alert': alert, 'request':request_node})
 
 def error_500(request):
-	return render(request, 'templates/Controller/notfound.html', {"error": "Error 500",'user' : user,'alert': alert})
+	return render(request, 'templates/Controller/notfound.html', {"error": "Error 500",'user' : user,'alert': alert, 'request':request_node})

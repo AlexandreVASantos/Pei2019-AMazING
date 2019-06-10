@@ -337,7 +337,7 @@
 				<div class="column" style="width:14%;float:left;margin-left: 1%;margin-right: 1%">
 					<div class="containerH">
 						<img src="{% static 'img/node.png' %}"  width="40%" height="40%" class="imageH" alt="">
-						<div class="overlayH">
+						<div class="overlayH" onclick="reset(22)">
 						    <div class="textH">Node 22</div>
 						 </div>
 					</div>
@@ -393,7 +393,23 @@
         nodes[i]=document.getElementById(i).value;        
 	};
 
-	
+	function isValidForm(){    
+      var c = window.confirm("Are you sure you want to turn the node OFF?\n\nPlease make sure that no one is using it before turning it down!");
+      if (c != true){
+        return false;
+      }
+    
+	    return true;
+	}
+
+	function isValidReset(id_button){    
+      var c = window.confirm("Are you sure you want to reconnect the node?\n\nPlease make sure that the node is really turned off and it's PoE port is ON!");
+      if (c != true){
+        return false;
+      }
+    
+	    return true;
+	}
 
 
 	$("button").click(function(){
@@ -401,33 +417,67 @@
 		data= { 
 			'id': $(this).attr('id'),
 			'value' : $(this).attr('value')};
-    	$.post("/config/", data ,function (data) {
-            count +=1;
-            document.getElementById(id).innerHTML = data[id.toString()][0];
-            document.getElementById(id).value = data[id.toString()][0];
-            document.getElementById(id).style.backgroundColor = data[id.toString()][1];
-               
-        
-        });
+		var off = isValidForm();
+        if(off == true){
+	    	$.post("/config/", data ,function (data) {
+	    		if ("error" in data){
+	    			window.alert(data["error"])
+	    		}else{
+
+		            if(document.getElementById(id).value == "ON"){
+		            	document.getElementById(id).innerHTML = data[id.toString()][0];
+			            document.getElementById(id).value = data[id.toString()][0];
+			            document.getElementById(id).style.backgroundColor = data[id.toString()][1];
+		            }else{ 
+						count +=1;   
+		        	}
+	        	}
+	        });
+	    }
 
 
     });
    
+   	function reset(id){
+   		data= {
+   			'id' : id
+   		};
+   		if( document.getElementById(id).value = "OFF"){
+		   	var off = isValidReset();	
+		   	if (off == true){
+			    $.post("/reset/", data,function (data) {
+			    	if (data["code"] == "200"){
+				        count +=1;
+				    }
+				    else{
+				    	window.alert("It was not possible to reconnect node " + id.toString());
+				    }
+			    });
+			}
+		}
+
+		
+  	}
+
   	
 
 
   	function change_grid(){
 	    $.get("/config/", function (data) {
-	          for(var i = 1;i<25 ;i++){
-	          	if(nodes[i] != data[i.toString()][0]){
-	          		count -=1;
-		            document.getElementById(i).innerHTML = data[i.toString()][0];
-		            document.getElementById(i).value = data[i.toString()][0];
-		            document.getElementById(i).style.backgroundColor = data[i.toString()][1];
-	        	}
+	    	if(!("code" in data)){
+	          	for(var i = 1;i<25 ;i++){
+		          	if(nodes[i] != data[i.toString()][0]){
+		          		count -=1;
+			            document.getElementById(i).innerHTML = data[i.toString()][0];
+			            document.getElementById(i).value = data[i.toString()][0];
+			            document.getElementById(i).style.backgroundColor = data[i.toString()][1];
+			            nodes[i] = data[i.toString()][0];
+
+		        	}
 	               
 	        
-	        };
+	        	};
+	       }
 
 	    });
 

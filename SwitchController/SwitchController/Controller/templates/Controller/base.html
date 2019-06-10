@@ -40,26 +40,38 @@
       </div>
   </nav>
   <br>
-  <div id="notify1"></div>
-  <div id="notify2"></div>
-  <div class="container" style="margin-top: 5%">
-    <div>
-      {% if failed %}
-        <div class ="alert alert-danger" role="alert">
-          {{message}}
+  <br>
+  <br>
+  <div class="row">
+    <div class="col-md-11">
+      <div class="container" style="margin-top: 5%">
+        <div>
+          {% if failed %}
+            <div class ="alert alert-danger" role="alert">
+              {{message}}
+            </div>
+          {% elif success %}
+            <div class ="alert alert-success" role="alert">
+              {{message}}
+            </div>    
+          {% endif %}
         </div>
-      {% elif success %}
-        <div class ="alert alert-success" role="alert">
-          {{message}}
-        </div>    
-      {% endif %}
-    </div>
-    {% block content %} {% endblock %}
+        {% block content %} {% endblock %}
 
+      </div>
+    </div>
+    <div class ="col-sm-1">
+      <div class="row" style = "height:10vh">
+        <div id="notify1"></div>
+      </div>
+      <div class="row" style = "height:10vh">
+        <div id="notify2"></div>
+      </div>
+    </div>
   </div>
   
 <!-- Footer -->
-<footer style="height: 150px; width: 100%; margin-top: 17%; bottom: 0%; position: relative; background-color: #0e2e5b">
+<footer style="height: 150px; width: 100%; margin-top: 10%; bottom: 0%; position: relative; background-color: #0e2e5b">
     <div class="row row-no-gutters">
       <div class="col-md-4" style="color:white;bottom:-100px;width: 70%">
         <p><small>&copy; Instituto Telecomunicações Aveiro </small></p>
@@ -73,17 +85,10 @@
   <!-- Footer -->
 {% if user.authenticated %}
 <script type="text/javascript">
-
-  function isValidForm(id_button){
-    var i = document.getElementById(id_button);
-    if( i.value == "ON"){
-      var c = window.confirm("Are you sure you want to turn the node OFF?\n\nPlease make sure that no one is using it before turning it down!");
-      if (c != true){
-        return false;
-      }
-    }
-    return true;
-  }
+  alert();
+  get_req();
+  
+  
 
   function goBack(){
     window.history.back();
@@ -98,7 +103,7 @@
       if(data["user"]["authenticated"] == true){
         if( data['alert'] == true){
             if (HasBeenAppended == false){
-              var html= '<div class="col-sm-2" style="margin-left:90%;width:15%"> <div class="notification" ><div class="content"><div class="identifier"></div><div class="text"><p>Alarm! </p><br></div></div></div></div>';
+              var html= '<div class="notification"><div class="content"><div class="identifier"></div><div class="text"><p>Alarm! </p><br></div></div></div>';
               $("#notify1").append(html);
               document.getElementById("alert").style.color = "red";
               HasBeenAppended = true;  
@@ -106,14 +111,16 @@
             
         }else{
           if(HasBeenAppended == true){
-            $("#notify1").remove(); 
+            $("#notify1").empty(); 
             HasBeenAppended = false;
+            document.getElementById("alert").style.color = "transparent";
           }
 
         }
       }else{
         if(HasBeenAppended == true){
-          $("#notify1").remove(); 
+          $("#notify1").empty();
+          
         }
       }
 
@@ -127,20 +134,23 @@
       console.log(JSON.stringify(data));
       if(data["user"]["authenticated"] == true){
         if( data['request'] == true){
-              var html= '<div class="col-sm-2" style="margin-left:90%;width:15%;margin-top:15%"> <div class="notification" ><div class="content"><div class="identifier" style="background-color:#6495ED"></div><div class="text"><p>Requests! </p><br></div></div></div></div>';
-              $("#notify2").append(html);
-              HasBeenAppendedReq = true;
-              document.getElementById("req").style.color = "#6495ED";
+              if(HasBeenAppendedReq ==false){
+                var html= '<div class="notification" ><div class="content"><div class="identifier" style="background-color:#6495ED"></div><div class="text"><p>Requests! </p><br></div></div></div>';
+                $("#notify2").append(html);
+                HasBeenAppendedReq = true;
+                document.getElementById("req").style.color = "#6495ED";
+              }
         }else{
           if(HasBeenAppendedReq == true){
-            $("#notify2").remove(); 
+            $("#notify2").empty(); 
             HasBeenAppendedReq = false;
+            document.getElementById("req").style.color = "transparent";
           }
 
         }
       }else{
         if(HasBeenAppended == true){
-          $("#notify2").remove(); 
+          $("#notify2").empty(); 
         }
       }
 
