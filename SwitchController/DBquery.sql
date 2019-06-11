@@ -91,7 +91,7 @@ INSERT INTO switch VALUES(23,23);
 INSERT INTO switch VALUES(24,24);
 
 
-INSERT INTO users VALUES('AmazingManager','Amazing2019');
+INSERT INTO users VALUES('username','password');
 
 
 COMMIT;

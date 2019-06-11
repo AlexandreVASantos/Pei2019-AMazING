@@ -20,7 +20,7 @@ import datetime
 user = {'username' : None, 'authenticated' : False }
 url = 'http://10.110.1.149/rest/v3/'
 
-headers = {'Content-Type': 'application/json'}
+headers = {'cookie': ''}
 
 grid = {}
 cookie = {}
@@ -235,8 +235,9 @@ def request(request):
 		global request_node
 		try:
 			args = json.loads(request.body.decode('utf-8'))
-			node = args.get('node')
-			username = args.get('username') 
+
+			node = args.get('id')
+			username = args.get('username')
 			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
@@ -246,10 +247,10 @@ def request(request):
 			c.close()
 			connection.close()
 		except sqlite3.Error as e:
-			return json.dumps({'code':2})
+			return JsonResponse({'code':2})
 
 		if fetch[1] == 'ON':
-			return json.dumps({'code':0})
+			return JsonResponse({'code':0})
 		else:
 
 			request_node = True
@@ -257,32 +258,103 @@ def request(request):
 			try:
 				connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
 				c=connection.cursor()
-				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node_id) + "and requested != 'False';"
+				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node) + " and requested != 'False';"
 				c.execute(query)
 				fetch1 = c.fetchone()
-				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node_id) + "and requested == 'False';"
+				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node) + " and requested == 'False';"
 				c.execute(query)
 				fetch2 = c.fetchone()
 				if fetch1 is None:
 					if fetch2 is None:
-						query = "Insert into requests values (" +str(node_id) + ",'"+ str(username)+"' ,'True')"
+						query = "Insert into requests values (" +str(node) + ",'"+ str(username)+"' ,'True')"
 						c.execute(query)
 						connection.commit()
 					else:
-						query = "Update requests set requested= 'True' where node_id = "+ str(node_id)+" and username='" + str(username)+ "';"
+						query = "Update requests set requested= 'True' where node_id = "+ str(node)+" and username='" + str(username)+ "';"
 						c.execute(query)
 						connection.commit()
 				
 				c.close()
 				connection.close()
-				return json.dumps({'code':1})
+				return JsonResponse({'code':1})
 			except sqlite3.Error as e:
-				return json.dumps({'code':2})
+				return JsonResponse({'code':2})
 			
-			return json.dumps({'code':1})
+			return JsonResponse({'code':1})
 
 	else:
 		return render(request, 'templates/Controller/home.html',{'user': user, 'alert': alert, 'request':request_node})
+
+
+
+
+@csrf_exempt
+def reset_node(request):
+	if request.method == 'POST':
+		if request.is_ajax():
+			try:
+				connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+				c=connection.cursor()
+				
+				node = request.POST.get('id')
+				
+				code = refresh_grid()
+
+				if code[0] == 1:
+					return JsonResponse({'code': -1})
+
+				(val,color,portId) = grid[int(node)]
+
+				print((val,color,portId))
+
+				print(str(200))
+				commands = "conf t\ninterface " + str(portId) + "\nno power-over-ethernet\nwrite memory"
+
+				
+				code,post = send_commands(commands)
+
+				if code != 0:
+					return JsonResponse({'code': -1})
+
+
+				print(post.status_code)
+
+				if post.status_code != 202:
+					return JsonResponse({'code': -1})
+
+				query = query = "Update node Set value='OFF', dateOn = '0' where id=" + str(node) +";"
+
+				c.execute(query)
+				connection.commit()
+
+				c.close
+				connection.close()
+
+
+				commands = "conf t\ninterface " + str(portId) + "\npower-over-ethernet\nwrite memory"
+
+				time.sleep(3)
+				
+				code,post = send_commands(commands)
+				if code !=0:
+					return JsonResponse({'code': -1})
+
+				print(post.status_code)
+
+				if post.status_code != 202 :
+					return JsonResponse({'code': -1})
+
+				
+
+				return JsonResponse({'code' : 200})
+
+			except sqlite3.Error as e:
+				return JsonResponse({'code' : -1})
+
+			
+		return JsonResponse({'code' : -1})
+
+	return render(request, 'templates/Controller/home.html', {'user':user})
 
 
 @csrf_exempt
@@ -392,12 +464,12 @@ def log_in(request):
 
 
 		code=compLogin(username,password)
-		
+		print(code[0])
 
 		if code[0] != 0:
 			return render(request, 'templates/Controller/login.html',{'message' :'Authentication Failed','user' : user, 'failed': True })
 
-		##use this block if a user login is added to the switch
+		##use this block if a user login is added to the switch, and the cookie needs to be passed to every post to the switch as a header field
 		#sess = requests.Session()
 		#req = sess.post(url + 'login-sessions',data={},timeout=1)
 		#cookie_response = req.json()['cookie']
@@ -503,6 +575,9 @@ def get_notifications_with_date(request):
 
 			else:
 				if date_init is None or date_init == '' or date_final is None or date_final == '':
+					if isinstance(int(node), int):
+						if int(node) < 1 or int(node) > 24:
+							return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Node number must be between 1 and 24.' ,'user': user})
 					query="Select node_id, alert, date_alert from alerts where node_id= " + str(node) + " Order by date_alert Desc;"
 				else:
 					date1 = datetime.datetime.strptime(date_init, "%Y-%m-%d")
@@ -524,7 +599,9 @@ def get_notifications_with_date(request):
 			connection.close()
 			value = [('node '+str(x[0]), x[1].split('\n'), x[2]) for x in fetch]
 		except sqlite3.Error as e:
-			return render(request, 'templates/Controller/error.html',{'error': str(e),'user': user})
+			return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment.",'user': user})
+		except ValueError:
+			return render(request, 'templates/Controller/notifications.html',{'failed': True, 'message' :' Node must be a number between 1 and 24' ,'user': user})
 
 		return render(request, 'templates/Controller/notifications.html',{'user': user, 'alert' : alert,  'request':request_node,'notifications':value, 'date1' : str(date_init), 'date2': str(date_final), 'node' : str(node)})
 	else:
@@ -601,8 +678,13 @@ def stats(request):
 			#date when node was turned on
 			up_date = datetime.datetime.strptime(info[1],'%Y-%m-%d %H:%M:%S') 
 			#difference between actual date and up_date
-			difference = relativedelta.relativedelta(todays_date,up_date)			
-			numHours[info[0]] = int(difference.hours)
+			difference = relativedelta.relativedelta(todays_date,up_date)
+			if int(difference.months) != 0:
+				numHours[info[0]]= int(difference.months)*30*24 + int(difference.days)*24 + int(difference.hours)
+			elif int(difference.days) != 0 :
+				numHours[info[0]] = int(difference.days)*24 + int(difference.hours)
+			else:
+				numHours[info[0]] = int(difference.hours)
 
 		for i in range(1,25):
 			if i not in list(numHours.keys()):
@@ -614,7 +696,7 @@ def stats(request):
 	
 	except sqlite3.Error as e:
 		if request.is_ajax():
-			return JsonResponse('code': str(-1))
+			return JsonResponse({'code': -1})
 		return render(request, 'templates/Controller/error.html',{'error': "Can't access database at the moment",'user': user})
 
 		
@@ -632,17 +714,17 @@ def stats_poe(request):
 
 		code,info = send_commands_power()
 		if code == 1:
-			return JsonResponse({'code': str(-1),'error': 'Cannot access swith at the moment'})
-		print(code.text)
+			return JsonResponse({'code': -1,'error': 'Cannot access swith at the moment'})
+		
 		
 		if info.status_code != 200 :
-			return JsonResponse({'code':str(-1), 'error': 'commands not accepted'})
+			return JsonResponse({'code': -1, 'error': 'commands not accepted'})
 		else:
 			response = info.json()['result_base64_encoded']
 			decoded_r = base64.b64decode(response).decode('utf-8')
-			print(decoded_r)
 			
-			return JsonResponse({'code':str(200), 'info': decoded_r.split('\n')})
+			
+			return JsonResponse({'code': 200, 'info': decoded_r.split('\n')})
 	else:
 		return stats(request)
 		
@@ -666,7 +748,7 @@ def send_grid(request):
 
 	if code == 1:
 		if request.is_ajax():
-			return JsonResponse({"code": str(-1)})
+			return JsonResponse({"code": -1})
 		return render(request, 'templates/Controller/error.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user})
 	
 	
@@ -698,12 +780,12 @@ def send_grid(request):
 					code,post = send_commands(commands)
 
 					if code == 1:
-						return JsonResponse({'error': 'Connection to switch timed out'})
+						return JsonResponse({'error': 'Connection to switch timed out. Could not turn on node!'})
 
 
 
 					if post.status_code != 202:
-						return JsonResponse({'error': 'commands not accepted'})
+						return JsonResponse({'error': 'commands not accepted.  Could not turn on node!'})
 
 					return JsonResponse(node_grid)
 			else:
@@ -721,14 +803,15 @@ def send_grid(request):
 
 
 					if code == 1:
+						
 						c.close()
 						connection.close()
-						return JsonResponse({'error': 'Connection to switch timed out'})
+						return JsonResponse({'error': 'Connection to switch timed out. Could not turn off node!'})
 
 					if post.status_code != 202:
 						c.close()
 						connection.close()
-						return JsonResponse({'error': 'commands not accepted'})
+						return JsonResponse({'error': 'commands not accepted.  Could not turn off node!'})
 
 
 					#update value of node state in database
@@ -789,10 +872,10 @@ def send_commands(command):
 		command_base64 = base64.b64encode(command_bytes)
 		command_dict={'cli_batch_base64_encoded': command_base64.decode('utf-8')}
 		with requests.Session() as s:
-			post_command = s.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=100)
+			post_command = s.post(url + 'cli_batch', data=json.dumps(command_dict), timeout=10)
 		return 0,post_command
 	except requests.exceptions.RequestException as e:
-		1,str(e)
+		return 1,str(e)
 
 
 

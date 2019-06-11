@@ -1,7 +1,7 @@
 {% extends "Controller/base.html" %}
 {% block content %}
 	{% if user.authenticated %}
-		<div class="container" id ="fillreq" style="text-align:left;min-height: 35vh;background-color: #FFFF;">
+		<div class="container" id ="fillreq" style="text-align:left;min-height: 40vh;background-color: #FFFF;">
 			
 			<h3 class="title">Pending Requests:</h3>
 			{% for user, node in requests.items %}

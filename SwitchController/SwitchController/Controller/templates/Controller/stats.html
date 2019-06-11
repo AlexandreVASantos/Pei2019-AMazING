@@ -229,6 +229,8 @@
            	hours = data['hours'];
            	console.log(JSON.stringify(data));
            	n_alerts_node = data['n_alerts_node'];
+            HoursNode();
+            drawAlertsByNode();
           }
 	    });
 	}
@@ -238,20 +240,24 @@
 		inHTML = document.getElementById("btnpoe").innerHTML;
 		if(inHTML == "Show PoE Info"){ 
 	    	$.get("/stats/poe/", function (data) {
-          if (data["code"] == "-1"){
+          if (data["code"] == -1){
             var info = data['error'];
+            $("#poeinfo").append(info);
+            $("#poeinfo").append("<br>");
+
           }else{
             var info = data["info"];  
+            var i;
+            
+            for(i=0;i<Object.keys(info).length;i++){
+              $("#poeinfo").append(info[i]);
+              $("#poeinfo").append("<br>");
+               
+            }
           }
 	        document.getElementById("btnpoe").innerHTML = "Hide PoE Info";
 	        
-          var i;
           
-          for(i=0;i<Object.keys(info).length;i++){
-	          $("#poeinfo").append(info[i]);
-            $("#poeinfo").append("<br>");
-             
-          }
 
                   
         
@@ -266,9 +272,8 @@
 
 
 
- 	setInterval(HoursNode,60000);
- 	setInterval(drawAlertsByNode,60000);
-  	setInterval(get_stats,60000);
+ 	
+  setInterval(get_stats,60000);
 
   </script>
   {% else %}

@@ -5,82 +5,86 @@ import time
 import datetime
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
+
 ##Alexandre Santos, 80106
 
-#url = 'http://localhost:8000/'
+url = 'http://localhost:8000/'
 
-#headers = {'Content-Type': 'application/json'}
+headers = {'Content-Type': 'application/json'}
 
 
 def get_hostname():
-	hostname = subprocess.check_output(['hostname'])
-	if hostname[4] != "" or hostname[4] is not None:
-		return chr(hostname[3]) + chr(hostname[4])
+	hostname = subprocess.check_output(['hostname'], shell=True, universal_newlines=True)
+	if hostname[4] != "\n" :
+		return hostname[3] + hostname[4]
 	else:
-		return chr(hostname[3])
+		return hostname[3]
 
 
 def node_life_cycle():
 	
-
-	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: json.dumps(x).encode('utf-8'))
-	#node_id = get_hostname()
-	node_id=1
-	#data = {'node': str(node_id) }
-	data = {str(node_id): 'wake_up'}
-
-	producer.send('switch', value=data)
-
-	#data_json = json.dumps(data)
-	#send = requests.post(url + 'nodeup/', data=data_json, headers= headers)
+	time.sleep(60)
 	
-	#if send.status_code == 200:
-	#	return 'MSG: ' + str(node_id) +' just woke up!!!'
-	#except requests.exceptions.Timeout as e:
-	#	continue
-	#except requests.exceptions.ConnectionError as e:
-	#	continue
+	while True:
+		try:
+			
+			producer = KafkaProducer(bootstrap_servers=['192.168.85.228:9093'],value_serializer=lambda x: json.dumps(x).encode('utf-8'))
+			node_id = str(get_hostname())
+			node_id.replace('\n', '')
+			data = {node_id: 'wake_up'}
+			print(data)
+
+			producer.send('switch', value=data)
+			
+			producer.close()
+
+			#data_json = json.dumps(data)
+			#send = requests.post(url + 'nodeup/', data=data_json, headers= headers)
+			break;
+
+		except KafkaError as e:
+			print(e)
+			continue 	
 
 
 	while True:
 		try:
-			#values = subprocess.check_output('sensors | grep -B 3 "ALARM"', shell=True, universal_newlines=True)
-			#values = subprocess.check_output('sensors', shell=True)
-			#if values != None or values != "":
-			#	readings = values.decode('utf-8')
-				#node_id = get_hostname()
-				
-				
-			#	current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			producer = KafkaProducer(bootstrap_servers=['192.168.85.228:9093'],value_serializer=lambda x: json.dumps(x).encode('utf-8'))
 
-			#	data = { str(node_id) : [current_date, readings.encode('utf-8')]}
-				#producer.send('alerts', value=data)
-				
-				
-			data = { str(node_id) : 'alive' }
+			data = { node_id : 'alive' }
+			print(data)
 			producer.send('switch', value=data)
+		
+			
+			
+			values = subprocess.check_output('sensors | grep -B 3 "ALARM"', shell=True, universal_newlines=True)
+			#values = subprocess.check_output('sensors', shell=True)
+			if values != None or values != "":
+				readings = values.decode('utf-8')
+				node_id = get_hostname()
 				
 				
-				#node_id = 13
-				
-				
-				#data_json = json.dumps(data_values)
-				
-				#send = requests.post(url + 'sensors/' , data=data_json, headers=headers )
+				current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+				data = { str(node_id) : [current_date, readings.encode('utf-8')]}
+				producer.send('alerts', value=data)
+				
+				
+			
+			
+			
+				
 		
 		except subprocess.CalledProcessError as e:
 			##if values return empty string it raises an error
-			continue
+			pass
 		except KafkaError as e:
 			print(e)
 			continue
-		#except requests.exceptions.ConnectionError as e:
-		#	continue
 
 
-
-		time.sleep(90)
+		producer.close()
+		time.sleep(50)
 
 
 

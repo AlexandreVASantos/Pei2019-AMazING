@@ -1,4 +1,0 @@
-curl -X PUT "localhost:9200/controller/" -H 'Content-Type: application/json' -d '{"settings": {"number_of_shards": 1,"number_of_replicas": 1},"mappings": {"properties": {"node_id": {"type": "keyword"},"up_date": { "type": "date", "format": "yyyy-MM-dd HH:mm:ss"},"value": { "type": "integer"}, "n_alerts":{ "type" : "integer"}}}}'
-
-
-curl -X POST "localhost:9200/controller/_doc/1" -H 'Content-Type: application/json' -d '{"node_id": "1","up_date": "2020-05-10 12:00:00","value": "OFF", "alerts": "2"}'
