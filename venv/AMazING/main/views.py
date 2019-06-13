@@ -29,8 +29,8 @@ def consumer():
 		message = message.value
 		for (a,b) in message.items():
 			print("('"+str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2]) +"','"+str(b[3]) +"','"+str(b[4]) +"') values entered")
-			cursor.execute("INSERT INTO Logs VALUES('"+ str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2])+"','"+str(b[3])+"','"+str(b[4]) +"');")
-			connection.commit()
+			cursor.execute("INSERT INTO Logs VALUES('"+ str(a)+"','"+str(b[0])+"','"+str(b[1])+"','"+str(b[2])+"','"+str(b[3])+"','"+str(b[4]) +"');")		#kafka stuff
+			connection.commit()																																#inserts useful data into database
 		cursor.close()
 		connection.close()
 		sleep(2)
@@ -38,14 +38,14 @@ def consumer():
 
 def auth(request):
 	username = request.POST.get('email')
-	password = request.POST.get('password')
+	password = request.POST.get('password')						#authentication,retrieves values from html, creates connection with ldap server and authenticates
 	system_messages=messages.get_messages(request)
 
 	user = authenticate(username=username,password=password)
 	if user is not None:
 		login(request,user)
 		refresh_grid()
-		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))	#kafka stuff, sends  value to insert into database
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
 		data = { request.user.get_username() : [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
@@ -61,7 +61,7 @@ def auth(request):
 @login_required(login_url='/')
 def AccessP(request):
 	data=request.GET
-	print(data)
+
 	ident=data['id']
 	return render(request,'main/AccessP.html',{'id':ident})
 
@@ -71,7 +71,7 @@ def home(request):
 @login_required(login_url='/')
 def modBitrate(request):
 	data=request.GET
-	print(data)
+
 	ident=data['id']
 	return render(request, 'main/modBitrate.html',{'id':ident})
 
@@ -94,14 +94,14 @@ def menu(request):
 			ident = key 
 
 
-	node_busy(request,{'id':ident});
+	node_busy(request,{'id':ident});			#changes node value in database, updates node grid
 	refresh_grid()
 	return render(request, 'main/menu.html',{'id':ident})
 
 @login_required(login_url='/')
 def connection(request):
 	data=request.GET
-	print(data)
+
 	ident=data['id']
 	return render(request, 'main/connection.html',{'id':ident})
 
@@ -117,7 +117,7 @@ def help(request):
 @login_required(login_url='/')
 def stationPeer(request):
 	data=request.GET
-	print(data)
+
 	ident=data['id']
 	return render(request, 'main/stationPeer.html',{'id':ident})
 
@@ -130,16 +130,16 @@ def addrChange(request):
 @login_required(login_url='/')
 def setTxPower(request):
 	data=request.GET
-	print(data)
+
 	ident=data['id']
 	return render(request, 'main/SetTxPower.html',{'id':ident})
 
 @login_required(login_url='/')
 def postGetApIP(request):
 	data=request.GET
-	url = "http://10.110.1." + ident + ":5000/"
+	url = "http://10.110.1." + ident + ":5000/"			#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	for key in data:
-		print(key)
+
 		dic[key] = data[key]
 
 	dataToSend = json.dumps(dic)
@@ -152,22 +152,22 @@ def postGetApIP(request):
 def postAccessP(request):
 	data = request.GET
 	ident=data['id']
-	url = "http://10.110.1." + ident + ":5000/CreateAccessPoint"
+	url = "http://10.110.1." + ident + ":5000/CreateAccessPoint"		
 	dic={}
 	channel = int(data["Channel"])
 
 	if not verify_nodeID(request,ident):
-		return render(request,'main/NodeMenu.html')
+		return render(request,'main/NodeMenu.html')				#retrieves values from HTML, sends them to corresponding endpoint on selected node
 
 	if( verify_Channel(request,channel) and verify_passw(request,data["APPW"]) and verify_Range(request,data["RangeStart"],data["RangeEnd"]) and verify_IP(request,data["RangeStart"]) and verify_IP(request,data["RangeEnd"]) and verify_IP(request,data["DFGateway"])):
 		for key in data:
-			print(key)
-			dic[key] = data[key]
+
+			dic[key] = data[key]					#verifies inserted data
 
 		if "id" in dic:
 			del dic["id"]
 
-		print(dic)
+
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
@@ -188,7 +188,7 @@ def postAccessP(request):
 	data = {request.user.get_username() : [curdate, 'Create Access Point',ident ,'Channel: '+data["Channel"]+', APPW: '+data["APPW"]+', HW_Mode: '+data["hw_mode"]+', RangeStart: ' +dic["RangeStart"]+ ', DFGateway: ' +dic["DFGateway"]+ ',APSSID: '+dic["APSSID"]+',Netmask: ' +dic["Netmask"]+',RangeEnd: ' +dic["RangeEnd"], 'Failed']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 	producer.send('numtest', value=data)
 	sleep(2)
-	#print(req.json())
+
 	return render(request,'main/AccessP.html',{'id':ident})
 
 @login_required(login_url='/')
@@ -196,13 +196,13 @@ def postStopAccessPoint(request):
 	data = request.GET
 	ident=data['id']
 	dic={}
-	url = "http://10.110.1." +ident + ":5000/StopAccessPoint"
+	url = "http://10.110.1." +ident + ":5000/StopAccessPoint"	#retrieves values from HTML, sends them to corresponding endpoint on selected node
 
 	if not verify_nodeID(request,ident):
-		return render(request,'main/NodeMenu.html')
+		return render(request,'main/NodeMenu.html')			#verifies inserted data
 
 	req = requests.get(url)
-	#print(req.json())
+
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -217,7 +217,7 @@ def postDisconnect(request):
 	data = request.GET
 	ident=data['id']
 	dic={}
-	url = "http://10.110.1." + ident + ":5000/disconnect"
+	url = "http://10.110.1." + ident + ":5000/disconnect"	#retrieves values from HTML, sends them to corresponding endpoint on selected node
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
@@ -225,7 +225,7 @@ def postDisconnect(request):
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
-	#print(req.json())
+
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 	curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
@@ -239,7 +239,7 @@ def postDisconnect(request):
 @login_required(login_url='/')
 def postTurnOnNode(request):
 	url = "http://192.168.85.228:8000/request/" 				
-	#url = "http://httpbin.org/post"
+
 	data=request.GET
 	dic = {}
 	nodes = ''
@@ -249,16 +249,16 @@ def postTurnOnNode(request):
 			dic["id"] = key 
 	ident = dic["id"]
 
-	#print(dic)
+
 	dic["username"]=request.user.get_username();
 	system_messages = messages.get_messages(request)
-	messages.warning(request, 'Please wait a few minutes before configuring node')
+	messages.warning(request, 'Please wait a few minutes before configuring node')		#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	system_messages.used = True
 	dataToSend = json.dumps(dic)
 	headers = {'Content-Type': 'application/json'}
 	req = requests.post(url,data=dataToSend, headers=headers)
 	updatedReqResp = req.json()
-	print(updatedReqResp)
+
 	node_up(request,dic)
 	refresh_grid()
 
@@ -276,21 +276,20 @@ def postScanning(request):
 	data = request.GET
 	ident=data['id']
 	dic={}
-	url = "http://10.110.1." + ident + ":5000/scan"
+	url = "http://10.110.1." + ident + ":5000/scan"		#retrieves values from HTML, sends them to corresponding endpoint on selected node
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 
-	if(verify_NetwC(request,data)):	
+	if(verify_NetwC(request,data)):			#verifies inserted data
 		
 		for key in data:
-			print(key)
 			dic[key] = data[key]
 
 		if "id" in dic:
 			del dic["id"]
 
-		print(dic)	
+
 		dataToSend = json.dumps(dic)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post(url,data=dataToSend, headers=headers)
@@ -304,7 +303,7 @@ def postScanning(request):
 
 		updatedReqResp = req.json()
 		
-		print(updatedReqResp)
+
 		return render(request, 'main/menu.html', {"flagAP":False,"flagEL":False,"flagSC":True,"flagLS":False,"flagIPC":False,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
@@ -314,7 +313,7 @@ def postScanning(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
+
 	return render(request,'main/menu.html',{'id':ident})
 
 @login_required(login_url='/')
@@ -322,15 +321,15 @@ def postLinkStatus(request):
 	data = request.GET
 	ident=data['id']
 	dic={}
-	url = "http://10.110.1." + ident + ":5000/link"
+	url = "http://10.110.1." + ident + ":5000/link"			#retrieves values from HTML, sends them to corresponding endpoint on selected node
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 
-	if(verify_NetwC(request,data)):	
+	if(verify_NetwC(request,data)):			#verifies inserted data
 		
 		for key in data:
-			#print(key)
+
 			dic[key] = data[key]
 
 		if "id" in dic:
@@ -357,7 +356,7 @@ def postLinkStatus(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
+
 	return render(request,'main/menu.html',{'id':ident})
 
 @login_required(login_url='/')
@@ -365,16 +364,16 @@ def postLocalWireless(request):
 	data = request.GET
 	ident=data['id']
 	dic={}
-	url = "http://10.110.1." + ident + ":5000/localwireless"
-	#print(data)
+	url = "http://10.110.1." + ident + ":5000/localwireless"		#retrieves values from HTML, sends them to corresponding endpoint on selected node
+
 
 	if not verify_nodeID(request,ident):
-		return render(request,'main/NodeMenu.html')
+		return render(request,'main/NodeMenu.html')			
 
-	if(verify_NetwC(request,data)):	
+	if(verify_NetwC(request,data)):			#verifies inserted data
 		
 		for key in data:
-			#print(key)
+
 			dic[key] = data[key]
 
 		if "id" in dic:
@@ -401,25 +400,25 @@ def postLocalWireless(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
+
 	return render(request,'main/menu.html',{'id':ident})
 
 @login_required(login_url='/')
 def postIPChange(request):
 	data = request.GET
 	ident=data['id']
-	url = "http://10.110.1." + ident + ":5000/changeIP"
+	url = "http://10.110.1." + ident + ":5000/changeIP"			#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	dic={}
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 	
-	if(verify_IP(request,data["IP"]) and verify_netmask(request,data["Netmask"]) and not (len(data)==0)):	
+	if(verify_IP(request,data["IP"]) and verify_netmask(request,data["Netmask"]) and not (len(data)==0)):		#verifies inserted data
 		
 		for key in data:
 			dic[key] = data[key]
 
-		#print(dic)
+
 		if "id" in dic:
 			del dic["id"]
 
@@ -435,7 +434,7 @@ def postIPChange(request):
 		sleep(2)
 
 		updatedReqResp = req.json()
-		#print(req.json())
+
 		return render(request, 'main/addrChange.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":True,"flagSS":False,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp
 
 	producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
@@ -445,25 +444,26 @@ def postIPChange(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
+
 	return render(request,'main/addrChange.html',{'id':ident})
 
 @login_required(login_url='/')
 def postConnection(request):
 	data = request.GET
-	#print(data)
+
 	ident=data['id']
-	url = "http://10.110.1." + ident +":5000/connection"
+	url = "http://10.110.1." + ident +":5000/connection"	#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	dic={}
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 
-	if(verify_NetwC(request,data) and not (len(data)==0)):	
+	if(verify_NetwC(request,data) and not (len(data)==0)):		#verifies inserted data
 
-			#print(data)
+
 			for key in data:
-				#print(key)
+
+
 				dic[key] = data[key]
 
 			if "id" in dic:
@@ -490,24 +490,24 @@ def postConnection(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
+
 	return render(request,'main/connection.html',{'id':ident})
 	
 @login_required(login_url='/')
 def postStationStats(request):
 	data = request.GET
 	ident=data['id']
-	url = "http://10.110.1." + ident +":5000/stationstats"
+	url = "http://10.110.1." + ident +":5000/stationstats"	#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	dic={}
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 
 
-	if(verify_NetwC(request,data)):	
+	if(verify_NetwC(request,data)):		#verifies inserted data
 		
 		for key in data:
-			#print(key)
+
 			dic[key] = data[key]
 
 		if "id" in dic:
@@ -526,7 +526,7 @@ def postStationStats(request):
 		sleep(2)
 
 
-		#print(req.json())
+
 		updatedReqResp = req.json()
 		return render(request, 'main/menu.html', {"flagLC":False,"flagAP":False,"flagEL":False,"flagSC":False,"flagLS":False,"flagIPC":False,"flagSS":True,"flagSP":False,"flagTP":False,"flagC":False,"req":updatedReqResp,'id':ident})#"req":updatedReqResp,
 
@@ -537,22 +537,21 @@ def postStationStats(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
 	return render(request,'main/menu.html',{'id':ident})
 
 @login_required(login_url='/')
 def postModBitrate(request):
 	data = request.GET
 	ident=data['id']
-	url = "http://10.110.1." + ident +":5000/modtxhtmcsbitrates"
+	url = "http://10.110.1." + ident +":5000/modtxhtmcsbitrates"	#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	dic={}
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 
-	if(verify_NetwC(request,data)):	
+	if(verify_NetwC(request,data)):		#verifies inserted data
 		for key in data:
-			print(key)
+
 			dic[key] = data[key]
 
 		if "id" in dic:
@@ -585,7 +584,7 @@ def postModBitrate(request):
 def postStationPeer(request):
 	data = request.GET
 	ident=data['id']
-	url = "http://10.110.1." + ident + ":5000/stationpeerstats"
+	url = "http://10.110.1." + ident + ":5000/stationpeerstats"		#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	mac=data["MAC"]
 	dic={}
 
@@ -593,13 +592,13 @@ def postStationPeer(request):
 		return render(request,'main/NodeMenu.html')
 
 	if not (len(data)==0):
-		if(verify_NetwC(request,data) and verify_mac(request,mac)):
+		if(verify_NetwC(request,data) and verify_mac(request,mac)):	#verifies inserted data
 				
 			
 			for key in data:
 				dic[key] = data[key]
 
-			#print(dic)	
+	
 
 			if "id" in dic:
 				del dic["id"]
@@ -625,7 +624,7 @@ def postStationPeer(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
+
 	return render(request,'main/stationPeer.html',{'id':ident})
 	
 	
@@ -633,16 +632,16 @@ def postStationPeer(request):
 def postTxPower(request):
 	data = request.GET
 	ident=data['id']
-	url = "http://10.110.1." + ident + ":5000/settingtxpowerdev"
+	url = "http://10.110.1." + ident + ":5000/settingtxpowerdev"	#retrieves values from HTML, sends them to corresponding endpoint on selected node
 	dic={}
 
 	if not verify_nodeID(request,ident):
 		return render(request,'main/NodeMenu.html')
 	
-	if(verify_NetwC(request,data) and not (len(data)==0)):	
+	if(verify_NetwC(request,data) and not (len(data)==0)):		#verifies inserted data
 		
 		for key in data:
-			#print(key)
+
 			dic[key] = data[key]
 
 		if "id" in dic:
@@ -668,7 +667,7 @@ def postTxPower(request):
 	producer.send('numtest', value=data)
 	sleep(2)
 
-	#print(req.json())
+
 	return render(request,'main/SetTxPower.html',{'id':ident})
 
 
@@ -678,8 +677,8 @@ def postTxPower(request):
 def compare_owner(request):
 	dic=request.GET
 	ident = dic["id"]
-	print("id",ident)
-	ownerList = node_owner(request,dic)
+
+	ownerList = node_owner(request,dic)			#checks if user is the same as node owner
 	owner=ownerList[0]
 
 	refresh_grid()
@@ -693,8 +692,8 @@ def compare_owner(request):
 def node_owner(request,dic):
 	try:
 		node = dic["id"]
-		print(node)
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+
+		connection = sqlite3.connect("/home/ubuntu/apps/NodeConfigApp/AMazING/main/NodeDB.db")			#returns the owner of the selected node
 		c=connection.cursor()
 
 		query = "Select owner From node where id='"+ str(node) +"';"
@@ -712,8 +711,8 @@ def node_owner(request,dic):
 @csrf_exempt
 def node_up(request,dic):
 	try:
-		node = dic["id"]
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		node = dic["id"]																		#changes node state to ON
+		connection = sqlite3.connect("/home/ubuntu/apps/NodeConfigApp/AMazING/main/NodeDB.db")
 		c=connection.cursor()
 
 		query = "Update node Set value='ON' where id="+ str(node) +";"
@@ -736,12 +735,13 @@ def node_busy(request,dic):
 		user=request.user.get_username()
 		
 		node = dic["id"]
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/NodeConfigApp/AMazING/main/NodeDB.db")			#changes node state to ON
 		c=connection.cursor()
 
 		query = "Update node Set value='BUSY', owner='" + str(user) + "' where id="+ str(node) +";"
 		#Only at this time we can update the value of the node in the database
-		#print(query)
+
+
 		c.execute(query)
 		
 		connection.commit()
@@ -759,8 +759,8 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 	code = refresh_grid()
 
 	if code[0] == 1:
-		return render(request, 'main/NodeMenu.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})
-	
+		return render(request, 'main/NodeMenu.html',{'error': "Can't refresh grid at the moment. Try again later.",'user': user, 'alert':alert})	#gets grid information
+		
 	##use this block if a user login is added to the switch
 	#sess = requests.Session()
 	#req = sess.post(url + 'login-sessions',data={},timeout=1)
@@ -783,8 +783,6 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 			elif key == 'value':
 				value=dic[key]
 
-			print(node)
-			print(value)
 			
 			(val,color,portId) = grid[int(node)]
 
@@ -799,7 +797,7 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 			# 			return render(request, 'Controller/error.html', {'error': 'commands not accepted'})
 			# else:
 			try:
-				connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+				connection = sqlite3.connect("/home/ubuntu/apps/NodeConfigApp/AMazING/main/NodeDB.db")
 				c=connection.cursor()
 				
 				#if value ON turn off
@@ -816,7 +814,7 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 
 				# verify_response = post.json()['result_base64_encoded']
 				# decoded_r = base64.b64decode(verify_response).decode('utf-8')
-				# print(decoded_r)
+
 				#update value of node state in database
 				c.execute(query)
 				connection.commit()
@@ -835,7 +833,8 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 			node_grid = grid
 
 		
-			print ('asdakjsdhiadhah')
+
+
 			return JsonResponse(node_grid)
 		
 
@@ -846,26 +845,26 @@ def send_grid(request):		#esta funcao tem que ser alterada (grid)
 def verify_nodeID(request,ident):
 	system_messages = messages.get_messages(request)
 	if not ident.isdigit():
-		messages.warning(request, 'Before Any Configuration, Please select a Node.')
+		messages.warning(request, 'Before Any Configuration, Please select a Node.')	#checks if user has selected a node
 		system_messages.used = True
 		return 0
 	return 1
 
 def get_IP(NOwner,NId):
 	try:	
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/NodeConfigApp/AMazING/main/NodeDB.db")	#returns IP of selected node
 		c=connection.cursor()	
 		c.execute("Select IP from node where owner="+ str(NOwner) +",id="+ str(NId) +";")
 		fetch= c.fetchall()
 		connection.close()
-		print("ip;",fetch)
+
 		return fetch
 	except sqlite3.Error as e:
 		return 1,str(e)
 
 def refresh_grid():
 	try:	
-		connection = sqlite3.connect("/home/santananas/Desktop/sitePei/venv/AMazING/NodeDB.db")
+		connection = sqlite3.connect("/home/ubuntu/apps/NodeConfigApp/AMazING/main/NodeDB.db")		#updates grid
 		c=connection.cursor()	
 		c.execute("Select id, value from node;")
 		fetch= c.fetchall()
@@ -883,7 +882,7 @@ def refresh_grid():
 
 
 
-def verify_netmask(request,netmask):
+def verify_netmask(request,netmask):				#checks if inserted netmask has valid format
 	system_messages = messages.get_messages(request)
 	if netmask == '':
 		return 1
@@ -896,7 +895,7 @@ def verify_netmask(request,netmask):
 	return 0
 
 
-def verify_mac(request,mac_address):
+def verify_mac(request,mac_address):				#checks if inserted MAC address has valid format
 	system_messages = messages.get_messages(request)
 	if re.match("[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", mac_address.lower()):
 		return 1
@@ -904,7 +903,7 @@ def verify_mac(request,mac_address):
 	system_messages.used = True
 	return 0
 
-def verify_IP(request,IP_address):
+def verify_IP(request,IP_address):		#checks if inserted IP address has valid format
 	system_messages = messages.get_messages(request)
 	a = IP_address.split('.')
 	if len(a) is not 4:
@@ -923,7 +922,7 @@ def verify_IP(request,IP_address):
 			return 0
 	return 1
 
-def verify_freq(request,freq):
+def verify_freq(request,freq):			#checks if inserted frequency has valid format
 	system_messages = messages.get_messages(request)
 	if freq.isdigit():
 		return 1
@@ -935,7 +934,7 @@ def verify_freq(request,freq):
 			return 0
 	return 1
 
-def verify_wep(request,wep):
+def verify_wep(request,wep):			#checks if inserted WEP KEY has valid format
 	system_messages = messages.get_messages(request)
 	if re.match("[0-9a-f]*",wep.lower()):
 		return 1
@@ -951,12 +950,11 @@ def verify_NetwC(request,dic):
 		return 0
 	return 1
 
-def verify_Range(request,rangeStart,rangeStop):
+def verify_Range(request,rangeStart,rangeStop):			#checks if inserted range values make sense
 	system_messages = messages.get_messages(request)
 	RSta = rangeStart.split('.')
 	RSto = rangeStop.split('.')
-	print("RSta",RSta)
-	print("RSto",RSto)
+
 
 	if len(RSta) is not 4 :
 		messages.warning(request, 'Please insert a valid IP on range Start.')
@@ -974,16 +972,16 @@ def verify_Range(request,rangeStart,rangeStop):
 	system_messages.used = True
 	return 0
 
-def verify_Channel(request,channel):
+def verify_Channel(request,channel):			#checks if inserted channel is valid
 	system_messages = messages.get_messages(request)
-	print(channel)
+
 	if channel not in range(0,12):
 		messages.warning(request, 'Please insert a valid Channel (1-11).')
 		system_messages.used = True
 		return 0
 	return 1
 
-def verify_passw(request,password):
+def verify_passw(request,password):			#checks if inserted password has 8 or more characters
 	system_messages = messages.get_messages(request)
 	if len(password) < 8:
 		messages.warning(request, 'Please insert a valid Password (8 or more characters).')
