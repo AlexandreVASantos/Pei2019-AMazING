@@ -1,113 +1,17 @@
-## Pei -  AMazING
+# Pei -  AMazING
 
 ## Nodes
 
-# Overview
+### Overview
 For the nodes we used an APU board from PCEngines.
 
-# Preparing OS
+### Preparing OS
 To Operating System we chose Ubuntu Server 18.04 LTS, which is available here. In case you choose the APU Board from PCEngines pick the 64-bit PC (AMD64) server install image, because with the others there is no compability and you have to do incrementals updates from Ubuntu Server 14.04 LTS.
 
-After the OS installation is completed you need to install the packages needed by our software to run the Restful API and connect nodes to kafka in order to manage if their running fine. If you desire to have separated virtual environment, please change the following script to your needs. The script for one virtual environment with all software needed looks like this:
+After the OS installation is completed you need to install the packages needed by our software to run the Restful API and connect nodes to kafka in order to manage if their running fine. If you desire to have separated virtual environment, please change the following script to your needs. The script for one virtual environment with all software needed is install_node.sh.
 
 
-#!/bin/bash
-
-echo 'password' | sudo -S apt-get update -y
-
-echo 'password' | sudo -S apt upgrade -y
-
-echo 'password' | sudo -S apt-get install lm-sensors -y
-
-echo 'password' | sudo -S apt-get install wireless-tools -y
-
-echo 'password' | sudo -S apt-get install hostapd -y
-
-echo 'password' | sudo -S apt-get install wpasupplicant -y
-
-echo 'password' | sudo -S apt-get install dnsmasq -y
-
-echo 'password' | sudo -S apt-get install unzip -y
-
-##Check if you have python3 installed, python3 --version
-##Uncomment the next line if you don't
-##echo 'password' | sudo -S apt-get install python3 -y
-
-##dont_delete is the folder with all the
-##Files needed in order to run the software in the boot
-
-echo 'password' | sudo -S mkdir /home/amazing/dont_delete
-
-mkdir /home/amazing/it_user
-
-echo 'password' | sudo -S mv /home/amazing/files.zip /home/amazing/dont_delete/
-
-
-##files.zip was sent to the node via scp (secure copy)
-##Has APIPEI.py, init_node.sh, requirementsAPI.txt, node_init.py
-
-
-echo 'password' | sudo -S unzip /home/amazing/dont_delete/files.zip -d /home/amazing/dont_delete/
-
-echo 'password' | sudo -S rm -r /home/amazing/dont_delete/files.zip
-
-echo 'password' | sudo -S mv /home/amazing/dont_delete/files/* /home/amazing/dont_delete/
-
-echo 'password' | sudo -S rm -r /home/amazing/dont_delete/files/
-
-echo 'password' | sudo -S chown root /home/amazing/dont_delete/init_node.sh
-
-echo 'password' | sudo -S chmod 775 /home/amazing/dont_delete/init_node.sh
-
-echo 'password' | sudo -S apt-get install python3-pip -y
-
-echo 'password' | sudo -S pip3 install virtualenv
-
-echo 'password' | sudo -S virtualenv /home/amazing/dont_delete/venv
-
-source /home/amazing/dont_delete/venv/bin/activate
-
-echo 'password' | sudo -S pip3 install -r /home/amazing/dont_delete/requirementsAPI.txt
-
-
-						
-
-
-requirementsAPI.txt content:
-
-
-aniso8601==5.1.0
-Click==7.0
-Flask==1.0.2
-Flask-RESTful==0.3.7
-itsdangerous==1.1.0
-Jinja2==2.10
-kafka-python==1.4.6
-MarkupSafe==1.1.1
-numpy==1.16.2
-psutil==5.6.0
-pytz==2018.9
-relativetimebuilder==0.2.0
-six==1.12.0
-Werkzeug==0.14.1
-						
-
-
-The package kafka-python is needed for the interaction between nodes and Switch Controller App. Remove it if not needed.
-
-
-
-init_node.sh content:
-
-
-#!/bin/bash
-
-source /home/amazing/dont_delete/venv/bin/activate
-
-sudo python3 /home/amazing/dont_delete/APIPEI.py &
-
-sudo python3 /home/amazing/dont_delete/node_init.py &
-
+The package kafka-python in requirementsAPI.txt is needed for the interaction between nodes and Switch Controller App. Remove it if not needed.
 						
 
 
@@ -129,17 +33,17 @@ Now just need to CTRL+X and then ENTER. At this moment everything you need is in
 
 ## Restful API
 
-# Overview
+### Overview
 The node restful API, running on nodes and being the bridge between the nodes and the Node Config App, we decided to go with Python with a little help of Flask. We even went further and used a microframework, Flask-Restful. Flask is a powerfull framework that in opposition with Django it is better user firendly when no web page is needed.
 
 If you have done the previous step correctly you are now able to run a Flask API.
 
 ## Node Config App
 
-# Overview
+### Overview
 Our Node Config App provides an abstraction layer for the end user when performing wireless configurations. We chose Python for building our app backend in addition with Django framework. For the front end html, css and javascript was used.
 
-# Preparing environment
+### Preparing environment
 
 $ sudo apt-get update
 $ sudo apt-get install python3-pip
@@ -149,19 +53,6 @@ $ sudo virtualenv path/to/virtualenv/name_of_virtualenv
 $ source path/to/virtualenv/name_of_virtualenv
 $ sudo pip3 install -r requirementsNodeConfigApp.txt
 						
-
-
-# requirementsNodeConfigApp.txt content:
-
-
-python-ldap==3.2.0
-Django==2.2.1
-django-auth-ldap==1.7.0
-django-background-tasks==1.2.0
-django-crispy-forms==1.7.2
-djangorestframework==3.9.2
-kafka-python==1.4.6
-requests==2.21.0
 						
 Right now everything you need to run the Node Config App is installed in the virtual environment. To find out how to create a django app please check the tutorial at the official django web page.
 
@@ -183,9 +74,10 @@ sudo python3 path/to/manage.py process_tasks
 						
 ## Switch Controller App
 
-# Overview
+### Overview
 The Switch Controller App allows the AMazING admin to turn on or off nodes by enabling or disabling the switch PoE ports. Similarly to Node Config App, Python was choosen to build the app backend with the help of Django framework. For the front end html, css, javascript with jquery and ajax was used.
-Preparing environment
+
+### Preparing environment
 
 $ sudo apt-get update
 $ sudo apt-get install python3-pip
@@ -193,17 +85,6 @@ $ sudo pip3 install virtualenv
 $ sudo virtualenv path/to/virtualenv/name_of_virtualenv
 $ source path/to/virtualenv/name_of_virtualenv
 $ sudo pip3 install -r requirementsSwitchControllerApp.txt
-						
-
-
-# requirementsSwitchControllerApp.txt content
-
-
-Django==2.2.1
-django-background-tasks==1.2.0
-kafka-python==1.4.6
-python-dateutil==2.8.0
-requests==2.21.0
 
 						
 Finally everything is installed and you can also run the Switch Controlling App in the virtual environment.
@@ -215,7 +96,7 @@ To run the app properly and without errors, like the Node Config App you need to
 ## Notes
 If you want to have the two web apps running on the same machine you just need to merge the steps above.
 
-# Preparing environment
+### Preparing environment
 
 $ sudo apt-get update
 $ sudo apt-get install python3-pip
@@ -227,7 +108,7 @@ $ sudo pip3 install -r requirements.txt
 						
 
 
-# requirements.txt content
+### requirements.txt content
 
 
 Django==2.2.1
@@ -281,7 +162,7 @@ sudo python3 /path/to/2ndApp/manage.py runserver process_tasks &
 
 This processes take a bit to initiate so, sleep 5, which means wait 5 seconds let the previous process fully load before a new one start, this is important because some of them depend on each other..
 
-Tips
+# Tips
 1. Virtual environment can be divided in four groups, pip, pip with sudo, pip3 and pip3 with sudo, and all this combinations can have different outcomes when trying to run something. So, make sure you use the same style for installing requirements and running processes, ex, if you installed requests with sudo and pip3, running the app or process without sudo and python3 will not work because it will get requirements from other sub group.
 
 2. Use & at the end of process initialization for making them run in the background. Removes the need of multiple terminals open and allows scripts to initiate multiple processes.
