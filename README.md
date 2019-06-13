@@ -6,7 +6,7 @@
 For the nodes we used an APU board from PCEngines.
 
 ### Preparing OS
-To Operating System we chose Ubuntu Server 18.04 LTS, which is available here. In case you choose the APU Board from PCEngines pick the 64-bit PC (AMD64) server install image, because with the others there is no compability and you have to do incrementals updates from Ubuntu Server 14.04 LTS.
+To Operating System we chose Ubuntu Server 18.04 LTS. In case you choose the APU Board from PCEngines pick the 64-bit PC (AMD64) server install image, because with the others there is no compability and you have to do incrementals updates from Ubuntu Server 14.04 LTS.
 
 After the OS installation is completed you need to install the packages needed by our software to run the Restful API and connect nodes to kafka in order to manage if their running fine. If you desire to have separated virtual environment, please change the following script to your needs. The script for one virtual environment with all software needed is install_node.sh.
 
