@@ -1,0 +1,38 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+	
+	<div style="left:-200%" class="site-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-lg-4">
+            <div class="site-section-heading">
+              <h1 style="color:black; left:-200%">Help</h1>
+            </div>
+          </div>
+        </div>	
+
+    <div style="left:-200%" class="site-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-lg-4">
+            <div class="site-section-heading">
+              <h3 style="color:black; left:-200%">Listening to events</h3>
+              <p>
+                 $ iw event
+				 - When debugging, it can be useful to see the auth/assoc/deauth/disassoc frames, use
+				 $ iw event -f
+				 - and sometimes timing information is also useful:
+				 $ iw event -t
+			  </p>
+            </div>
+          </div>
+        </div>
+
+        
+
+{% endblock content %}
+
+{%block back %}
+ <li class="active"><a href="{% url 'menu' %}">Back</a></li>
+{%endblock back %}

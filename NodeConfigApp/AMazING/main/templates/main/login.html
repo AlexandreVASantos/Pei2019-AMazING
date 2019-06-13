@@ -1,0 +1,28 @@
+{% extends "main/base.html" %}
+{% block content %}
+{% if messages %}
+<ul class="messages">
+	{% for msg in messages %}
+	<li>
+		<div class="alert alert-{{msg.level_tag}}" style="width:450px;right:50px" role="alert">
+			{{msg.message}}
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %}
+	<form action = "/auth/" method = "POST">
+		{% csrf_token %}
+	  <div class="form-group" align="center">
+	    <label style="color:#000" align="center" for="emailInput">Email</label>
+	    <input type="text" class="form-control" name="email" placeholder="Email">
+	  </div>
+	  <div class="form-group" align="center">
+	    <label style="color:#000" for="passwordInput">Password</label>
+	    <input type="password" class="form-control" name="password" placeholder="Password">
+	  </div>
+	  <div class="from-group" align="center">
+	  	<button style="background-color:#0061ff;color:#ffff" type="submit" id="timer" value class="btn">Submit</button>
+	  </div>
+	</form>
+{% endblock content %}

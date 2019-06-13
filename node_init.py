@@ -8,9 +8,6 @@ from kafka.errors import KafkaError
 
 ##Alexandre Santos, 80106
 
-url = 'http://localhost:8000/'
-
-headers = {'Content-Type': 'application/json'}
 
 
 def get_hostname():
@@ -28,7 +25,7 @@ def node_life_cycle():
 	while True:
 		try:
 			
-			producer = KafkaProducer(bootstrap_servers=['192.168.85.228:9093'],value_serializer=lambda x: json.dumps(x).encode('utf-8'))
+			producer = KafkaProducer(bootstrap_servers=['kafkaserverIP:9093'],value_serializer=lambda x: json.dumps(x).encode('utf-8'))
 			node_id = str(get_hostname())
 			node_id.replace('\n', '')
 			data = {node_id: 'wake_up'}
@@ -38,8 +35,7 @@ def node_life_cycle():
 			
 			producer.close()
 
-			#data_json = json.dumps(data)
-			#send = requests.post(url + 'nodeup/', data=data_json, headers= headers)
+			
 			break;
 
 		except KafkaError as e:
@@ -49,7 +45,7 @@ def node_life_cycle():
 
 	while True:
 		try:
-			producer = KafkaProducer(bootstrap_servers=['192.168.85.228:9093'],value_serializer=lambda x: json.dumps(x).encode('utf-8'))
+			producer = KafkaProducer(bootstrap_servers=['kafkaserverIP:9093'],value_serializer=lambda x: json.dumps(x).encode('utf-8'))
 
 			data = { node_id : 'alive' }
 			print(data)
