@@ -46,12 +46,19 @@ Our Node Config App provides an abstraction layer for the end user when performi
 ### Preparing environment
 
 $ sudo apt-get update
+
 $ sudo apt-get install python3-pip
+
 $ sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
+
 $ sudo pip3 install virtualenv
+
 $ sudo virtualenv path/to/virtualenv/name_of_virtualenv
+
 $ source path/to/virtualenv/name_of_virtualenv
+
 $ sudo pip3 install -r requirementsNodeConfigApp.txt
+
 						
 						
 Right now everything you need to run the Node Config App is installed in the virtual environment. To find out how to create a django app please check the tutorial at the official django web page.
@@ -80,10 +87,15 @@ The Switch Controller App allows the AMazING admin to turn on or off nodes by en
 ### Preparing environment
 
 $ sudo apt-get update
+
 $ sudo apt-get install python3-pip
+
 $ sudo pip3 install virtualenv
+
 $ sudo virtualenv path/to/virtualenv/name_of_virtualenv
+
 $ source path/to/virtualenv/name_of_virtualenv
+
 $ sudo pip3 install -r requirementsSwitchControllerApp.txt
 
 						
@@ -99,11 +111,17 @@ If you want to have the two web apps running on the same machine you just need t
 ### Preparing environment
 
 $ sudo apt-get update
+
 $ sudo apt-get install python3-pip
+
 $ sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
+
 $ sudo pip3 install virtualenv
+
 $ sudo virtualenv path/to/virtualenv/name_of_virtualenv
+
 $ source path/to/virtualenv/name_of_virtualenv
+
 $ sudo pip3 install -r requirements.txt
 						
 
@@ -112,13 +130,21 @@ $ sudo pip3 install -r requirements.txt
 
 
 Django==2.2.1
+
 django-auth-ldap==1.7.0
+
 django-background-tasks==1.2.0
+
 django-crispy-forms==1.7.2
+
 djangorestframework==3.9.2
+
 kafka-python==1.4.6
+
 python-dateutil==2.8.0
+
 python-ldap==3.2.0
+
 requests==2.21.0
 						
 
@@ -139,9 +165,13 @@ sudo path/to/bin/kafka-server-start.sh config/server.properties &
 sleep 5
 
 ##or
+
 ##sudo path/to/bin/kafka-server-start.sh config/server-1.properties &
+
 ##sudo path/to/bin/kafka-server-start.sh config/server-2.properties &
+
 ##sudo path/to/bin/kafka-server-start.sh config/server-x.properties &
+
 ##depending on your needs
 
 sudo python3 /path/to/1stApp/manage.py runserver IP:PORT &
@@ -163,6 +193,7 @@ sudo python3 /path/to/2ndApp/manage.py runserver process_tasks &
 This processes take a bit to initiate so, sleep 5, which means wait 5 seconds let the previous process fully load before a new one start, this is important because some of them depend on each other..
 
 # Tips
+
 1. Virtual environment can be divided in four groups, pip, pip with sudo, pip3 and pip3 with sudo, and all this combinations can have different outcomes when trying to run something. So, make sure you use the same style for installing requirements and running processes, ex, if you installed requests with sudo and pip3, running the app or process without sudo and python3 will not work because it will get requirements from other sub group.
 
 2. Use & at the end of process initialization for making them run in the background. Removes the need of multiple terminals open and allows scripts to initiate multiple processes.
