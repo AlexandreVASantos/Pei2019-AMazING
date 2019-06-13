@@ -1,5 +1,0 @@
-good morning our project is AMazING, in fact it shoul be called Amazing 2.0 since it is a new version of the old system
-as you can see amazíng was implemented back in two thousand and ten to fullfil the needs of students and researchers of IT
-with that being said our main objective is to reimplement amazing but with steroids, that means, the old system but with added software to 
-facilitate the work of people inside it. As you can imagine it is not functional to, for every time we want to ... go get the node, connect it to pc, put programs in 
-it run them and in the end put everything back in place
