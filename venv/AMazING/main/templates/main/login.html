@@ -1,5 +1,16 @@
 {% extends "main/base.html" %}
 {% block content %}
+{% if messages %}
+<ul class="messages">
+	{% for msg in messages %}
+	<li>
+		<div class="alert alert-{{msg.level_tag}}" style="width:450px;right:50px" role="alert">
+			{{msg.message}}
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %}
 	<form action = "/auth/" method = "POST">
 		{% csrf_token %}
 	  <div class="form-group" align="center">

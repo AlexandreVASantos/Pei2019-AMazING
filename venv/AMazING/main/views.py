@@ -14,7 +14,7 @@ from json import dumps
 from django.views.decorators.csrf import csrf_exempt
 from background_task import background
 from time import sleep
-
+from django.contrib.auth.decorators import login_required
 
 grid={}
 
@@ -39,7 +39,7 @@ def consumer():
 def auth(request):
 	username = request.POST.get('email')
 	password = request.POST.get('password')
-
+	system_messages=messages.get_messages(request)
 
 	user = authenticate(username=username,password=password)
 	if user is not None:
@@ -48,7 +48,7 @@ def auth(request):
 		producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
 		curdate = datetime.datetime.today().strftime('[%d/%B/%Y %H:%M:%S]')
 		username='username'
-		data = {username: [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
+		data = { request.user.get_username() : [curdate, 'Login','null' ,'null', 'null']}   #curdate= current date, data["NetwC"]=input , req.json() = output
 		producer.send('numtest', value=data)
 		sleep(2)
 
@@ -58,6 +58,7 @@ def auth(request):
 		system_messages.used = True
 	return render(request,'main/login.html')
 
+@login_required(login_url='/')
 def AccessP(request):
 	data=request.GET
 	print(data)
@@ -67,19 +68,23 @@ def AccessP(request):
 def home(request):
 	return render(request, 'main/login.html')
 
+@login_required(login_url='/')
 def modBitrate(request):
 	data=request.GET
 	print(data)
 	ident=data['id']
 	return render(request, 'main/modBitrate.html',{'id':ident})
 
+@login_required(login_url='/')
 def about(request):
 	return render(request, 'main/about.html')
 
+@login_required(login_url='/')
 def Logout(request):
 	logout(request)
 	return render(request, 'main/login.html')
 
+@login_required(login_url='/')
 def menu(request):	
 	data = request.GET
 	ident=""
@@ -93,39 +98,43 @@ def menu(request):
 	refresh_grid()
 	return render(request, 'main/menu.html',{'id':ident})
 
+@login_required(login_url='/')
 def connection(request):
 	data=request.GET
 	print(data)
 	ident=data['id']
 	return render(request, 'main/connection.html',{'id':ident})
 
+@login_required(login_url='/')
 def NodeMenu(request):
 	refresh_grid()
 	return render(request, 'main/NodeMenu.html',{'node_grid':grid})
 
-def main(request):
-	return render(request, 'main/main.html')
-
+@login_required(login_url='/')
 def help(request):
 	return render(request, 'main/help.html')
 
+@login_required(login_url='/')
 def stationPeer(request):
 	data=request.GET
 	print(data)
 	ident=data['id']
 	return render(request, 'main/stationPeer.html',{'id':ident})
 
+@login_required(login_url='/')
 def addrChange(request):
 	data=request.GET
 	ident=data['id']
 	return render(request, 'main/addrChange.html',{'id':ident})
 
+@login_required(login_url='/')
 def setTxPower(request):
 	data=request.GET
 	print(data)
 	ident=data['id']
 	return render(request, 'main/SetTxPower.html',{'id':ident})
 
+@login_required(login_url='/')
 def postGetApIP(request):
 	data=request.GET
 	url = "http://10.110.1." + ident + ":5000/"
@@ -139,6 +148,7 @@ def postGetApIP(request):
 	updatedReqResp = req.json()
 	return render(request,'main/menu.html',{'id':ident})
 
+@login_required(login_url='/')
 def postAccessP(request):
 	data = request.GET
 	ident=data['id']
@@ -181,6 +191,7 @@ def postAccessP(request):
 	#print(req.json())
 	return render(request,'main/AccessP.html',{'id':ident})
 
+@login_required(login_url='/')
 def postStopAccessPoint(request):
 	data = request.GET
 	ident=data['id']
@@ -201,6 +212,7 @@ def postStopAccessPoint(request):
 	sleep(2)
 	return render(request,'main/menu.html',{'id':ident})	
 
+@login_required(login_url='/')
 def postDisconnect(request):
 	data = request.GET
 	ident=data['id']
@@ -224,6 +236,7 @@ def postDisconnect(request):
 
 	return render(request,'main/menu.html',{'id':ident})	
 
+@login_required(login_url='/')
 def postTurnOnNode(request):
 	url = "http://192.168.85.228:8000/request/" 				
 	#url = "http://httpbin.org/post"
@@ -258,6 +271,7 @@ def postTurnOnNode(request):
 
 	return render(request,'main/NodeMenu.html',{'node_grid':grid,'id':ident})
 
+@login_required(login_url='/')
 def postScanning(request):
 	data = request.GET
 	ident=data['id']
@@ -303,6 +317,7 @@ def postScanning(request):
 	#print(req.json())
 	return render(request,'main/menu.html',{'id':ident})
 
+@login_required(login_url='/')
 def postLinkStatus(request):
 	data = request.GET
 	ident=data['id']
@@ -345,6 +360,7 @@ def postLinkStatus(request):
 	#print(req.json())
 	return render(request,'main/menu.html',{'id':ident})
 
+@login_required(login_url='/')
 def postLocalWireless(request):
 	data = request.GET
 	ident=data['id']
@@ -388,6 +404,7 @@ def postLocalWireless(request):
 	#print(req.json())
 	return render(request,'main/menu.html',{'id':ident})
 
+@login_required(login_url='/')
 def postIPChange(request):
 	data = request.GET
 	ident=data['id']
@@ -431,6 +448,7 @@ def postIPChange(request):
 	#print(req.json())
 	return render(request,'main/addrChange.html',{'id':ident})
 
+@login_required(login_url='/')
 def postConnection(request):
 	data = request.GET
 	#print(data)
@@ -475,7 +493,7 @@ def postConnection(request):
 	#print(req.json())
 	return render(request,'main/connection.html',{'id':ident})
 	
-
+@login_required(login_url='/')
 def postStationStats(request):
 	data = request.GET
 	ident=data['id']
@@ -522,6 +540,7 @@ def postStationStats(request):
 	#print(req.json())
 	return render(request,'main/menu.html',{'id':ident})
 
+@login_required(login_url='/')
 def postModBitrate(request):
 	data = request.GET
 	ident=data['id']
@@ -562,7 +581,7 @@ def postModBitrate(request):
 
 	return render(request,'main/modBitrate.html',{'id':ident})		
 
-
+@login_required(login_url='/')
 def postStationPeer(request):
 	data = request.GET
 	ident=data['id']
@@ -610,7 +629,7 @@ def postStationPeer(request):
 	return render(request,'main/stationPeer.html',{'id':ident})
 	
 	
-
+@login_required(login_url='/')
 def postTxPower(request):
 	data = request.GET
 	ident=data['id']
