@@ -17,6 +17,9 @@ urlpatterns = [
     path('requests/', views.requests_on, name='requests'),
     path('stats/poe/', views.stats_poe, name='stats_poe'),
     path('reset/', views.reset_node, name="reset"),
+    path('logfile/', views.logs_file, name ='logs_file'),
+    path('logs/', views.get_logs_page, name = 'get_logs_page'),
+    path('logs/filter/', views.get_logs, name = 'get_logs'),
     
 ]
 

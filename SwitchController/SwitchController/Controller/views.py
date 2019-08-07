@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from dateutil import relativedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from background_task import background
 from kafka import KafkaConsumer
 from kafka import TopicPartition
@@ -44,7 +44,7 @@ def check_reading_messages():
 			
 			time.sleep(10)
 			consumerA = KafkaConsumer('alerts', bootstrap_servers=['192.168.85.228:9093'], auto_offset_reset='earliest',enable_auto_commit=False, group_id="get_alerts", value_deserializer=lambda x:json.loads(x.decode('utf-8')), consumer_timeout_ms=3000)
-			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c = connection.cursor()
 			
 			for message in consumerA:
@@ -150,7 +150,7 @@ def check_reading_messages():
 # 			# date = todays_date.strftime("%Y-%m-%d %H:%M:%S")
 # 		count_alerts['node'] +=1
 			
-# 			# connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+# 			# connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 # 			# c=connection.cursor()
 
 # 			# query = "Insert into alerts values(" + str(node)+ ",'" + str(info)+ "','"+ str(date) +"','False');"
@@ -187,7 +187,7 @@ def check_reading_messages():
 # 			up_date = datetime.datetime.now()
 # 			time2 = up_date
 # 			date = up_date.strftime("%Y-%m-%d %H:%M:%S")
-# 			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+# 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 # 			c=connection.cursor()
 
 # 			query = "Update node Set value='ON', dateOn='"+ str(date) + "' where id="+ str(node) +";"
@@ -228,6 +228,114 @@ def getlogin(request):
 
 
 
+
+def logs_file(request):
+	if request.method == 'GET':	
+		try:
+			file = ''
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/Logs.db")
+			c=connection.cursor()
+
+			query = "Select * from Logs;"
+			c.execute(query)
+			fetch = c.fetchall()
+			for row in fetch:
+				file += str(row) + '\n'
+			c.close()
+			connection.close()
+		except sqlite3.Error as e:
+			return None
+
+		print("dlkasjdaskldjas")
+		return HttpResponse(file, content_type='text/plain')
+
+def get_usernames_logs_database():
+	try:
+		usernames=[]
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/Logs.db")
+		c=connection.cursor()
+
+		query = "Select username from Logs;"
+		c.execute(query)
+		fetch = c.fetchall()
+		for row in fetch:
+			usernames.append(str(row[0]))
+		c.close()
+		connection.close()
+		return usernames
+	except sqlite3.Error as e:
+		return None
+
+@csrf_exempt
+def get_logs(request):
+	if request.method == 'POST':	
+		try:
+			log={}
+			usernames=get_usernames_logs_database()
+			if usernames is not None:
+				log['username']= usernames
+
+				values = request.POST
+
+				print(values)
+
+				date_init = values.get('date1')
+				date_final = values.get('date2')
+				username = values.get('username_id')
+				order = values.get('order')
+				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/Logs.db")
+				c=connection.cursor()
+
+				if date_init is None or date_init == '':
+					if date_final is None or date_final == '':
+						if username == 'all':
+							query = "Select * from Logs order by date"
+						else:
+							query = "Select * from Logs where username = '" + str(username)+ "' order by date"
+
+						if order == 'latest':
+							query+= " Desc;"
+						else:
+							query+= ";"
+
+
+
+				c.execute(query)
+				fetch = c.fetchall()
+				info = [('username: '+ str(row[0]), 'date: ' + str(row[1]), 'function: ' + str(row[2]),'node: ' + str(row[3]),'input: ' + str(row[4]), 'output: ' + str(row[5])) for row in fetch]
+				log['info'] = info
+
+
+				return render(request, 'templates/Controller/logs.html',{'user': user, 'alert': alert, 'request':request_node, 'logs' : log})
+			else:
+				return None
+		except sqlite3.Error as e:
+			return None
+		
+
+
+
+
+def get_logs_page(request):
+	if request.method == 'GET':	
+		try:
+			log={}
+			usernames= []
+			usernames=get_usernames_logs_database()
+			if usernames is not None:	
+				log['username'] = usernames
+				log['info'] = None
+
+				print(log['username'])
+
+				return render(request,"templates/Controller/logs.html", {'user': user, 'alert': alert, 'request':request_node, 'logs' : log})
+			else:
+				return None
+		except sqlite3.Error as e:
+			return None
+		
+
+
 @csrf_exempt
 def request(request):
 	if request.method == 'POST':
@@ -237,7 +345,7 @@ def request(request):
 
 			node = args.get('id')
 			username = args.get('username')
-			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 
 			query = "Select id,value from node where id="+ str(node) +";"
@@ -255,7 +363,7 @@ def request(request):
 			request_node = True
 
 			try:
-				connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 				c=connection.cursor()
 				query= "Select username from requests where username='" +str(username)+ "' and node_id=" + str(node) + " and requested != 'False';"
 				c.execute(query)
@@ -292,7 +400,7 @@ def reset_node(request):
 	if request.method == 'POST':
 		if request.is_ajax():
 			try:
-				connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 				c=connection.cursor()
 				
 				node = request.POST.get('id')
@@ -362,7 +470,7 @@ def requests_on(request):
 		if request.is_ajax():
 			return JsonResponse({'user':user, 'request':request_node})
 		try:
-			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 			query = "Delete from requests where requested = 'False';"
 			c.execute(query)
@@ -392,7 +500,7 @@ def requests_on(request):
 				username = request.POST.get('username')
 
 				try:
-					connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+					connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 					c=connection.cursor()
 					query = "Update requests set requested = 'False' where node_id=" + str(node_id) + " AND username='" + str(username) + "';"
 					c.execute(query)
@@ -416,7 +524,7 @@ def requests_on(request):
 ##Check if there is any alert not read yet
 def alerts():
 	try:
-		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query="Select count(*) from alerts where read = 'False';" 
 		c.execute(query)
@@ -434,11 +542,16 @@ def alerts():
 
 def compLogin(username, password):
 	try:
-		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query="Select username, password from users where username= '" + str(username) + "';"
 		c.execute(query)
 		fetch= c.fetchall()
+
+		if fetch is None or fetch == []:
+			c.close()
+			connection.close()
+			return 1, 'No username in database'
 		
 		if fetch[0][1] != password:
 			c.close()
@@ -505,7 +618,7 @@ def change_pass(request):
 			return render(request, 'templates/Controller/password.html',{'message' :'New passwords did not match' ,'user' : user, 'failed': True  })
 
 		try:
-			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 			query1="Select username, password from users where username='" + str(username) + "';"
 			c.execute(query1)
@@ -587,7 +700,7 @@ def get_notifications_with_date(request):
 					date_fin = str(date_final) + ' 23:59:59'
 					query = query="Select node_id, alert, date_alert from alerts where date_alert >='" +str(date_in)+ "' AND date_alert <='" +str(date_fin)+ "' AND node_id=" + str(node) + ";"
 			
-			connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 			c=connection.cursor()
 				
 			c.execute(query)
@@ -611,7 +724,7 @@ def notifications(request):
 	try:
 		global alert
 		alert = False
-		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 		query="Select node_id, alert, date_alert from alerts where read = 'False' Order by date_alert Desc;" 
 		c.execute(query)
@@ -632,7 +745,7 @@ def notifications(request):
 def stats(request):
 
 	try:
-		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()
 
 		##count how many alerts exist
@@ -785,7 +898,7 @@ def send_grid(request):
 					return JsonResponse(node_grid)
 			else:
 				try:
-					connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+					connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 					c=connection.cursor()
 					
 					#if value ON turn off
@@ -841,7 +954,7 @@ def send_grid(request):
 
 def refresh_grid():
 	try:	
-		connection = sqlite3.connect("/home/ubuntu/apps/SwitchController/SwitchController/Controller/controller.db")
+		connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/SwitchController/Controller/controller.db")
 		c=connection.cursor()	
 		c.execute("Select node_id, value, portId from node as N Join switch as S on N.id = S.node_id;")
 		fetch= c.fetchall()
