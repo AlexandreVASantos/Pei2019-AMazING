@@ -236,17 +236,17 @@ def logs_file(request):
 			connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/Logs.db")
 			c=connection.cursor()
 
-			query = "Select * from Logs;"
+			query = "Select * from Logs order by date Desc;"
 			c.execute(query)
 			fetch = c.fetchall()
 			for row in fetch:
-				file += str(row) + '\n'
+				file += str(row[0]) + "(" + row[1] + ")" + "\n" + "function: " + row[2] + "\t" + "node: " + row[3] + "\n"  + "input: " + row[4] + "\n" + "output: " + row[5] + "\n \n"    
+				 
 			c.close()
 			connection.close()
 		except sqlite3.Error as e:
 			return None
 
-		print("dlkasjdaskldjas")
 		return HttpResponse(file, content_type='text/plain')
 
 def get_usernames_logs_database():
@@ -281,22 +281,42 @@ def get_logs(request):
 
 				date_init = values.get('date1')
 				date_final = values.get('date2')
+				
 				username = values.get('username_id')
 				order = values.get('order')
 				connection = sqlite3.connect("/home/alexandre/Desktop/SwitchController/Logs.db")
 				c=connection.cursor()
 
-				if date_init is None or date_init == '':
-					if date_final is None or date_final == '':
+
+				if date_init == '':
+					if date_final == '':	
 						if username == 'all':
 							query = "Select * from Logs order by date"
 						else:
 							query = "Select * from Logs where username = '" + str(username)+ "' order by date"
-
-						if order == 'latest':
-							query+= " Desc;"
+					else:
+						if username == 'all':
+							query = "Select * from Logs where date <= '" + str(date_final) + " 23:59:59' order by date"
 						else:
-							query+= ";"
+							query = "Select * from Logs where username = '" + str(username)+ "' and date <= '" + str(date_final) + " 23:59:59' order by date"
+
+				else:
+					if date_final == '':
+						if username == 'all':
+							query = "Select * from Logs where date >= '" + str(date_init) + " 00:00:00' order by date"
+						else:
+							query = "Select * from Logs where username = '" + str(username)+ "' and date >= '" + str(date_init) + " 00:00:00' order by date"
+					else:
+						if username == 'all':
+							query = "Select * from Logs where date >= '" + str(date_init) + " 00:00:00' and date <= '" + str(date_final)+  " 23:59:59' order by date"
+						else:
+							query = "Select * from Logs where username = '" + str(username)+ "' and date >= '" + str(date_init) + " 00:00:00' and date <= '" + str(date_final) + " 23:59:59' order by date"
+					
+				
+				if order == 'latest':
+					query+= " Desc;"
+				else:
+					query+= ";"
 
 
 
@@ -308,7 +328,7 @@ def get_logs(request):
 
 				return render(request, 'templates/Controller/logs.html',{'user': user, 'alert': alert, 'request':request_node, 'logs' : log})
 			else:
-				return None
+				return render(request, 'templates/Controller/home.html',{'user': user, 'alert': alert, 'request':request_node})
 		except sqlite3.Error as e:
 			return None
 		
