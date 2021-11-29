@@ -1,4 +1,4 @@
-python-ldap==3.2.0
+python-ldap==3.4.0
 Django==2.2.13
 django-auth-ldap==1.7.0
 django-background-tasks==1.2.0
